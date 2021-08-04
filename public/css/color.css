@@ -1,0 +1,190 @@
+body{
+     background-color: #ffffff;
+}
+.navbar-default, #wrapper{
+    background-color: #0E4174!important;
+    border-color: #0E4174!important;
+}
+#page-wrapper{
+   min-height: 899px;
+}
+#side-menu>li a:hover ,#side-menu>li a:focus{
+	background-color:transparent;
+}
+#side-menu>li a:focus, #side-menu>li a:hover{
+	color:#e47958!important;
+}
+.logo{
+    max-width: 200px;
+    /* padding-left: 50%; */
+    
+}
+.logo2{
+    max-width: 150px;
+    margin-left: 20px;
+    margin-top: -10px;
+}
+.logo3{
+   max-width: 100px;
+}
+.move{
+	margin:0!important;
+}
+.ocultar{
+	left: -100%;
+}
+.move-menu{
+	margin-top: 15px;
+    margin-left: -15px;
+    font-size: 25px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+/*
+a{
+	color:#cdcfd0!important;
+}
+*/
+.dropdown-menu{
+    background-color:#0c3f6e!important;
+}
+.dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover {
+    color: #eee!important;
+    text-decoration: none;
+    background-color:#002e5a!important;
+}
+.sidebar ul li a.active {
+    background-color: #002e5a!important;
+}
+.sidebar .nav-second-level li a {
+    color: #ffffff!important;
+}
+.sidebar .nav-third-level li a {
+  text-align: right;
+}
+.close, .close:focus, .close:hover{
+    color:#000!important;
+}
+.btn-success, .btn-success:hover, .btn-warning, .btn-warning:focus,.btn-danger, .btn-danger:focus{
+    color: #fff!important;
+    margin: 2px;
+    min-width: 90px;
+}
+.btn-primary, .btn-primary:focus{
+    color: #fff!important;
+    margin: 2px;
+}
+.dropdown  a:focus, .dropdown  a:hover , .navbar-right  a:focus,  .navbar-right  a:hover{
+    color:#23527c!important;
+}
+.pagination>li>a:focus, .pagination>li>a:hover, .pagination>li>span:focus, .pagination>li>span:hover {
+    z-index: 2;
+    color: #23527c!important;
+}
+.pagination>li>a, .pagination>li>span {
+    color: #337ab7!important;
+}
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+    color: #fff!important;
+}
+td>a{
+    color:#23527c!important;
+}
+.muestra a{
+    color:#002e5a!important;
+}
+.requerido{
+    color:#ff0000!important;
+    display: inline-block;
+    font-weight: 900;
+    /*font-size: 20px;*/
+}
+.RSElogo{
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+}
+.nav-tabs>li>a {
+    color: #337ab7!important;
+}
+tr.group, tr.group:hover {
+    background-color: #ddd !important;
+}
+
+.content-big{
+    max-width: 1100px;
+    margin: auto;
+    margin-bottom: 10px;
+}
+.content-media{
+    max-width: 950px;
+    margin: auto;
+    margin-bottom: 10px;
+}
+.color-panel-footer{
+color:#002e5a;
+}
+.back-panel-footer{
+    background-color:#002e5a;
+    color:#FFFFFF;
+}
+.move-start{
+    padding-right: 10px;
+}
+.chosen-container-single .chosen-single, .chosen-container-multi .chosen-choices {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    padding: 0 0px 0 10px!important;
+    height: 34px!important;
+    background-color: #fff;
+    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(20%, #ffffff), color-stop(50%, #f6f6f6), color-stop(52%, #eeeeee), color-stop(100%, #f4f4f4));
+    background: -webkit-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -moz-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background: -o-linear-gradient(#ffffff 20%, #f6f6f6 50%, #eeeeee 52%, #f4f4f4 100%);
+    background-clip: padding-box;
+
+    text-decoration: none;
+    white-space: nowrap;
+    line-height: 32px!important;
+    font-size: 60px;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif!important;
+
+
+
+    color: #999!important;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+@media only screen and (max-width : 480px){
+ 	.move-menu{display:none!important;}
+ 	#user{
+ 	float: right;
+    width: 100%;
+    text-align:right;
+    left: 15px;
+ 	}
+    #home{
+        width: 100%;
+        text-align:right;
+    }
+ }
+@media only screen and (min-width :480px) and (max-width: 767px) {
+	.move-menu{display:none!important;}
+}
+
+
+.text-bold{
+    font-weight: bold;
+}
+.header_ini{
+    font-size: 100px;
+    font-weight: bold;
+}

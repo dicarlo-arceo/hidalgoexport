@@ -1,0 +1,18 @@
+.RSElogo{
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+}
+.content-big{
+    max-width: 1000px;
+    margin: auto;
+    margin-bottom: 10px;
+}
+.content-media{
+    max-width: 950px;
+    margin: auto;
+    margin-bottom: 10px;
+}
+.head-color{
+background-color: #e0dddd;
+}
