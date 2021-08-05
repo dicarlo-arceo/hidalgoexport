@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Profile;
 use App\Permission;
-use App\AgentCode;
 
 class UsersController extends Controller
 {
@@ -30,7 +29,8 @@ class UsersController extends Controller
 
     public function GetInfo($id)
     {
-        $user = User::where('id',$id)->with('agent_codes')->first();
+
+        $user = User::where('id',$id)->first();
         // dd($user);
         return response()->json(['status'=>true, "data"=>$user]);
 
@@ -47,16 +47,6 @@ class UsersController extends Controller
         $user->cellphone = $request->cellphone;
         $user->fk_profile = $request->fk_profile;
         $user->save();
-        if($request->codes != null)
-        {
-            foreach($request->codes as $code)
-            {
-                $agentCode = new AgentCode;
-                $agentCode->fk_user = $user->id;
-                $agentCode->code = $code["code"];
-                $agentCode->save();
-            }
-        }
         return response()->json(['status'=>true, 'message'=>'Usuario Creado']);
     }
 
@@ -67,22 +57,7 @@ class UsersController extends Controller
         ->update(['email'=>$request->email,'password'=>bcrypt($request->password),
         'name'=>$request->name,'firstname'=>$request->firstname,'lastname'=>$request->lastname,
         'cellphone'=>$request->cellphone,'fk_profile'=>$request->fk_profile]);
-        $codes_edit = AgentCode::where('fk_user', $request->id)->get();
         // dd($codes_edit);
-        foreach($codes_edit as $codes)
-        {
-            $codes->delete();
-        }
-        if($request->codigoseditar != null)
-        {
-            foreach($request->codigoseditar as $codigos)
-            {
-                $agentCode = new AgentCode;
-                $agentCode->fk_user = $request->id;
-                $agentCode->code = $codigos["code"];
-                $agentCode->save();
-            }
-        }
         return response()->json(['status'=>true, 'message'=>"Usuario Actualizado"]);
 
     }

@@ -12,8 +12,8 @@ class ProfilesController extends Controller
     public function index(){
         $profiles = Profile::get();
         $profile = User::findProfile();
-        $perm = Permission::permView($profile,6);
-        $perm_btn =Permission::permBtns($profile,6);
+        $perm = Permission::permView($profile,4);
+        $perm_btn =Permission::permBtns($profile,4);
         // dd($perm_btn);
         if($perm==0)
         {

@@ -62,7 +62,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="">Perfil:</label>
-                                            <select name="selectProfile" id="selectProfile" class="form-control" onchange="showimp()">
+                                            <select name="selectProfile" id="selectProfile" class="form-control">
                                                 <option hidden selected>Selecciona una opción</option>
                                                 @foreach ($profiles as $id => $profile)
                                                     <option value='{{ $id }}'>{{ $profile }}</option>
@@ -71,27 +71,6 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="form-group">
-                                                <label for="" style="display: none" id="etiqueta">Clave de Agente</label>
-                                                <input type="text" id="code" name="code" class="form-control" style="display: none;">
-                                                <br>
-                                                <button type="button" id="agregarcol" class="btn btn-primary" onclick="agregarcodigo()" style="display: none;">Agregar</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {{-- inicio tabla --}}
-                                    <div class="table-responsive">
-                                        <table class="table table-stripped table-hover text-center" id="tbcodes" style="display: none">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-center">Clave de agente</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="tbody-codigo"></tbody>
-                                        </table>
-                                    </div>
                                 </div>
 
                             </div>
