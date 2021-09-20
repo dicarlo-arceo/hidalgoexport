@@ -29,7 +29,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
-                        <button type="button" onclick="guardarperfil()" class="btn btn-primary">Guardar</button>
+                        <button type="button" onclick="guardarperfil({{$perm_btn}})" class="btn btn-primary">Guardar</button>
                     </div>
                 </div>
             </div>

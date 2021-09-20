@@ -38,7 +38,8 @@ class ProfilesController extends Controller
         $profile = new Profile;
         $profile->name = $request->name;
         $profile->save();
-        return response()->json(["status"=>true, "message"=>"Perfil Creado"]);
+        $profiles = Profile::get();
+        return response()->json(["status"=>true, "message"=>"Perfil Creado", "data"=>$profiles]);
     }
 
     public function update(Request $request, $id)

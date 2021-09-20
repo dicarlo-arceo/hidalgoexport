@@ -31,9 +31,10 @@ $(document).ready( function () {
     });
 } );
 
-function guardarperfil()
+function guardarperfil(permisos)
 {
     var name = $("#name").val();
+    var table = $('#tbProf').DataTable();
     var route = "profiles";
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -47,10 +48,22 @@ function guardarperfil()
         success:function(result)
         {
             alertify.success(result.message);
-            $("#myModal").modal('hide');
-            window.location.reload(true);
+            // $("#myModal").modal('hide');
+            table.clear();
+            $("[data-dismiss=modal]").trigger({ type: "click" });
+            // for(var x = 0; x < result.data.lenght; x++)
+            // {
+            //     table.row.add([result.data.name,'<a href="#|" class="btn btn-warning" onclick="editarperfil('+result.data.id+')" >Editar</a>']).node().id = result.data.id;
+            // }
+            // table.draw(false);
+            result.data.forEach( function(valor, indice, array) {
+                table.row.add([valor.name,'<button href="#|" class="btn btn-warning" onclick="editarperfil('+valor.id+')" >Editar</button>&nbsp<button href="#|" class="btn btn-danger" onclick="eliminarperfil('+valor.id+')">Eliminar</button>']).node().id = valor.id;
+            });
+            table.draw(false);
+            // window.location.reload(true);
         }
     })
+
 }
 var idupdate = 0;
 function editarperfil(id)
