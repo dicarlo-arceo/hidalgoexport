@@ -36,10 +36,7 @@ Route::get('admin/users/user/GetInfo/{id}','UsersController@GetInfo')->name('use
 // clientes
 Route::resource('admin/client/client', 'ClientsController');
 Route::get('admin/client/client/GetInfo/{id}','ClientsController@GetInfo')->name('client.GetInfo');
-Route::post('admin/client/client/saveEnterprise', 'ClientsController@saveEnterprise')->name('client.saveEnterprise');
-Route::get('admin/client/client/GetInfoE/{id}','ClientsController@GetInfoE')->name('client.GetInfoE');
-Route::post('admin/client/client/updateEnterprise', 'ClientsController@updateEnterprise')->name('client.updateEnterprise');
-Route::delete('admin/client/client/destroyEnterprise/{id}','ClientsController@destroyEnterprise')->name('cliente.destroyEnterprise');
+Route::post('admin/client/client/SaveNuc','ClientsController@SaveNuc')->name('client.SaveNuc');
 
 // permisos
 Route::resource('admin/permission/permissions', 'PermissionsController');
@@ -50,3 +47,7 @@ Route::post('admin/permission/permissions/update_store','PermissionsController@u
 // fondo mensual
 Route::resource('funds/monthfund/monthfunds', 'MonthFundsController');
 Route::get('funds/monthfund/monthfunds/GetInfo/{id}','MonthFundsController@GetInfo')->name('monthfunds.GetInfo');
+Route::get('funds/monthfund/monthfunds/GetInfoLast/{id}','MonthFundsController@GetInfoLast')->name('monthfunds.GetInfoLast');
+Route::post('funds/monthfund/monthfunds/updateStatus', 'MonthFundsController@updateStatus')->name('monthfunds.updateStatus');
+Route::post('funds/monthfund/monthfunds/updateAuth', 'MonthFundsController@updateAuth')->name('monthfunds.updateAuth');
+Route::get('funds/monthfund/monthfunds/GetNuc/{id}','MonthFundsController@GetNuc')->name('monthfunds.GetNuc');

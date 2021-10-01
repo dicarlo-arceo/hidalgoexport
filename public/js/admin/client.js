@@ -226,3 +226,47 @@ function eliminarCliente(id)
             alertify.error('Cancelado');
     });
 }
+var idnuc = 0;
+function nuevoNuc(id)
+{
+    idnuc=id;
+    $("#nucModal").modal('show');
+}
+function cerrarNuc()
+{
+    $("#nucModal").modal('hide');
+}
+function guardarNuc()
+{
+    var onoff = document.getElementById("onoff");
+    var checked = onoff.checked;
+    var selectCurrency = $("#selectCurrency").val();
+    var nuc = $("#nuc").val();
+    var reinvest = 2;
+    if(checked)
+    {
+        reinvest = 1;
+    }
+    var route = baseUrl + '/SaveNuc';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'nuc':nuc,
+        'selectCurrency':selectCurrency,
+        'fk_client':idnuc,
+        'estatus':reinvest,
+    };
+    console.log(data);
+    jQuery.ajax({
+        url:route,
+        type:"post",
+        data: data,
+        dataType: 'json',
+        success:function(result)
+        {
+            alertify.success(result.message);
+            $("#myModal").modal('hide');
+            window.location.reload(true);
+        }
+    })
+}
+

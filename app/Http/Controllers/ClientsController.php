@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Client;
 use App\Permission;
 use App\User;
+use App\Nuc;
 
 class ClientsController extends Controller
 {
@@ -56,7 +57,7 @@ class ClientsController extends Controller
         $client->cellphone = $request->cellphone;
         $client->email = $request->email;
         $client->save();
-        return response()->json(["status"=>true, "message"=>"Persona Física Creada"]);
+        return response()->json(["status"=>true, "message"=>"Cliente Creada"]);
     }
 
     public function update(Request $request)
@@ -78,5 +79,15 @@ class ClientsController extends Controller
         $client->delete();
         return response()->json(['status'=>true, "message"=>"cliente eliminado"]);
 
+    }
+    public function SaveNuc(Request $request)
+    {
+        $nuc = new Nuc;
+        $nuc->nuc = $request->nuc;
+        $nuc->currency = $request->selectCurrency;
+        $nuc->fk_client = $request->fk_client;
+        $nuc->estatus = $request->estatus;
+        $nuc->save();
+        return response()->json(["status"=>true, "message"=>"Nuc creado"]);
     }
 }
