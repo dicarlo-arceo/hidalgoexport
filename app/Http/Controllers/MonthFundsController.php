@@ -9,6 +9,8 @@ use App\Permission;
 use App\MonthFund;
 use App\Nuc;
 use App\Status;
+use App\Exports\ExportFund;
+use Maatwebsite\Excel\Facades\Excel;
 use DB;
 
 class MonthFundsController extends Controller
@@ -92,5 +94,11 @@ class MonthFundsController extends Controller
     {
         $nuc = Nuc::where('id',$request->id)->update(['nuc'=>$request->nuc,'fk_client'=>$request->fk_client]);
         return response()->json(['status'=>true, 'message'=>"Nuc Actualizado"]);
+    }
+    public function ExportFunds($id)
+    {
+        $nuc = DB::table('Nuc')->select('nuc',DB::raw('CONCAT(Client.name," ",firstname," ",lastname) AS name'))->join('Client',"Nuc.fk_client","=","Client.id")->where('Nuc.id',$id)->first();
+        $nombre = "NUC_".(string)$nuc->nuc."_".$nuc->name.".xlsx";
+        return Excel::download(new ExportFund($id),$nombre);
     }
 }

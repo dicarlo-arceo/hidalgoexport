@@ -77,8 +77,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secundary" onclick="cancelarMovimiento()">Cancelar</button>
-                        <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar Excel</button>
-                        <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button>
+                        <button type="button" onclick="excel_nuc()" class="btn btn-primary">Exportar Excel</button>
+                        {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
                     </div>
                 </div>
             </div>
