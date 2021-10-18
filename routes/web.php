@@ -54,3 +54,7 @@ Route::post('funds/monthfund/monthfunds/updateAuth', 'MonthFundsController@updat
 Route::get('funds/monthfund/monthfunds/GetNuc/{id}','MonthFundsController@GetNuc')->name('monthfunds.GetNuc');
 Route::get('funds/monthfund/monthfunds/ExportFunds/{id}','MonthFundsController@ExportFunds');
 // Route::get('funds/monthfund/monthfunds/GetNuc/{id}','MonthFundsController@GetNuc')->name('monthfunds.GetNuc');
+
+// -------------------------------------------------- Asignación de clientes--------------------------------------------
+
+Route::resource('admin/assiment/assigment', 'AssigmentController');
