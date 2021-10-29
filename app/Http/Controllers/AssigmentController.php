@@ -10,8 +10,9 @@ use App\User;
 class AssigmentController extends Controller
 {
     public function index(){
-        $clients = Client::get();
-        $users = User::pluck('name','id');
+        $users = User::where('fk_profile','=','12')->get();
+        $clients = Client::where("fk_agent",null)->pluck('name','id');
+        // dd($clients);
         $profile = User::findProfile();
         $perm = Permission::permView($profile,20);
         $perm_btn =Permission::permBtns($profile,20);
@@ -25,4 +26,21 @@ class AssigmentController extends Controller
             return view('admin.assigment.assigment', compact('clients','perm_btn','users'));
         }
     }
+
+    public function Viewclients($id){
+        // dd($id);
+        $clients = Client::where('fk_agent',$id)->get();
+        // dd($clients);
+        return response()->json(['status'=>true, "data"=>$clients]);
+    }
+
+    public function updateClient(Request $request){
+        // dd($request->all());
+        $client = Client::where('id',$request->client)->first();
+        // dd($client);
+        $client->fk_agent = $request->id;
+        $client->save();
+        return response()->json(['status'=>true, "message"=>"Cliente asignado"]);
+    }
+
 }

@@ -4,7 +4,7 @@
     <div style="max-width: 1200px; margin: auto;">
         {{-- modal| --}}
         <div id="assigmentModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal.lg" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
 
                     <div class="modal-header">
@@ -17,13 +17,23 @@
                             <div class="col-lg-12">
                                 <div class="row">
                                     <div class="form-group">
-                                        <label for="">Agente</label>
+                                        <label for="">Clientes</label>
                                         <select name="selectAgent" id="selectAgent" class="form-control">
                                             <option hidden selected>Selecciona una opción</option>
-                                            @foreach ($users as $id => $user)
-                                                <option value='{{ $id }}'>{{ $user }}</option>
+                                            @foreach ($clients as $id => $client)
+                                                <option value='{{ $id }}'>{{ $client }}</option>
                                             @endforeach
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
+                                        <table class="table table-strped table-hover text-center" id="tableClients">
+                                            <thead>
+                                                <th class="text-center">id</th>
+                                                <th class="text-center">Cliente</th>
+                                            </thead>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -32,7 +42,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secundary" onclick="cerrarmodal()">Cancelar</button>
-                        <button type="button" onclick="asignar()" class="btn btn-primary">Asignar</button>
+                        <button type="button" onclick="assignclient()" class="btn btn-primary">Asignar</button>
                     </div>
 
                 </div>
@@ -44,26 +54,26 @@
             <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
                 <table class="table table-striped table-hover text-center" id="tbClient">
                     <thead>
-                        <th class="text-center">Nombre</th>
-                        <th class="text-center">RFC</th>
+                        <th class="text-center">Nombre del Agente</th>
+                        <th class="text-center">Correo</th>
                         @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                             <th class="text-center">Opciones</th>
                         @endif
                     </thead>
 
                     <tbody>
-                        @foreach ($clients as $client)
-                            <tr id="{{$client->id}}">
-                                <td>{{$client->name}}</td>
-                                <td>{{$client->rfc}}</td>
+                        @foreach ($users as $user)
+                            <tr id="{{$user->id}}">
+                                <td>{{$user->name}}</td>
+                                <td>{{$user->email}}</td>
                                 @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                     <td>
                                         @if ($perm_btn['modify']==1)
-                                            <a href="#|" class="btn btn-primary" onclick="assignment({{$client->id}})" >Asignar Agente</a>
-                                            <a href="#|" class="btn btn-warning" onclick="editarCliente({{$client->id}})" >Editar</a>
+                                            <a href="#|" class="btn btn-primary" onclick="assignment({{$user->id}})" >Asignar Cliente</a>
+                                            {{-- <a href="#|" class="btn btn-warning" onclick="editarCliente({{$client->id}})" >Editar</a> --}}
                                         @endif
                                         @if ($perm_btn['erase']==1)
-                                            <a href="#|" class="btn btn-danger" onclick="eliminarCliente({{$client->id}})">Eliminar</a>
+                                            {{-- <a href="#|" class="btn btn-danger" onclick="eliminarCliente({{$client->id}})">Eliminar</a> --}}
                                         @endif
                                     </td>
                                 @endif
