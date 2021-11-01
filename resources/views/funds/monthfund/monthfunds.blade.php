@@ -67,6 +67,7 @@
                                                     <th class="text-center">Moneda</th>
                                                     <th class="text-center">Monto</th>
                                                     <th class="text-center">Tipo</th>
+                                                    <th class="text-center">Opciones</th>
                                                 </thead>
                                             </table>
                                         </div>

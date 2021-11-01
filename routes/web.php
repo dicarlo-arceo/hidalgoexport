@@ -58,3 +58,8 @@ Route::get('funds/monthfund/monthfunds/ExportFunds/{id}','MonthFundsController@E
 // -------------------------------------------------- Asignación de clientes--------------------------------------------
 
 Route::resource('admin/assiment/assigment', 'AssigmentController');
+
+//---------------------------------------------------Comisiones fondo mensual--------------------------------------------
+
+Route::resource('funds/monthlycomission/monthcomission', 'MonthComissionController');
+

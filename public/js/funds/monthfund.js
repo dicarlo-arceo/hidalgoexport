@@ -82,6 +82,7 @@ function nuevoMovimiento(id)
     var options = [];
     var route = baseUrl + '/GetInfo/'+ id;
     var button = 'Autorizado';
+    var btnTrash;
 
     $("#amount").val("");
     table.clear();
@@ -102,8 +103,9 @@ function nuevoMovimiento(id)
                 {
                     button = valor.auth;
                 }
+                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa fa-trash mr-2"></i></button>';
                 table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
-                    valor.currency,formatter.format(valor.amount),valor.type]).node().id = valor.id;
+                    valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
             });
             table.draw(false);
             $('#selectType').empty();
@@ -382,4 +384,43 @@ function excel_nuc(){
     form.append(field);
     $(document.body).append(form);
     form.submit();
+}
+
+function deleteMove(id)
+{
+    var route = "monthfunds/"+id;
+    var data = {
+        'id':id,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+    };
+    alertify.confirm("Eliminar Movimiento","¿Desea borrar el Movimiento?",
+        function(){
+            jQuery.ajax({
+                url:route,
+                data: data,
+                type:'delete',
+                dataType:'json',
+                success:function(result)
+                {
+                    alertify.success(result.message);
+                    table.clear();
+                    result.data.forEach( function(valor, indice, array) {
+                        if(valor.auth == "-")
+                        {
+                            button = '<button href="#|" class="btn btn-primary" onclick="autorizarMovimiento('+valor.id+')" >Autorizar</button>';
+                        }
+                        else
+                        {
+                            button = valor.auth;
+                        }
+                        table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
+                            valor.currency,formatter.format(valor.amount),valor.type]).node().id = valor.id;
+                    });
+                    table.draw(false);
+                }
+            })
+        },
+        function(){
+            alertify.error('Cancelado');
+    });
 }
