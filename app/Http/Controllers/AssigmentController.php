@@ -11,7 +11,7 @@ class AssigmentController extends Controller
 {
     public function index(){
         $users = User::where('fk_profile','=','12')->get();
-        $clients = Client::where("fk_agent",null)->pluck('name','id');
+        $clients = Client::whereNull("fk_agent")->pluck('name','id');
         // dd($clients);
         $profile = User::findProfile();
         $perm = Permission::permView($profile,20);

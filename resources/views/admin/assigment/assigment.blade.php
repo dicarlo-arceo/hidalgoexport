@@ -21,9 +21,9 @@
                                             <label for="">Clientes</label>
                                             <select name="selectAgent" id="selectAgent" class="form-select">
                                                 <option hidden selected>Selecciona una opción</option>
-                                                {{-- @foreach ($clients as $id => $client)
+                                                @foreach ($clients as $id => $client)
                                                     <option value='{{ $id }}'>{{ $client }}</option>
-                                                @endforeach --}}
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
