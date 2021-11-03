@@ -62,7 +62,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="">Perfil:</label>
-                                            <select name="selectProfile" id="selectProfile" class="form-control">
+                                            <select name="selectProfile" id="selectProfile" class="form-select">
                                                 <option hidden selected>Selecciona una opción</option>
                                                 @foreach ($profiles as $id => $profile)
                                                     <option value='{{ $id }}'>{{ $profile }}</option>

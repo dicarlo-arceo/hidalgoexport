@@ -15,7 +15,7 @@ class MonthComissionController extends Controller
 {
     public function index(){
         $profile = User::findProfile();
-        $users = User::get();
+        $users = DB::table('users')->select('id',DB::raw('CONCAT(name," ",firstname," ",lastname) AS name'))->get();
         $nucs = DB::table('Nuc')
         ->select('Nuc.id as id',DB::raw('CONCAT(Client.name," ",firstname," ",lastname) AS name'),"nuc",'Status.id as statId','Status.name as estatus','color')
         ->join('Client',"Client.id","=","Nuc.fk_client")

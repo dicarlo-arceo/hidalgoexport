@@ -57,7 +57,7 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label for="">Genero</label>
-                                    <select name="gender1" id="gender1" class="form-control">
+                                    <select name="gender1" id="gender1" class="form-select">
                                         <option hidden selected>Selecciona una opción</option>
                                         <option value="1">Masculino</option>
                                         <option value="2">Femenino</option>
@@ -67,7 +67,7 @@
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label for="">Estado Civil</label>
-                                    <select name="marital_status1" id="marital_status1" class="form-control">
+                                    <select name="marital_status1" id="marital_status1" class="form-select">
                                         <option hidden selected>Selecciona una opción</option>
                                         <option value="1">Soltero(a)</option>
                                         <option value="2">Casado(a)</option>

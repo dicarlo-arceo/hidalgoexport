@@ -16,14 +16,16 @@
                         <div class="container-fluid bd-example-row">
                             <div class="col-lg-12">
                                 <div class="row">
-                                    <div class="form-group">
-                                        <label for="">Clientes</label>
-                                        <select name="selectAgent" id="selectAgent" class="form-control">
-                                            <option hidden selected>Selecciona una opción</option>
-                                            @foreach ($clients as $id => $client)
-                                                <option value='{{ $id }}'>{{ $client }}</option>
-                                            @endforeach
-                                        </select>
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <label for="">Clientes</label>
+                                            <select name="selectAgent" id="selectAgent" class="form-select">
+                                                <option hidden selected>Selecciona una opción</option>
+                                                {{-- @foreach ($clients as $id => $client)
+                                                    <option value='{{ $id }}'>{{ $client }}</option>
+                                                @endforeach --}}
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
