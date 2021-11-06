@@ -67,4 +67,5 @@ Route::resource('funds/monthlycomission/monthcomission', 'MonthComissionControll
 Route::get('funds/monthlycomission/monthcomission/GetInfo/{id}','MonthComissionController@GetInfo')->name('monthcomission.GetInfo');
 Route::get('funds/monthlycomission/monthcomission/GetInfoMonth/{id}/{month}/{year}','MonthComissionController@GetInfoMonth')->name('monthcomission.GetInfoMonth');
 Route::get('funds/monthlycomission/monthcomission/GetInfoLast/{id}','MonthComissionController@GetInfoLast')->name('monthcomission.GetInfoLast');
+Route::get('funds/monthlycomission/monthcomission/ExportPDF/{id}','MonthComissionController@ExportPDF');
 
