@@ -102,8 +102,17 @@ function calcular()
 }
 function abrirResumen(idNuc)
 {
-    obtenerSaldo(idNuc);
-    $("#myModalCalc").modal('show');
+    var date = $("#month").val();
+
+    if(date == null || date == "")
+    {
+        alert("El campo de mes no debe quedar vacio");
+        return false;
+    }else
+    {
+        obtenerSaldo(idNuc);
+        $("#myModalCalc").modal('show');
+    }
 }
 function cancelarCalc()
 {
@@ -133,9 +142,23 @@ function obtenerSaldo(id)
             else
             {
                 console.log("null");
+                obtenerultimomovimiento(id);
                 // return(saldo obtenido)
                 // aqui vamos a hacer otra consulta para obtener el ultimo movimiento
             }
+        }
+    })
+}
+
+function obtenerultimomovimiento(id)
+{
+    var route = baseUrl + '/GetInfoLast/'+ id;
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result){
+            console.log(result.data);
         }
     })
 }

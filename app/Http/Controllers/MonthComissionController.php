@@ -46,12 +46,16 @@ class MonthComissionController extends Controller
     }
     public function GetInfoLast($id)
     {
+        // dd($id);
         // $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS client_name'),
         // DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)->
         // whereNull('Month_fund.deleted_at')->get();
-        $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS client_name'))
-        ->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)
-        ->get();
-        return response()->json(['status'=>true, "data"=>$clients]);
+        // $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS client_name'))
+        // ->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)
+        // ->get();
+        
+        $movements = DB::table('Month_fund')->select('*')->where('fk_nuc',$id)->orderByRaw('id DESC')->first();
+        // dd($movements);
+        return response()->json(['status'=>true, "data"=>$movements]);
     }
 }
