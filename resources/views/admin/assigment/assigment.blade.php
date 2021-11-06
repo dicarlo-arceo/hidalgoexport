@@ -20,10 +20,14 @@
                                         <div class="form-group">
                                             <label for="">Clientes</label>
                                             <select name="selectAgent" id="selectAgent" class="form-select">
-                                                <option hidden selected>Selecciona una opción</option>
-                                                @foreach ($clients as $id => $client)
-                                                    <option value='{{ $id }}'>{{ $client }}</option>
-                                                @endforeach
+                                                @if ($clients != null)
+                                                    <option hidden selected>Selecciona una opción</option>
+                                                    @foreach ($clients as $id => $client)
+                                                        <option value='{{ $id }}'>{{ $client }}</option>
+                                                    @endforeach
+                                                @else
+                                                    <option selected>Selecciona una opción</option>
+                                                @endif
                                             </select>
                                         </div>
                                     </div>

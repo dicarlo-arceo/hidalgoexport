@@ -10,7 +10,7 @@ use App\User;
 class AssigmentController extends Controller
 {
     public function index(){
-        $users = User::where('fk_profile','=','12')->get();
+        $users = User::get();
         $clients = Client::whereNull("fk_agent")->pluck('name','id');
         // dd($clients);
         $profile = User::findProfile();

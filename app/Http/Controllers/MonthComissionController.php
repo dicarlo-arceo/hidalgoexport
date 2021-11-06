@@ -15,20 +15,9 @@ class MonthComissionController extends Controller
 {
     public function index(){
         $profile = User::findProfile();
-        $users = DB::table('users')->select('id',DB::raw('CONCAT(name," ",firstname," ",lastname) AS name'))->get();
-        $nucs = DB::table('Nuc')
-        ->select('Nuc.id as id',DB::raw('CONCAT(Client.name," ",firstname," ",lastname) AS name'),"nuc",'Status.id as statId','Status.name as estatus','color')
-        ->join('Client',"Client.id","=","Nuc.fk_client")
-        ->join('Status',"Nuc.estatus","=","Status.id")
-        ->get();
-        $clients = DB::table('Nuc')->select('Client.id',DB::raw('CONCAT(Client.name," ",firstname," ",lastname) AS name'))
-        ->join('Client',"Client.id","=","Nuc.fk_client")
-        ->pluck('name','id');
+        $users = DB::table('users')->select('id',DB::raw('CONCAT(name," ",firstname," ",lastname) AS name'))->whereNull('deleted_at')->get();
         $perm = Permission::permView($profile,21);
         $perm_btn =Permission::permBtns($profile,21);
-        $cmbStatus = Status::select('id','name')
-        ->where("fk_section","19")
-        ->pluck('name','id');
         // dd($clients);
         if($perm==0)
         {
@@ -36,7 +25,33 @@ class MonthComissionController extends Controller
         }
         else
         {
-            return view('funds.monthcomission.monthcomission', compact('users','perm_btn','cmbStatus','clients'));
+            return view('funds.monthcomission.monthcomission', compact('users','perm_btn'));
         }
+    }
+    public function GetInfo($id)
+    {
+        // $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS client_name'),
+        // DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)->
+        // whereNull('Month_fund.deleted_at')->get();
+        $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS client_name'))
+        ->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)
+        ->get();
+        return response()->json(['status'=>true, "data"=>$clients]);
+    }
+    public function GetInfoMonth($id,$month,$year)
+    {
+        $movimientos = DB::table('Month_fund')->select("*")->where('fk_nuc',$id)->whereMonth('apply_date',$month)->whereYear('apply_date',$year)->whereNull('deleted_at')->get();
+        // dd($movimientos);
+        return response()->json(['status'=>true, "data"=>$movimientos]);
+    }
+    public function GetInfoLast($id)
+    {
+        // $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS client_name'),
+        // DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)->
+        // whereNull('Month_fund.deleted_at')->get();
+        $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS client_name'))
+        ->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)
+        ->get();
+        return response()->json(['status'=>true, "data"=>$clients]);
     }
 }

@@ -64,4 +64,6 @@ Route::post('admin/assiment/assigment/updateClient', 'AssigmentController@update
 //---------------------------------------------------Comisiones fondo mensual--------------------------------------------
 
 Route::resource('funds/monthlycomission/monthcomission', 'MonthComissionController');
+Route::get('funds/monthlycomission/monthcomission/GetInfo/{id}','MonthComissionController@GetInfo')->name('monthcomission.GetInfo');
+Route::get('funds/monthlycomission/monthcomission/GetInfoMonth/{id}/{month}/{year}','MonthComissionController@GetInfoMonth')->name('monthcomission.GetInfoMonth');
 

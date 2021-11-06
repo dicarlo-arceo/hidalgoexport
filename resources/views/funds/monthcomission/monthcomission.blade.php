@@ -10,7 +10,7 @@
 
                     <div class="modal-header">
                         <h4 class="modal-title" id="gridModalLabek">Comisiones</h4>
-                        <button type="button" class="close" aria-label="Close" onclick="cancelarMovimiento()"><span aria-hidden="true">&times;</span></button>
+                        <button type="button" class="close" aria-label="Close" onclick="cancelarComision()"><span aria-hidden="true">&times;</span></button>
                     </div>
 
                     <div class="modal-body">
@@ -26,8 +26,14 @@
                                     </div>
                                     <div class="col-lg-3">
                                         <div class="form-group">
+                                            <label for="">Mes</label>
+                                            <input type="month" id="month" name="month" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
                                             <div class="d-grid gap-2 col-12 mx-auto">
-                                                <button type="button" class="btn btn-primary" onclick="guardarMovimiento()">Calcular</button>
+                                                <button type="button" class="btn btn-primary" onclick="calcular()">Calcular</button>
                                             </div>
                                         </div>
                                     </div>
@@ -38,10 +44,8 @@
                                         <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
                                             <table class="table table-striped table-hover text-center" id="tbProf1">
                                                 <thead>
+                                                    <th class="text-center">Nuc</th>
                                                     <th class="text-center">Cliente</th>
-                                                    <th class="text-center">Comision Agente</th>
-                                                    <th class="text-center">Comision Victor</th>
-                                                    <th class="text-center">Ganancia</th>
                                                     <th class="text-center">Opciones</th>
                                                 </thead>
                                             </table>
@@ -52,16 +56,81 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secundary" onclick="cancelarMovimiento()">Cancelar</button>
-                        <button type="button" onclick="excel_nuc()" class="btn btn-primary">Desglose Agente</button>
-                        <button type="button" onclick="excel_nuc()" class="btn btn-primary">Desglose Victor</button>
+                        <button type="button" class="btn btn-secundary" onclick="cancelarComision()">Cancelar</button>
+                        <button type="button" onclick="excel_nuc()" class="btn btn-primary">Descargar todo PDF</button>
+                        {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- modal Cálculo --}}
+        <div id="myModalCalc" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Comisiones</h4>
+                        <button type="button" class="close" aria-label="Close" onclick="cancelarCalc()"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-lg-12">
+                                {{-- <div class="row align-items-center"> --}}
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="">Saldo al cierre</label>
+                                            <input type="text" id="balance" name="balance" placeholder="Saldo al cierre" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="">Monto bruto</label>
+                                            <input type="text" id="b_amount" name="b_amount" placeholder="Monto bruto" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">IVA</label>
+                                            <input type="text" id="iva" name="iva" placeholder="IVA" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">RET ISR</label>
+                                            <input type="text" id="ret_isr" name="ret_isr" placeholder="RET ISR" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">RET IVA</label>
+                                            <input type="text" id="ret_iva" name="ret_iva" placeholder="RET IVA" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-4">
+                                        <div class="form-group">
+                                            <label for="">Monto Neto</label>
+                                            <input type="text" id="n_amount" name="n_amount" placeholder="Monto Neto" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cancelarCalc()">Cancelar</button>
+                        <button type="button" onclick="excel_nuc()" class="btn btn-primary">Descargar Desglose PDF</button>
                         {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
                     </div>
                 </div>
             </div>
         </div>
         {{-- termina modal --}}
-    @include('funds.status.status')
         {{-- Inicia pantalla de inicio --}}
         <br><br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
