@@ -16,7 +16,6 @@
                     <div class="modal-body">
                         <div class="container-fluid bd-example-row">
                             <div class="col-lg-12">
-                                {{-- <div class="row align-items-center"> --}}
                                 <div class="row align-items-end">
                                     <div class="col-lg-3">
                                         <div class="form-group">
@@ -28,13 +27,6 @@
                                         <div class="form-group">
                                             <label for="">Mes</label>
                                             <input type="month" id="month" name="month" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-3">
-                                        <div class="form-group">
-                                            <div class="d-grid gap-2 col-12 mx-auto">
-                                                <button type="button" class="btn btn-primary" onclick="calcular()">Calcular</button>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -57,7 +49,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secundary" onclick="cancelarComision()">Cancelar</button>
-                        <button type="button" onclick="excel_nuc()" class="btn btn-primary">Descargar todo PDF</button>
+                        <button type="button" onclick="calcular()" class="btn btn-primary">Descargar todo PDF</button>
                         {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
                     </div>
                 </div>
@@ -81,13 +73,13 @@
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             <label for="">Saldo al cierre</label>
-                                            <input type="text" id="balance" name="balance" placeholder="Saldo al cierre" class="form-control">
+                                            <input type="text" id="balance" name="balance" placeholder="Saldo al cierre" class="form-control" disabled>
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
                                         <div class="form-group">
                                             <label for="">Monto bruto</label>
-                                            <input type="text" id="b_amount" name="b_amount" placeholder="Monto bruto" class="form-control">
+                                            <input type="text" id="b_amount" name="b_amount" placeholder="Monto bruto" class="form-control" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -95,19 +87,19 @@
                                     <div class="col-lg-4">
                                         <div class="form-group">
                                             <label for="">IVA</label>
-                                            <input type="text" id="iva" name="iva" placeholder="IVA" class="form-control">
+                                            <input type="text" id="iva" name="iva" placeholder="IVA" class="form-control" disabled>
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="form-group">
                                             <label for="">RET ISR</label>
-                                            <input type="text" id="ret_isr" name="ret_isr" placeholder="RET ISR" class="form-control">
+                                            <input type="text" id="ret_isr" name="ret_isr" placeholder="RET ISR" class="form-control" disabled>
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="form-group">
                                             <label for="">RET IVA</label>
-                                            <input type="text" id="ret_iva" name="ret_iva" placeholder="RET IVA" class="form-control">
+                                            <input type="text" id="ret_iva" name="ret_iva" placeholder="RET IVA" class="form-control" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -115,7 +107,7 @@
                                     <div class="col-lg-4">
                                         <div class="form-group">
                                             <label for="">Monto Neto</label>
-                                            <input type="text" id="n_amount" name="n_amount" placeholder="Monto Neto" class="form-control">
+                                            <input type="text" id="n_amount" name="n_amount" placeholder="Monto Neto" class="form-control" disabled>
                                         </div>
                                     </div>
                                 </div>
@@ -136,7 +128,7 @@
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
             <table class="table table-striped table-hover text-center" id="tbProf">
                 <thead>
-                    <th class="text-center">Nombre</th>
+                    <th class="text-center">Usuarios-Agentes</th>
                     @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                         <th class="text-center">Opciones</th>
                     @endif

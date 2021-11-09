@@ -96,6 +96,7 @@ function cancelarComision()
 {
     $("#myModal2").modal('hide');
 }
+
 function calcular()
 {
     var route = baseUrl + '/ExportPDF/1';
@@ -123,34 +124,67 @@ function calcular()
     $(document.body).append(form);
     form.submit();
 }
+
 function abrirResumen(idNuc)
 {
+    var TC = $("#change").val();
     var date = $("#month").val();
 
-    if(date == null || date == "")
+    date = date.split("-");
+    var year = date[0];
+    var month = date[1];
+
+    if(date == null || date == "" && TC == null || TC == "")
     {
-        alert("El campo de mes no debe quedar vacio");
+        alert("Ningun campo debe quedar vacio");
         return false;
     }else
     {
-        obtenerSaldo(idNuc);
-        $("#myModalCalc").modal('show');
+        var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+            'TC':TC,
+            'id':idNuc,
+            'year':year,
+            'month':month
+        }
+        
+        var route = baseUrl+'/GetInfoComition';
+        jQuery.ajax({
+            url:route,
+            data:data,
+            type:'post',
+            dataType:'json',
+            success:function(result){
+                console.log(result);
+                $("#balance").val(result.b_amount);
+                $("#b_amount").val(result.gross_amount);
+                $("#iva").val(result.iva_amount);
+                $("#ret_isr").val(result.ret_isr);
+                $("#ret_iva").val(result.ret_iva);
+                $("#n_amount").val(result.n_amount);
+                
+                // obtenerSaldo(idNuc);
+                $("#myModalCalc").modal('show');
+            }
+        });
     }
 }
 function cancelarCalc()
 {
     $("#myModalCalc").modal('hide');
 }
+
 var arraySaldo = [];
 function obtenerSaldo(id)
 {
+        // llenar los campos con los calculos correspondientes como en la imagen
+
     arraySaldo = [];
     var date = $("#month").val();
     date = date.split("-");
     var year = date[0];
     var month = date[1];
     var route = baseUrl + '/GetInfoMonth/'+ id + "/" + month + "/" + year;
-    var btn;
 
     jQuery.ajax({
         url:route,
@@ -165,7 +199,8 @@ function obtenerSaldo(id)
             else
             {
                 console.log("null");
-                obtenerultimomovimiento(id);
+                obtenerultimomovimiento(id,month,year);
+                // aqui retornar array con valores
                 // return(saldo obtenido)
                 // aqui vamos a hacer otra consulta para obtener el ultimo movimiento
             }
@@ -173,9 +208,9 @@ function obtenerSaldo(id)
     })
 }
 
-function obtenerultimomovimiento(id)
+function obtenerultimomovimiento(id,month,year)
 {
-    var route = baseUrl + '/GetInfoLast/'+ id;
+    var route = baseUrl + '/GetInfoLast/'+ id + "/" + month + "/" + year;
     jQuery.ajax({
         url:route,
         type:'get',

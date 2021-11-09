@@ -13,6 +13,12 @@ class AssigmentController extends Controller
         $users = User::get();
         $clients = Client::whereNull("fk_agent")->pluck('name','id');
         // dd($clients);
+        // if($clients->isEmpty())
+        //     dd("vacio");
+        // else
+        //     dd("lleno");
+        // $client = Client::whereNull("fk_agent")->get();
+        // dd($clients);
         $profile = User::findProfile();
         $perm = Permission::permView($profile,20);
         $perm_btn =Permission::permBtns($profile,20);

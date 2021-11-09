@@ -65,14 +65,14 @@ class MonthFundsController extends Controller
 
         $fund->save();
 
-        $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->where('fk_nuc',$request->fk_nuc)->whereNull('deleted_at')->get();
+        $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->where('fk_nuc',$request->fk_nuc)->whereNull('Month_fund.deleted_at')->get();
         return response()->json(["status"=>true, "message"=>"Movimiento Registrado", "data"=>$movimientos]);
     }
     public function destroy($id)
     {
         $fund = MonthFund::find($id);
         $fund->delete();
-        $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->where('fk_nuc',$id)->whereNull('deleted_at')->get();
+        $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->where('fk_nuc',$id)->whereNull('Month_fund.deleted_at')->get();
         return response()->json(['status'=>true, "message"=>"Movimiento eliminado", "data"=>$movimientos]);
 
     }

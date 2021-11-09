@@ -19,16 +19,17 @@
                                     <div class="col-lg-12">
                                         <div class="form-group">
                                             <label for="">Clientes</label>
+                                            @if ($clients->isEmpty())
+                                                <label for="">No hay clientes disponibles</label>
+                                            @else
                                             <select name="selectAgent" id="selectAgent" class="form-select">
-                                                @if ($clients != null)
-                                                    <option hidden selected>Selecciona una opción</option>
-                                                    @foreach ($clients as $id => $client)
-                                                        <option value='{{ $id }}'>{{ $client }}</option>
-                                                    @endforeach
-                                                @else
-                                                    <option selected>Selecciona una opción</option>
-                                                @endif
+                                                <option hidden selected>Selecciona una opción</option>
+                                                @foreach ($clients as $id => $client)
+                                                    <option value='{{ $id }}'>{{ $client }}</option>
+                                                @endforeach
                                             </select>
+                                            @endif
+
                                         </div>
                                     </div>
                                 </div>
