@@ -103,7 +103,7 @@ function nuevoMovimiento(id)
                 {
                     button = valor.auth;
                 }
-                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa fa-trash mr-2"></i></button>';
+                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa fa-trash"></i></button>';
                 table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
                     valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
             });
@@ -203,8 +203,9 @@ function guardarMovimiento()
                         {
                             button = valor.auth;
                         }
+                        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa fa-trash"></i></button>';
                         table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
-                            valor.currency,formatter.format(valor.amount),valor.type]).node().id = valor.id;
+                            valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
                     });
                     table.draw(false);
                     if(type == "Apertura")
@@ -303,8 +304,9 @@ function guardarAuth()
                 {
                     button = valor.auth;
                 }
+                btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa fa-trash"></i></button>';
                 table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
-                    valor.currency,formatter.format(valor.amount),valor.type]).node().id = valor.id;
+                    valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
             });
             table.draw(false);
         }
@@ -388,6 +390,7 @@ function excel_nuc(){
 
 function deleteMove(id)
 {
+    var table = $('#tbProf1').DataTable();
     var route = "monthfunds/"+id;
     var data = {
         'id':id,
@@ -413,8 +416,9 @@ function deleteMove(id)
                         {
                             button = valor.auth;
                         }
+                        btnTrash = '<button type="button" class="btn btn-danger"'+'onclick="deleteMove('+valor.id+')"><i class="fa fa-trash"></i></button>';
                         table.row.add([valor.apply_date,button,formatter.format(valor.prev_balance),formatter.format(valor.new_balance),
-                            valor.currency,formatter.format(valor.amount),valor.type]).node().id = valor.id;
+                            valor.currency,formatter.format(valor.amount),valor.type,btnTrash]).node().id = valor.id;
                     });
                     table.draw(false);
                 }

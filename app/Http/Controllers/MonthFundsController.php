@@ -71,8 +71,10 @@ class MonthFundsController extends Controller
     public function destroy($id)
     {
         $fund = MonthFund::find($id);
+        // dd($fund);
+        $fk_nuc = $fund->fk_nuc;
         $fund->delete();
-        $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->where('fk_nuc',$id)->whereNull('Month_fund.deleted_at')->get();
+        $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->where('fk_nuc',$fk_nuc)->whereNull('Month_fund.deleted_at')->get();
         return response()->json(['status'=>true, "message"=>"Movimiento eliminado", "data"=>$movimientos]);
 
     }

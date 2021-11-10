@@ -81,6 +81,10 @@ class MonthComissionController extends Controller
                     line-height: 30px;
                 }
 
+                table{
+                    align: center;
+                }
+
                 footer {
                     position: fixed;
                     bottom: 0cm;
@@ -101,47 +105,47 @@ class MonthComissionController extends Controller
 
         <main>
             <h1>Javier Barrera</h1>
-        <table class="table table-striped table-hover text-center" id="tbProf">
+            <table class="table table-striped table-hover text-center" id="tbProf">
 
-            <tbody>
-                <tr>
-                    <td>Saldo al Cierre</td>
-                    <td>&nbsp;&nbsp;&nbsp;&nbsp;$1,000,000.00</td>
-                </tr>
-                <tr>
-                    <td>Inversion Convertida a USD</td>
-                    <td>&nbsp;&nbsp;&nbsp;&nbsp;$49,548.61</td>
-                </tr>
-                <tr>
-                    <td># de veces, 5,000 USD / monto invertido</td>
-                    <td>&nbsp;&nbsp;&nbsp;&nbsp;$9.91</td>
-                </tr>
-                <tr>
-                    <td>Monto comision en USD bruto a pagar</td>
-                    <td>&nbsp;&nbsp;&nbsp;&nbsp;$99.10</td>
-                </tr>
-                <tr>
-                    <td>Monto bruto</td>
-                    <td>&nbsp;&nbsp;&nbsp;&nbsp;$2,000.00</td>
-                </tr>
-                <tr>
-                    <td>IVA</td>
-                    <td>&nbsp;&nbsp;&nbsp;&nbsp;$320.00</td>
-                </tr>
-                <tr>
-                    <td>RET ISR</td>
-                    <td>&nbsp;&nbsp;&nbsp;&nbsp;$200.00</td>
-                </tr>
-                <tr>
-                    <td>RET IVA</td>
-                    <td>&nbsp;&nbsp;&nbsp;&nbsp;$213.33</td>
-                </tr>
-                <tr>
-                    <td>Monto Neto</td>
-                    <td>&nbsp;&nbsp;&nbsp;&nbsp;$1,906.67</td>
-                </tr>
-            </tbody>
-        </table>
+                <tbody>
+                    <tr>
+                        <td>Saldo al Cierre</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$1,000,000.00</td>
+                    </tr>
+                    <tr>
+                        <td>Inversion Convertida a USD</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$49,548.61</td>
+                    </tr>
+                    <tr>
+                        <td># de veces, 5,000 USD / monto invertido</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$9.91</td>
+                    </tr>
+                    <tr>
+                        <td>Monto comision en USD bruto a pagar</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$99.10</td>
+                    </tr>
+                    <tr>
+                        <td>Monto bruto</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$2,000.00</td>
+                    </tr>
+                    <tr>
+                        <td>IVA</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$320.00</td>
+                    </tr>
+                    <tr>
+                        <td>RET ISR</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$200.00</td>
+                    </tr>
+                    <tr>
+                        <td>RET IVA</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$213.33</td>
+                    </tr>
+                    <tr>
+                        <td>Monto Neto</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$1,906.67</td>
+                    </tr>
+                </tbody>
+            </table>
         </main>
         </body>
         </html>
@@ -156,7 +160,7 @@ class MonthComissionController extends Controller
         $dll_conv=0;//conversion a usd
         $usd_invest=0;//para cada 5,00 usd sobre el monto invertido(esto multiplicar x10)
         $usd_invest1=0;//para cada 5,00 usd sobre el monto invertido(esto multiplicar x10)
-        
+
         $gross_amount=0;//Monto bruto = usd_invest * $request->TC
 
         $iva_amount=0;//iva del monto bruto
@@ -169,7 +173,7 @@ class MonthComissionController extends Controller
         ->join('Nuc','Nuc.id','=','Month_fund.fk_nuc')
         ->where('fk_nuc',$request->id)->whereMonth('apply_date',$request->month)
         ->whereYear('apply_date',$request->year)->whereNull('Month_fund.deleted_at')->get();
-        
+
         if($data->isEmpty())
         {
             $fecha = $request->year.'/'.$request->month.'/01';
@@ -179,7 +183,7 @@ class MonthComissionController extends Controller
             ->whereNull('Month_fund.deleted_at')
             ->orderByRaw('Month_fund.id DESC')->first();
         }
-        
+
         // $data = DB::table('Month_fund')->select('*')
         // ->join('Nuc','Nuc.id','=','fk_nuc')
         // ->where('Month_fund.fk_nuc',$request->id)
@@ -208,7 +212,7 @@ class MonthComissionController extends Controller
         $ret_iva = $ret_iva/3; //retencion del iva
 
         $n_amount= ($gross_amount + $iva_amount) - ($ret_isr + $ret_iva); //Monto neto
-        
+
         // dd(number_format($dll_conv,2,'.',''));
         return response()->json(['status'=>true, "b_amount"=>number_format($b_amount,2,'.',','),'dll_conv'=>number_format($dll_conv,2,'.',','),'usd_invest'=>number_format($usd_invest1,2,'.',','),
         'gross_amount'=>number_format($gross_amount,2,'.',','), 'iva_amount'=>number_format($iva_amount,2,'.',','), 'ret_isr'=>number_format($ret_isr,2,'.',','), 'ret_iva'=>number_format($ret_iva,2,'.',','), 'n_amount'=>number_format($n_amount,2,'.',',')]);
