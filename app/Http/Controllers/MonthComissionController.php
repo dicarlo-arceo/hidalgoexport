@@ -202,7 +202,7 @@ class MonthComissionController extends Controller
         $usd_invest = $dll_conv/5000; //por cada 5000 sobre el monto invertido
         $usd_invest1 = $usd_invest*10; //se multiplica por 10 el resultado obtenido
 
-        $gross_amount = $usd_invest * $request->TC; //monto bruto
+        $gross_amount = $usd_invest1 * $request->TC; //monto bruto
 
         $iva_amount = $gross_amount * .16; // iva del monto bruto
 
@@ -213,7 +213,7 @@ class MonthComissionController extends Controller
 
         $n_amount= ($gross_amount + $iva_amount) - ($ret_isr + $ret_iva); //Monto neto
 
-        // dd(number_format($dll_conv,2,'.',''));
+        // dd(number_format($iva_amount,2,'.',''));
         return response()->json(['status'=>true, "b_amount"=>number_format($b_amount,2,'.',','),'dll_conv'=>number_format($dll_conv,2,'.',','),'usd_invest'=>number_format($usd_invest1,2,'.',','),
         'gross_amount'=>number_format($gross_amount,2,'.',','), 'iva_amount'=>number_format($iva_amount,2,'.',','), 'ret_isr'=>number_format($ret_isr,2,'.',','), 'ret_iva'=>number_format($ret_iva,2,'.',','), 'n_amount'=>number_format($n_amount,2,'.',',')]);
     }
