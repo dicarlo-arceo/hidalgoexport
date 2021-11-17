@@ -104,26 +104,29 @@ class MonthComissionController extends Controller
         </header>
 
         <main>
-            <h1>Javier Barrera</h1>
+            <h1>Noyola</h1>
             <table class="table table-striped table-hover text-center" id="tbProf">
 
                 <tbody>
                     <tr>
-                        <td>Saldo al Cierre</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$1,000,000.00</td>
+                        <td>Cliente 1</td>
                     </tr>
                     <tr>
-                        <td>Inversion Convertida a USD</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$49,548.61</td>
+                        <td>Cliente 2</td>
                     </tr>
                     <tr>
-                        <td># de veces, 5,000 USD / monto invertido</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$9.91</td>
+                        <td>Cliente 3</td>
                     </tr>
                     <tr>
-                        <td>Monto comision en USD bruto a pagar</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$99.10</td>
+                        <td>Cliente 4</td>
                     </tr>
+                </tbody>
+            </table>
+            <br>
+            <br>
+            <table class="table table-striped table-hover text-center" id="tbProf">
+
+                <tbody>
                     <tr>
                         <td>Monto bruto</td>
                         <td>&nbsp;&nbsp;&nbsp;&nbsp;$2,000.00</td>
@@ -168,29 +171,182 @@ class MonthComissionController extends Controller
         $ret_iva=0;//retencion de iva son 2 3ras partes del iva de montro bruto 2(IVA)/3
         $n_amount=0;//monto neto
 
-        // consulta get info month hablar con beto para ver calculos
-        $data = DB::table('Month_fund')->select("*")
-        ->join('Nuc','Nuc.id','=','Month_fund.fk_nuc')
-        ->where('fk_nuc',$request->id)->whereMonth('apply_date',$request->month)
-        ->whereYear('apply_date',$request->year)->whereNull('Month_fund.deleted_at')->get();
-
-        if($data->isEmpty())
+        // condicion para determinar fecha de corte
+        $nuc = DB::table('Nuc')->select("cut_date","currency")->where('id',$request->id)->first();
+        // dd($request->year."-".(intval($request->month)-1)."-15");
+        // dd($cut_date->cut_date);
+        if(intval($nuc->cut_date) > 15)
         {
-            $fecha = $request->year.'/'.$request->month.'/01';
-            $data = DB::table('Month_fund')->select('*')
-            ->join('Nuc','Nuc.id','=','fk_nuc')
-            ->where('fk_nuc',$request->id)->where('apply_date','<',$fecha)
-            ->whereNull('Month_fund.deleted_at')
-            ->orderByRaw('Month_fund.id DESC')->first();
+            // dd("entre a mayor que 15");
+            // consultas para corte al día 30
+            $data = DB::table('Month_fund')->select("*")
+            ->join('Nuc','Nuc.id','=','Month_fund.fk_nuc')
+            ->where('fk_nuc',$request->id)->whereMonth('apply_date',$request->month)
+            ->whereYear('apply_date',$request->year)->whereNull('Month_fund.deleted_at')->get();
+
+            if($data->isEmpty())
+            {
+                $fecha = $request->year.'/'.$request->month.'/01';
+                $data = DB::table('Month_fund')->select('*')
+                ->join('Nuc','Nuc.id','=','fk_nuc')
+                ->where('fk_nuc',$request->id)->where('apply_date','<',$fecha)
+                ->whereNull('Month_fund.deleted_at')
+                ->orderByRaw('Month_fund.id DESC')->first();
+                $b_amount = $data->new_balance;
+            }
+            else
+            {
+                // cálculo para mes con movimientos corte día 30
+                $balance = 0;
+                // dd($data);
+                if(count($data) == 1)
+                {
+                    $data = $data[0];
+                    $day = explode("-", $data->apply_date);
+                    $day = intval($day[2]);
+                    if($day == 1)
+                    {
+                        $b_amount = $data->new_balance;
+                    }
+                    else if($day == 30 || $day == 31)
+                    {
+                        $b_amount = (29*$data->prev_balance + $data->new_balance)/30;
+                    }
+                    else
+                    {
+                        $b_amount = ($day*$data->prev_balance + (30-$day)*$data->new_balance)/30;
+                    }
+                    // dd($b_amount);
+                }
+                else
+                {
+                    $movs = array();
+                    foreach ($data as $movimiento)
+                    {
+                        $day = explode("-", $movimiento->apply_date);
+                        $day = intval($day[2]);
+                        $mov = array($day, $movimiento->prev_balance, $movimiento->new_balance);
+                        array_push($movs,$mov);
+                    }
+                    // dd($movs);
+                    for($x = 0; $x <= count($movs); $x++)
+                    {
+                        if($x == 0)
+                        {
+                            $b_amount = $movs[$x][0]*$movs[$x][1];
+                        }
+                        else if($x == count($movs))
+                        {
+                            $b_amount += (30-$movs[$x-1][0])*$movs[$x-1][2];
+                        }
+                        else
+                        {
+                            $b_amount += ($movs[$x][0]-$movs[$x-1][0])*$movs[$x][1];
+                        }
+                    }
+                    $b_amount /= 30;
+                    // dd($b_amount);
+                }
+            }
         }
+        else
+        {
+            // dd("entre a menor que 15");
+            $data = DB::table('Month_fund')->select("*")
+            ->join('Nuc','Nuc.id','=','Month_fund.fk_nuc')
+            ->where('fk_nuc',$request->id)
+            ->whereBetween('apply_date', [$request->year."-".(intval($request->month)-1)."-15", $request->year."-".(intval($request->month))."-15"])
+            ->whereNull('Month_fund.deleted_at')->get();
+            if($data->isEmpty())
+            {
+                $fecha = $request->year.'/'.(intval($request->month)-1).'/15';
+                $data = DB::table('Month_fund')->select('*')
+                ->join('Nuc','Nuc.id','=','fk_nuc')
+                ->where('fk_nuc',$request->id)->where('apply_date','<',$fecha)
+                ->whereNull('Month_fund.deleted_at')
+                ->orderByRaw('Month_fund.id DESC')->first();
+                $b_amount = $data->new_balance;
+            }
+            else
+            {
+                // cálculo para mes con movimientos corte día 15
+                $balance = 0;
+                // dd(count($data));
+                if(count($data) == 1)
+                {
+                    $data = $data[0];
+                    $day = explode("-", $data->apply_date);
+                    $month = intval($day[1]);
+                    $day = intval($day[2]);
+                    if($day == 15)
+                    {
+                        if($month == ($request->month - 1))
+                        {
+                            $b_amount = $data->new_balance;
+                        }
+                        else if($month == $request->month)
+                        {
+                            $b_amount = (29*$data->prev_balance + $data->new_balance)/30;
+                        }
+                    }
+                    else if($day > 15)
+                    {
+                        $b_amount = (($day-15)*$data->prev_balance + (45-$day)*$data->new_balance)/30;
+
+                    }
+                    else if($day < 15)
+                    {
+                        $b_amount = ((15+$day)*$data->prev_balance + (15-$day)*$data->new_balance)/30;
+                    }
+                    // dd($b_amount);
+                }
+                else
+                {
+                    $movs = array();
+                    foreach ($data as $movimiento)// los días menores a 15 se les debe sumar 30
+                    {
+                        $day = explode("-", $movimiento->apply_date);
+                        $month = intval($day[1]);
+                        $day = intval($day[2]);
+                        if($day > 15)
+                        {
+                            $mov = array($day-14, $movimiento->prev_balance, $movimiento->new_balance);
+                        }
+                        else
+                        {
+                            $mov = array($day+16, $movimiento->prev_balance, $movimiento->new_balance);
+                        }
+                        array_push($movs,$mov);
+                    }
+                    // dd($movs);
+                    for($x = 0; $x <= count($movs); $x++)
+                    {
+                        if($x == 0)// calcular el numero de dias restandole 15
+                        {
+                            $b_amount = $movs[$x][0]*$movs[$x][1];
+                        }
+                        else if($x == count($movs))// calcular a 45 en lugar de 30
+                        {
+                            $b_amount += (30-$movs[$x-1][0])*$movs[$x-1][2];
+                        }
+                        else
+                        {
+                            $b_amount += ($movs[$x][0]-$movs[$x-1][0])*$movs[$x][1];
+                        }
+                    }
+                    $b_amount /= 30;
+                    // dd($b_amount);
+                }
+            }
+        }
+
 
         // $data = DB::table('Month_fund')->select('*')
         // ->join('Nuc','Nuc.id','=','fk_nuc')
         // ->where('Month_fund.fk_nuc',$request->id)
         // ->orderByRaw('Month_fund.id DESC')->first();
 
-        $b_amount = $data->new_balance;//asignamos el valor de cierre de mes
-        if($data->currency == "MXN")
+        if($nuc->currency == "MXN")
         {
             $dll_conv = $b_amount / $request->TC; //si es en pesos, ponemos valor en usd
 

@@ -72,7 +72,7 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="form-group">
-                                            <label for="">Saldo al cierre</label>
+                                            <label for="">Saldo promedio del mes</label>
                                             <input type="text" id="balance" name="balance" placeholder="Saldo al cierre" class="form-control" disabled>
                                         </div>
                                     </div>

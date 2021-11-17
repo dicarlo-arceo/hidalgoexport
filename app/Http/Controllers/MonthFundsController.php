@@ -62,8 +62,24 @@ class MonthFundsController extends Controller
         $fund->prev_balance = $request->prev_balance;
         $fund->new_balance = $request->new_balance;
         $fund->apply_date = $request->apply_date;
-
+        $day = explode("-", $request->apply_date);
+        $day = intval($day[2]);
+        // dd($day);
         $fund->save();
+
+        if($request->type == "Apertura")
+        {
+            $nuc = Nuc::where('id', $request->fk_nuc)->first();
+            if($day <= 15)
+            {
+                $nuc->cut_date = 15;
+            }
+            else
+            {
+                $nuc->cut_date = 30;
+            }
+            $nuc->save();
+        }
 
         $movimientos = DB::table('Month_fund')->select("*","Month_fund.id as id",DB::raw('IFNULL(auth_date, "-") as auth'))->join('Nuc',"Nuc.id","=","fk_nuc")->where('fk_nuc',$request->fk_nuc)->whereNull('Month_fund.deleted_at')->get();
         return response()->json(["status"=>true, "message"=>"Movimiento Registrado", "data"=>$movimientos]);
