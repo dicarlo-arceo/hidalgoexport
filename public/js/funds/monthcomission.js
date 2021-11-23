@@ -99,7 +99,12 @@ function cancelarComision()
 
 function calcular()
 {
-    var route = baseUrl + '/ExportPDF/1';
+    var TC = $("#change").val();
+    var date = $("#month").val();
+    date = date.split("-");
+    var year = date[0];
+    var month = date[1];
+    var route = baseUrl + '/ExportPDF/'+ idUser + "/" + month + "/" + year + "/"+ TC;
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
     });
@@ -147,7 +152,7 @@ function abrirResumen(idNuc)
             'year':year,
             'month':month
         }
-        
+
         var route = baseUrl+'/GetInfoComition';
         jQuery.ajax({
             url:route,
@@ -162,7 +167,7 @@ function abrirResumen(idNuc)
                 $("#ret_isr").val(result.ret_isr);
                 $("#ret_iva").val(result.ret_iva);
                 $("#n_amount").val(result.n_amount);
-                
+
                 // obtenerSaldo(idNuc);
                 $("#myModalCalc").modal('show');
             }

@@ -53,7 +53,41 @@ class MonthComissionController extends Controller
     //     return response()->json(['status'=>true, "data"=>$movements]);
     // }
 
-    public function ExportPDF($id){
+    public function ExportPDF($id,$month,$year,$TC){
+
+        // dd($id,$month,$year,$TC);
+        $b_amount = 0;
+        $IVA = 0;
+        $ret_isr = 0;
+        $ret_iva = 0;
+        $n_amount = 0;
+        // setlocale(LC_TIME, 'es_ES.UTF-8');
+        // $monthName = date('F', mktime(0, 0, 0, $month, 10));
+        $months = array (1=>'Enero',2=>'Febrer',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
+        $userName = DB::table('users')->select(DB::raw('CONCAT(name," ",firstname," ",lastname) AS name'))->where('id',$id)->whereNull('deleted_at')->first();
+        $nucs = DB::table('Nuc')->select("Nuc.id as id")
+        ->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)
+        ->get();
+        $clients = DB::table('Client')->select(DB::raw('CONCAT(name," ",firstname," ",lastname) AS name'))->where('fk_agent',$id)->get();
+        $clientNames = "";
+        foreach ($nucs as $nuc)
+        {
+            $value = $this->calculo($nuc->id,$month,$year,$TC);
+            // dd($value);
+            $b_amount += $value["gross_amount"];
+            $IVA += $value["iva_amount"];
+            $ret_isr += $value["ret_isr"];
+            $ret_iva += $value["ret_iva"];
+            $n_amount += $value["n_amount"];
+            // dd($clientNames);
+        }
+        // dd($b_amount,$IVA,$ret_isr,$ret_iva,$n_amount);
+        foreach ($clients as $client)
+        {
+            $clientNames = $clientNames."<tr><td>".$client->name."</tr></td>";
+            // dd($clientNames);
+        }
+        // dd($clientNames);
         $pdf = app('dompdf.wrapper');
         $pdf->loadHTML('
         <html>
@@ -100,52 +134,43 @@ class MonthComissionController extends Controller
         </head>
         <body>
         <header>
-            <h1>Agosto(Septiembre)</h1>
+            <h1>'.$months[$month]." ".$year.'</h1>
         </header>
 
         <main>
-            <h1>Noyola</h1>
+            <h1>'.$userName->name.'</h1>
+            <br>
+            <h2>Clientes</h2>
             <table class="table table-striped table-hover text-center" id="tbProf">
 
                 <tbody>
-                    <tr>
-                        <td>Cliente 1</td>
-                    </tr>
-                    <tr>
-                        <td>Cliente 2</td>
-                    </tr>
-                    <tr>
-                        <td>Cliente 3</td>
-                    </tr>
-                    <tr>
-                        <td>Cliente 4</td>
-                    </tr>
+                    '.$clientNames.'
                 </tbody>
             </table>
             <br>
-            <br>
+            <h2>Totales</h2>
             <table class="table table-striped table-hover text-center" id="tbProf">
 
                 <tbody>
                     <tr>
                         <td>Monto bruto</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$2,000.00</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($b_amount,2,'.',',').'</td>
                     </tr>
                     <tr>
                         <td>IVA</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$320.00</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($IVA,2,'.',',').'</td>
                     </tr>
                     <tr>
                         <td>RET ISR</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$200.00</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($ret_isr,2,'.',',').'</td>
                     </tr>
                     <tr>
                         <td>RET IVA</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$213.33</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($ret_iva,2,'.',',').'</td>
                     </tr>
                     <tr>
                         <td>Monto Neto</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$1,906.67</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($n_amount,2,'.',',').'</td>
                     </tr>
                 </tbody>
             </table>
@@ -153,10 +178,20 @@ class MonthComissionController extends Controller
         </body>
         </html>
         ');
-        return $pdf->download('mi-archivo.pdf');
+        return $pdf->download($months[$month]."_".$year."_".$userName->name.'.pdf');
     }
 
     public function GetInfoComition(Request $request)
+    {
+        $values = $this->calculo($request->id,$request->month,$request->year,$request->TC);
+
+        // dd(number_format($iva_amount,2,'.',''));
+        return response()->json(['status'=>true, "b_amount"=>number_format($values["b_amount"],2,'.',','),'dll_conv'=>number_format($values["dll_conv"],2,'.',','),'usd_invest'=>number_format($values["usd_invest1"],2,'.',','),
+        'gross_amount'=>number_format($values["gross_amount"],2,'.',','), 'iva_amount'=>number_format($values["iva_amount"],2,'.',','), 'ret_isr'=>number_format($values["ret_isr"],2,'.',','),
+        'ret_iva'=>number_format($values["ret_iva"],2,'.',','), 'n_amount'=>number_format($values["n_amount"],2,'.',',')]);
+    }
+
+    public function calculo($id, $month, $year, $TC)
     {
         // dd($request->all());
         $b_amount=0;//Saldo cierre de mes
@@ -172,27 +207,35 @@ class MonthComissionController extends Controller
         $n_amount=0;//monto neto
 
         // condicion para determinar fecha de corte
-        $nuc = DB::table('Nuc')->select("cut_date","currency")->where('id',$request->id)->first();
+        $nuc = DB::table('Nuc')->select("cut_date","currency")->where('id',$id)->first();
         // dd($request->year."-".(intval($request->month)-1)."-15");
         // dd($cut_date->cut_date);
+
         if(intval($nuc->cut_date) > 15)
         {
             // dd("entre a mayor que 15");
             // consultas para corte al día 30
             $data = DB::table('Month_fund')->select("*")
             ->join('Nuc','Nuc.id','=','Month_fund.fk_nuc')
-            ->where('fk_nuc',$request->id)->whereMonth('apply_date',$request->month)
-            ->whereYear('apply_date',$request->year)->whereNull('Month_fund.deleted_at')->get();
+            ->where('fk_nuc',$id)->whereMonth('apply_date',$month)
+            ->whereYear('apply_date',$year)->whereNull('Month_fund.deleted_at')->get();
 
             if($data->isEmpty())
             {
-                $fecha = $request->year.'/'.$request->month.'/01';
+                $fecha = $year.'/'.$month.'/01';
                 $data = DB::table('Month_fund')->select('*')
                 ->join('Nuc','Nuc.id','=','fk_nuc')
-                ->where('fk_nuc',$request->id)->where('apply_date','<',$fecha)
+                ->where('fk_nuc',$id)->where('apply_date','<',$fecha)
                 ->whereNull('Month_fund.deleted_at')
                 ->orderByRaw('Month_fund.id DESC')->first();
-                $b_amount = $data->new_balance;
+                if($data == 0)
+                {
+                    $b_amount = 0;
+                }
+                else
+                {
+                    $b_amount = $data->new_balance;
+                }
             }
             else
             {
@@ -254,18 +297,25 @@ class MonthComissionController extends Controller
             // dd("entre a menor que 15");
             $data = DB::table('Month_fund')->select("*")
             ->join('Nuc','Nuc.id','=','Month_fund.fk_nuc')
-            ->where('fk_nuc',$request->id)
-            ->whereBetween('apply_date', [$request->year."-".(intval($request->month)-1)."-15", $request->year."-".(intval($request->month))."-15"])
+            ->where('fk_nuc',$id)
+            ->whereBetween('apply_date', [$year."-".(intval($month)-1)."-15", $year."-".(intval($month))."-15"])
             ->whereNull('Month_fund.deleted_at')->get();
             if($data->isEmpty())
             {
-                $fecha = $request->year.'/'.(intval($request->month)-1).'/15';
+                $fecha = $year.'/'.(intval($month)-1).'/15';
                 $data = DB::table('Month_fund')->select('*')
                 ->join('Nuc','Nuc.id','=','fk_nuc')
-                ->where('fk_nuc',$request->id)->where('apply_date','<',$fecha)
+                ->where('fk_nuc',$id)->where('apply_date','<',$fecha)
                 ->whereNull('Month_fund.deleted_at')
                 ->orderByRaw('Month_fund.id DESC')->first();
-                $b_amount = $data->new_balance;
+                if($data == null)
+                {
+                    $b_amount = 0;
+                }
+                else
+                {
+                    $b_amount = $data->new_balance;
+                }
             }
             else
             {
@@ -280,11 +330,11 @@ class MonthComissionController extends Controller
                     $day = intval($day[2]);
                     if($day == 15)
                     {
-                        if($month == ($request->month - 1))
+                        if($month == ($month - 1))
                         {
                             $b_amount = $data->new_balance;
                         }
-                        else if($month == $request->month)
+                        else if($month == $month)
                         {
                             $b_amount = (29*$data->prev_balance + $data->new_balance)/30;
                         }
@@ -348,7 +398,7 @@ class MonthComissionController extends Controller
 
         if($nuc->currency == "MXN")
         {
-            $dll_conv = $b_amount / $request->TC; //si es en pesos, ponemos valor en usd
+            $dll_conv = $b_amount / $TC; //si es en pesos, ponemos valor en usd
 
         }else{
             $dll_conv = $b_amount; //si es en dolares, se queda igual
@@ -358,7 +408,7 @@ class MonthComissionController extends Controller
         $usd_invest = $dll_conv/5000; //por cada 5000 sobre el monto invertido
         $usd_invest1 = $usd_invest*10; //se multiplica por 10 el resultado obtenido
 
-        $gross_amount = $usd_invest1 * $request->TC; //monto bruto
+        $gross_amount = $usd_invest1 * $TC; //monto bruto
 
         $iva_amount = $gross_amount * .16; // iva del monto bruto
 
@@ -369,8 +419,10 @@ class MonthComissionController extends Controller
 
         $n_amount= ($gross_amount + $iva_amount) - ($ret_isr + $ret_iva); //Monto neto
 
-        // dd(number_format($iva_amount,2,'.',''));
-        return response()->json(['status'=>true, "b_amount"=>number_format($b_amount,2,'.',','),'dll_conv'=>number_format($dll_conv,2,'.',','),'usd_invest'=>number_format($usd_invest1,2,'.',','),
-        'gross_amount'=>number_format($gross_amount,2,'.',','), 'iva_amount'=>number_format($iva_amount,2,'.',','), 'ret_isr'=>number_format($ret_isr,2,'.',','), 'ret_iva'=>number_format($ret_iva,2,'.',','), 'n_amount'=>number_format($n_amount,2,'.',',')]);
+        $values = array("b_amount"=>$b_amount,'dll_conv'=>$dll_conv,'usd_invest1'=>$usd_invest1,
+        'gross_amount'=>$gross_amount, 'iva_amount'=>$iva_amount, 'ret_isr'=>$ret_isr,
+        'ret_iva'=>$ret_iva, 'n_amount'=>$n_amount);
+
+        return($values);
     }
 }

@@ -116,7 +116,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secundary" onclick="cancelarCalc()">Cancelar</button>
-                        <button type="button" onclick="excel_nuc()" class="btn btn-primary">Descargar Desglose PDF</button>
+                        <button type="button" onclick="calcular()" class="btn btn-primary">Descargar Desglose PDF</button>
                         {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
                     </div>
                 </div>

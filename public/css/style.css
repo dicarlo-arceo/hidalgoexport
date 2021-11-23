@@ -57,12 +57,20 @@ a:focus {
 }
 
 #sidebar {
-    min-width: 250px;
-    max-width: 250px;
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 999;
     background: #cccccc;
     color: #fff;
     transition: all 0.3s;
 }
+.centrado{
+    text-align: center;
+    background: #cccccc !important;
+  }
 
 #sidebar.active {
     margin-left: -250px;
@@ -144,10 +152,17 @@ a.article:hover {
 ----------------------------------------------------- */
 
 #content {
-    width: 100%;
-    padding: 20px;
+    width: calc(100% - 250px);
+    padding: 40px;
     min-height: 100vh;
     transition: all 0.3s;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#content.active {
+    width: 100%;
 }
 
 /* ---------------------------------------------------
@@ -161,8 +176,14 @@ a.article:hover {
     #sidebar.active {
         margin-left: 0;
     }
-    #sidebarCollapse {
-        padding-right: 20px;
+    #content {
+        width: 100%;
+    }
+    #content.active {
+        width: calc(100% - 250px);
+    }
+    #sidebarCollapse span {
+        display: none;
     }
 }
 
@@ -174,7 +195,4 @@ a.article:hover {
     color: rgb(34, 24, 126);
 }
 
-.centrado{
-    text-align: center;
-    background: #cccccc !important;
-  }
+
