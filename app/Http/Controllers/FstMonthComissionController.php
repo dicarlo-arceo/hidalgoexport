@@ -11,18 +11,18 @@ use App\Nuc;
 use App\Status;
 use DB;
 
-class MonthComissionController extends Controller
+class FstMonthComissionController extends Controller
 {
     public function index(){
         $profile = User::findProfile();
         $users = DB::table('users')->select('users.id',DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
             ->join('Client',"fk_agent","=","users.id")
             ->join('Nuc',"fk_client","=","Client.id")
-            ->where("month_flag","=","7")
+            ->where("month_flag","<","7")
             ->groupBy("name")
             ->whereNull('users.deleted_at')->get();
-        $perm = Permission::permView($profile,21);
-        $perm_btn =Permission::permBtns($profile,21);
+        $perm = Permission::permView($profile,22);
+        $perm_btn =Permission::permBtns($profile,22);
         // dd($clients);
         if($perm==0)
         {
@@ -30,35 +30,18 @@ class MonthComissionController extends Controller
         }
         else
         {
-            return view('funds.monthcomission.monthcomission', compact('users','perm_btn'));
+            return view('funds.fstmonthcomission.fstmonthcomission', compact('users','perm_btn'));
         }
     }
     public function GetInfo($id)
     {
         $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS client_name'))
-        ->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)->where("month_flag","=","7")
+        ->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)->where("month_flag","<","7")
         ->get();
         return response()->json(['status'=>true, "data"=>$clients]);
     }
-
-    // public function GetInfoMonth($id,$month,$year)
-    // {
-    //     $movimientos = DB::table('Month_fund')->select("*")->where('fk_nuc',$id)->whereMonth('apply_date',$month)->whereYear('apply_date',$year)->whereNull('deleted_at')->get();
-    //     // dd($movimientos);
-    //     return response()->json(['status'=>true, "data"=>$movimientos]);
-    // }
-
-    // public function GetInfoLast($id,$month,$year)
-    // {
-    //     $fecha = $year.'/'.$month.'/01';
-    //     // dd($fecha);
-    //     $movements = DB::table('Month_fund')->select('*')->where('fk_nuc',$id)->where('apply_date','<',$fecha)
-    //     ->orderByRaw('id DESC')->first();
-    //     // dd($movements);
-    //     return response()->json(['status'=>true, "data"=>$movements]);
-    // }
-
     public function ExportPDF($id,$month,$year,$TC){
+
 
         // dd($id,$month,$year,$TC);
         $b_amount = 0;
@@ -69,31 +52,26 @@ class MonthComissionController extends Controller
         // setlocale(LC_TIME, 'es_ES.UTF-8');
         // $monthName = date('F', mktime(0, 0, 0, $month, 10));
         $months = array (1=>'Enero',2=>'Febrer',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
-        $userName = DB::table('users')->select(DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
-            ->where('users.id',$id)->whereNull('users.deleted_at')->first();
-        $nucs = DB::table('Nuc')->select("Nuc.id as id")
-            ->join('Client',"Client.id","=","fk_client")
-            ->where("month_flag","=","7")
-            ->where('fk_agent',$id)
-            ->get();
-        $clients = DB::table('Client')->select(DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS name'))
-            ->join('Nuc',"fk_client","=","Client.id")
-            ->where("month_flag","=","7")
-            ->groupBy("name")
-            ->where('fk_agent',$id)->get();
+        $clients = DB::table('Client')->select(DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS name'),"fk_agent")
+        ->join('Nuc',"fk_client","=","Client.id")
+        ->where("month_flag","<","7")
+        ->groupBy("name")
+        ->where('Nuc.id',$id)->get();
         $clientNames = "";
-        foreach ($nucs as $nuc)
-        {
-            $value = $this->calculo($nuc->id,$month,$year,$TC);
-            // dd($value);
-            $b_amount += $value["gross_amount"];
-            $IVA += $value["iva_amount"];
-            $ret_isr += $value["ret_isr"];
-            $ret_iva += $value["ret_iva"];
-            $n_amount += $value["n_amount"];
+        $userName = DB::table('users')->select(DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
+            ->where('users.id',$clients[0]->fk_agent)->whereNull('users.deleted_at')->first();
+
+        $value5 = $this->calculo($id,$month,$year,$TC,10);
+        $value1 = $this->calculo($id,$month,$year,$TC,35);
+        // dd($value5,$value1);
+        $b_amount += $value5["gross_amount"]*5 + $value1["gross_amount"];
+        $IVA += $value5["iva_amount"]*5 + $value1["iva_amount"];
+        $ret_isr += $value5["ret_isr"]*5 + $value1["ret_isr"];
+        $ret_iva += $value5["ret_iva"]*5 + $value1["ret_iva"];
+        $n_amount += $value5["n_amount"]*5 + $value1["n_amount"];
             // dd($clientNames);
-        }
         // dd($b_amount,$IVA,$ret_isr,$ret_iva,$n_amount);
+
         foreach ($clients as $client)
         {
             $clientNames = $clientNames."<tr><td>".$client->name."</tr></td>";
@@ -195,15 +173,15 @@ class MonthComissionController extends Controller
 
     public function GetInfoComition(Request $request)
     {
-        $values = $this->calculo($request->id,$request->month,$request->year,$request->TC);
-
+        $values = $this->calculo($request->id,$request->month,$request->year,$request->TC,10);
+        // dd($request->id);
         // dd(number_format($iva_amount,2,'.',''));
         return response()->json(['status'=>true, "b_amount"=>number_format($values["b_amount"],2,'.',','),'dll_conv'=>number_format($values["dll_conv"],2,'.',','),'usd_invest'=>number_format($values["usd_invest1"],2,'.',','),
         'gross_amount'=>number_format($values["gross_amount"],2,'.',','), 'iva_amount'=>number_format($values["iva_amount"],2,'.',','), 'ret_isr'=>number_format($values["ret_isr"],2,'.',','),
         'ret_iva'=>number_format($values["ret_iva"],2,'.',','), 'n_amount'=>number_format($values["n_amount"],2,'.',',')]);
     }
 
-    public function calculo($id, $month, $year, $TC)
+    public function calculo($id, $month, $year, $TC, $dllMult)
     {
         // dd($request->all());
         $b_amount=0;//Saldo cierre de mes
@@ -231,6 +209,7 @@ class MonthComissionController extends Controller
             ->join('Nuc','Nuc.id','=','Month_fund.fk_nuc')
             ->where('fk_nuc',$id)->whereMonth('apply_date',$month)
             ->whereYear('apply_date',$year)->whereNull('Month_fund.deleted_at')->get();
+
             if($data->isEmpty())
             {
                 $fecha = $year.'/'.$month.'/01';
@@ -239,7 +218,7 @@ class MonthComissionController extends Controller
                 ->where('fk_nuc',$id)->where('apply_date','<',$fecha)
                 ->whereNull('Month_fund.deleted_at')
                 ->orderByRaw('Month_fund.id DESC')->first();
-                if($data == NULL)
+                if($data == 0)
                 {
                     $b_amount = 0;
                 }
@@ -417,7 +396,7 @@ class MonthComissionController extends Controller
         }
 
         $usd_invest = $dll_conv/5000; //por cada 5000 sobre el monto invertido
-        $usd_invest1 = $usd_invest*10; //se multiplica por 10 el resultado obtenido
+        $usd_invest1 = $usd_invest*$dllMult; //se multiplica por 10 el resultado obtenido
 
         $gross_amount = $usd_invest1 * $TC; //monto bruto
 
@@ -433,7 +412,9 @@ class MonthComissionController extends Controller
         $values = array("b_amount"=>$b_amount,'dll_conv'=>$dll_conv,'usd_invest1'=>$usd_invest1,
         'gross_amount'=>$gross_amount, 'iva_amount'=>$iva_amount, 'ret_isr'=>$ret_isr,
         'ret_iva'=>$ret_iva, 'n_amount'=>$n_amount);
+        // dd($values);
 
         return($values);
     }
 }
+

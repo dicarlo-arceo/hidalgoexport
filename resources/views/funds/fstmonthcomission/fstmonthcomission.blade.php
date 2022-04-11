@@ -1,7 +1,7 @@
 @extends('home')
 {{-- @section('title','Perfiles') --}}
 @section('content')
-    <div class="text-center"><h1>Generar Comisiones del Fondo Mensual</h1></div>
+    <div class="text-center"><h1>Primera Comision del Fondo Mensual</h1></div>
     <div style="max-width: 1200px; margin: auto;">
         {{-- inicia modal --}}
         <div id="myModal2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
@@ -49,7 +49,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secundary" onclick="cancelarComision()">Cancelar</button>
-                        <button type="button" onclick="calcular()" class="btn btn-primary">Descargar todo PDF</button>
+                        {{-- <button type="button" onclick="calcular()" class="btn btn-primary">Descargar todo PDF</button> --}}
                         {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
                     </div>
                 </div>
@@ -154,5 +154,5 @@
     </div>
 @endsection
 @push('head')
-    <script src="{{URL::asset('js/funds/monthcomission.js')}}"></script>
+    <script src="{{URL::asset('js/funds/fstmonthcomission.js')}}"></script>
 @endpush

@@ -70,4 +70,11 @@ Route::get('funds/monthlycomission/monthcomission/GetInfo/{id}','MonthComissionC
 Route::get('funds/monthlycomission/monthcomission/ExportPDF/{id}/{month}/{year}/{TC}','MonthComissionController@ExportPDF');
 Route::post('funds/monthlycomission/monthcomission/GetInfoComition','MonthComissionController@GetInfoComition')->name('monthcomission.GetInfoComition');
 
+//---------------------------------------------------Comisiones 6 meses fondo mensual--------------------------------------------
+Route::resource('funds/fstmonthcomission/fstmonthcomission', 'FstMonthComissionController');
+Route::get('funds/fstmonthcomission/fstmonthcomission/GetInfo/{id}','FstMonthComissionController@GetInfo')->name('fstmonthcomission.GetInfo');
+Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDF/{id}/{month}/{year}/{TC}','FstMonthComissionController@ExportPDF');
+Route::post('funds/fstmonthcomission/fstmonthcomission/GetInfoComition','FstMonthComissionController@GetInfoComition')->name('fstmonthcomission.GetInfoComition');
+
+
 
