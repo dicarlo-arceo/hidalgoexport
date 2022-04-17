@@ -53,7 +53,7 @@
                             </div>
                         </div>
 
-                        <div class="row">
+                        {{-- <div class="row">
                             <div class="col-lg-6">
                                 <div class="form-group">
                                     <label for="">Genero</label>
@@ -131,7 +131,7 @@
                                     <input type="text" id="country1" name="country1" class="form-control" placeholder="País">
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="row">
                             <div class="col-lg-6">
