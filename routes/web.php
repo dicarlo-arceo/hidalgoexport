@@ -75,6 +75,7 @@ Route::resource('funds/fstmonthcomission/fstmonthcomission', 'FstMonthComissionC
 Route::get('funds/fstmonthcomission/fstmonthcomission/GetInfo/{id}','FstMonthComissionController@GetInfo')->name('fstmonthcomission.GetInfo');
 Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDF/{id}/{month}/{year}/{TC}','FstMonthComissionController@ExportPDF');
 Route::post('funds/fstmonthcomission/fstmonthcomission/GetInfoComition','FstMonthComissionController@GetInfoComition')->name('fstmonthcomission.GetInfoComition');
+Route::put('funds/fstmonthcomission/fstmonthcomission/UpdateRegime','FstMonthComissionController@UpdateRegime')->name('fstmonthcomission.UpdateRegime');
 
 
 

@@ -68,20 +68,27 @@ var formatter = new Intl.NumberFormat('en-US', {
     currency: 'USD',
   });
 
-var idUser = 0
+var idUser = 0;
+var flagComition = 0;
 function abrirComision(id)
 {
     idUser = id;
     var table = $('#tbProf1').DataTable();
     var route = baseUrl + '/GetInfo/'+ idUser;
     var btn;
-
+    flagComition = 0;
     jQuery.ajax({
         url:route,
         type:'get',
         dataType:'json',
         success:function(result)
         {
+            if(result.regime == 0)
+                $("#onoffRegime").bootstrapToggle('on');
+            else
+                $("#onoffRegime").bootstrapToggle('off');
+
+            flagComition = 1;
             table.clear();
             result.data.forEach( function(valor, indice, array) {
                 btn = '<button type="button" class="btn btn-success"'+'onclick="abrirResumen('+valor.idNuc+')"><i class="fas fa-calculator"></i></button>';
@@ -134,6 +141,12 @@ function abrirResumen(idNuc)
 {
     var TC = $("#change").val();
     var date = $("#month").val();
+    var reg = $("#onoffRegime").prop('checked');
+    var regime = 0;
+    if(reg)
+        regime = 1;
+    else
+        regime = 0;
 
     date = date.split("-");
     var year = date[0];
@@ -150,7 +163,8 @@ function abrirResumen(idNuc)
             'TC':TC,
             'id':idNuc,
             'year':year,
-            'month':month
+            'month':month,
+            'regime':regime
         }
 
         var route = baseUrl+'/GetInfoComition';
@@ -160,7 +174,7 @@ function abrirResumen(idNuc)
             type:'post',
             dataType:'json',
             success:function(result){
-                console.log(result);
+                // alert(result.regime);
                 $("#balance").val(result.b_amount);
                 $("#b_amount").val(result.gross_amount);
                 $("#iva").val(result.iva_amount);
@@ -224,4 +238,34 @@ function obtenerultimomovimiento(id,month,year)
             console.log(result.data);
         }
     })
+}
+
+function updateRegime()
+{
+    if(flagComition != 0)
+    {
+        var reg = $("#onoffRegime").prop('checked');
+        var regime = 0;
+        if(reg)
+            regime = 0;
+        else
+            regime = 1;
+
+        var route = baseUrl+"/UpdateRegime";
+        var data = {
+            "_token": $("meta[name='csrf-token']").attr("content"),
+            'id':idUser,
+            'regime':regime
+        };
+        jQuery.ajax({
+            url:route,
+            type:'put',
+            data:data,
+            dataType:'json',
+            success:function(result)
+            {
+                alertify.success(result.message);
+            }
+        })
+    }
 }

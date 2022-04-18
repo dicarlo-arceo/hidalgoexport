@@ -29,6 +29,12 @@
                                             <input type="month" id="month" name="month" class="form-control">
                                         </div>
                                     </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Regimen</label> <br>
+                                            <input id = "onoffRegime" type="checkbox" data-toggle="toggle" data-on = "Regimen 1" data-off="Regimen 2" data-width="120" onchange=updateRegime()>
+                                        </div>
+                                    </div>
                                 </div>
                                 <br>
                                 <div class="row">

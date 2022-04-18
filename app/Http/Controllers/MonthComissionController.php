@@ -36,9 +36,12 @@ class MonthComissionController extends Controller
     public function GetInfo($id)
     {
         $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS client_name'))
-        ->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)->where("month_flag","=","7")
+        ->join('Client',"Client.id","=","fk_client")
+        ->where('fk_agent',$id)
+        ->where("month_flag","=","7")
         ->get();
-        return response()->json(['status'=>true, "data"=>$clients]);
+        $regime = DB::table('users')->select('regime')->where('id',$id)->first();
+        return response()->json(['status'=>true, "regime"=>$regime->regime, "data"=>$clients]);
     }
 
     // public function GetInfoMonth($id,$month,$year)
@@ -195,15 +198,14 @@ class MonthComissionController extends Controller
 
     public function GetInfoComition(Request $request)
     {
-        $values = $this->calculo($request->id,$request->month,$request->year,$request->TC);
-
+        $values = $this->calculo($request->id,$request->month,$request->year,$request->TC,$request->regime);
         // dd(number_format($iva_amount,2,'.',''));
         return response()->json(['status'=>true, "b_amount"=>number_format($values["b_amount"],2,'.',','),'dll_conv'=>number_format($values["dll_conv"],2,'.',','),'usd_invest'=>number_format($values["usd_invest1"],2,'.',','),
         'gross_amount'=>number_format($values["gross_amount"],2,'.',','), 'iva_amount'=>number_format($values["iva_amount"],2,'.',','), 'ret_isr'=>number_format($values["ret_isr"],2,'.',','),
         'ret_iva'=>number_format($values["ret_iva"],2,'.',','), 'n_amount'=>number_format($values["n_amount"],2,'.',',')]);
     }
 
-    public function calculo($id, $month, $year, $TC)
+    public function calculo($id, $month, $year, $TC, $regime)
     {
         // dd($request->all());
         $b_amount=0;//Saldo cierre de mes
@@ -423,7 +425,11 @@ class MonthComissionController extends Controller
 
         $iva_amount = $gross_amount * .16; // iva del monto bruto
 
-        $ret_isr = $gross_amount *.10; //isr del monto bruto
+        // dd($regime);
+        if($regime == 1)
+            $ret_isr = $gross_amount *.10; //isr del monto bruto
+        else
+            $ret_isr = $gross_amount *.0125;
 
         $ret_iva = 2*$iva_amount; //retencion de iva
         $ret_iva = $ret_iva/3; //retencion del iva
@@ -435,5 +441,11 @@ class MonthComissionController extends Controller
         'ret_iva'=>$ret_iva, 'n_amount'=>$n_amount);
 
         return($values);
+    }
+
+    public function update(Request $request)
+    {
+        $client = User::where('id',$request->id)->update(['regime'=>$request->regime]);
+        return response()->json(['status'=>true, 'message'=>"Régimen Actualizado"]);
     }
 }
