@@ -53,10 +53,20 @@ class UsersController extends Controller
     public function update(Request $request)
     {
         // dd($request->all());
-        $user = User::where('id',$request->id)
-        ->update(['email'=>$request->email,'password'=>bcrypt($request->password),
-        'name'=>$request->name,'firstname'=>$request->firstname,'lastname'=>$request->lastname,
-        'cellphone'=>$request->cellphone,'fk_profile'=>$request->fk_profile]);
+        if($request->password == null)
+        {
+            $user = User::where('id',$request->id)
+            ->update(['email'=>$request->email,
+            'name'=>$request->name,'firstname'=>$request->firstname,'lastname'=>$request->lastname,
+            'cellphone'=>$request->cellphone,'fk_profile'=>$request->fk_profile]);
+        }
+        else
+        {
+            $user = User::where('id',$request->id)
+            ->update(['email'=>$request->email,'password'=>bcrypt($request->password),
+            'name'=>$request->name,'firstname'=>$request->firstname,'lastname'=>$request->lastname,
+            'cellphone'=>$request->cellphone,'fk_profile'=>$request->fk_profile]);
+        }
         // dd($codes_edit);
         return response()->json(['status'=>true, 'message'=>"Usuario Actualizado"]);
 
