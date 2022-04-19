@@ -99,99 +99,147 @@ class MonthComissionController extends Controller
         // dd($b_amount,$IVA,$ret_isr,$ret_iva,$n_amount);
         foreach ($clients as $client)
         {
-            $clientNames = $clientNames."<tr><td>".$client->name."</tr></td>";
+            $clientNames = $clientNames.$client->name."<br>";
             // dd($clientNames);
         }
         // dd($clientNames);
+        if(intval($month) == 0)
+            $monthless = 12;
+        else
+            $monthless = intval($month) - 1;
         $pdf = app('dompdf.wrapper');
         $pdf->loadHTML('
-        <html>
-        <head>
-            <style>
-                @page {
-                    margin: 0cm 0cm;
-                    font-family: Arial;
-                }
+        <div class="container">
+            <div class="row">
+                <!-- BEGIN INVOICE -->
+                <div class="col-xs-12">
+                    <div class="grid invoice">
+                        <div class="grid-body">
+                            <div class="invoice-title">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <img src="../public/img/logo.png" alt="" height="180">
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-12">
+                                    <h2>'.$userName->name.'</h2>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <address>
+                                        <strong>Clientes:</strong><br>
+                                        '.$clientNames.'
+                                    </address>
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <address>
+                                        <strong>Fecha de pago:</strong><br>
+                                        '.$months[intval($month)]." ".$year.'
+                                    </address>
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <address>
+                                        <strong>Corte a:</strong><br>
+                                        '.$months[$monthless]." ".$year.'
+                                    </address>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h3>Totales</h3>
+                                    <table class="table table-striped">
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Monto bruto</strong><br>
+                                                <td class="text-center">$'.number_format($b_amount,2,'.',',').'</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>IVA</strong><br>
+                                                <td class="text-center">$'.number_format($IVA,2,'.',',').'</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>RET ISR</strong><br>
+                                                <td class="text-center">$'.number_format($ret_isr,2,'.',',').'</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>RET IVA</strong><br>
+                                                <td class="text-center">$'.number_format($ret_iva,2,'.',',').'</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Monto Neto</strong><br>
+                                                <td class="text-center">$'.number_format($n_amount,2,'.',',').'</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END INVOICE -->
+            </div>
+        </div>
+        <style>
+            body{margin-top:20px;
+            background:#eee;
+            }
 
-                body {
-                    margin: 3cm 2cm 2cm;
-                    max-height: 500px;
-                }
+            .invoice {
+                padding: 30px;
+            }
 
-                header {
-                    position: fixed;
-                    top: 0cm;
-                    left: 0cm;
-                    right: 0cm;
-                    height: 2cm;
-                    background-color: #106a6a;
-                    color: white;
-                    text-align: center;
-                    line-height: 30px;
-                }
+            .invoice h2 {
+                margin-top: 0px;
+                line-height: 0.8em;
+            }
 
-                table{
-                    align: center;
-                }
+            .invoice .small {
+                font-weight: 300;
+            }
 
-                footer {
-                    position: fixed;
-                    bottom: 0cm;
-                    left: 0cm;
-                    right: 0cm;
-                    height: 2cm;
-                    background-color: #2a0927;
-                    color: white;
-                    text-align: center;
-                    line-height: 35px;
-                }
-            </style>
-        </head>
-        <body>
-        <header>
-            <h1>'.$months[intval($month)]." ".$year.'</h1>
-        </header>
+            .invoice hr {
+                margin-top: 10px;
+                border-color: #ddd;
+            }
 
-        <main>
-            <h1>'.$userName->name.'</h1>
-            <br>
-            <h2>Clientes</h2>
-            <table class="table table-striped table-hover text-center" id="tbProf">
+            .invoice .table tr.line {
+                border-bottom: 1px solid #ccc;
+            }
 
-                <tbody>
-                    '.$clientNames.'
-                </tbody>
-            </table>
-            <br>
-            <h2>Totales</h2>
-            <table class="table table-striped table-hover text-center" id="tbProf">
+            .invoice .table td {
+                border: none;
+            }
 
-                <tbody>
-                    <tr>
-                        <td>Monto bruto</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($b_amount,2,'.',',').'</td>
-                    </tr>
-                    <tr>
-                        <td>IVA</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($IVA,2,'.',',').'</td>
-                    </tr>
-                    <tr>
-                        <td>RET ISR</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($ret_isr,2,'.',',').'</td>
-                    </tr>
-                    <tr>
-                        <td>RET IVA</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($ret_iva,2,'.',',').'</td>
-                    </tr>
-                    <tr>
-                        <td>Monto Neto</td>
-                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($n_amount,2,'.',',').'</td>
-                    </tr>
-                </tbody>
-            </table>
-        </main>
-        </body>
-        </html>
+            .invoice .identity {
+                margin-top: 10px;
+                font-size: 1.1em;
+                font-weight: 300;
+            }
+
+            .invoice .identity strong {
+                font-weight: 600;
+            }
+
+            .invoice-title{
+                text-align: center;
+            }
+
+            .grid {
+                position: relative;
+                width: 100%;
+                background: #fff;
+                color: #666666;
+                border-radius: 2px;
+                margin-bottom: 25px;
+                box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+            }
+        </style>
         ');
         return $pdf->download($months[intval($month)]."_".$year."_".$userName->name.'.pdf');
     }

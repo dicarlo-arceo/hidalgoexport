@@ -56,10 +56,10 @@ $(document).ready( function () {
             }
         },
         aLengthMenu: [
-            [25, 50, 100, 200, -1],
-            [25, 50, 100, 200, "All"]
+            [10, 25, 50, 100, 200, -1],
+            [10, 25, 50, 100, 200, "All"]
         ],
-        iDisplayLength: -1
+        iDisplayLength: 10
     });
 } );
 
