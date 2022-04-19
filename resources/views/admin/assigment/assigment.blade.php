@@ -39,6 +39,7 @@
                                             <thead>
                                                 <th class="text-center">id</th>
                                                 <th class="text-center">Cliente</th>
+                                                <th class="text-center">Opciones</th>
                                             </thead>
                                         </table>
                                     </div>
@@ -71,7 +72,7 @@
                     <tbody>
                         @foreach ($users as $user)
                             <tr id="{{$user->id}}">
-                                <td>{{$user->name}}</td>
+                                <td>{{$user->name}} {{$user->firstname}} {{$user->lastname}}</td>
                                 <td>{{$user->email}}</td>
                                 @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
                                     <td>

@@ -6,12 +6,15 @@ use Illuminate\Http\Request;
 use App\Client;
 use App\Permission;
 use App\User;
+use DB;
 
 class AssigmentController extends Controller
 {
     public function index(){
         $users = User::get();
-        $clients = Client::whereNull("fk_agent")->pluck('name','id');
+        // $clients = Client::whereNull("fk_agent")->pluck('name','id');
+        $clients = DB::table('Client')->select('Client.id',DB::raw('CONCAT(Client.name," ",firstname," ",lastname) AS name'), 'id')
+        ->whereNull("fk_agent")->whereNull('deleted_at')->pluck('name','id');
         // dd($clients);
         // if($clients->isEmpty())
         //     dd("vacio");
