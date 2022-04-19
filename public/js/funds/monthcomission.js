@@ -108,10 +108,20 @@ function calcular()
 {
     var TC = $("#change").val();
     var date = $("#month").val();
+    var reg = $("#onoffRegime").prop('checked');
+    var regime = 0;
+
+    if(reg)
+        regime = 1;
+    else
+        regime = 0;
+
     date = date.split("-");
     var year = date[0];
     var month = date[1];
-    var route = baseUrl + '/ExportPDF/'+ idUser + "/" + month + "/" + year + "/"+ TC;
+
+    var route = baseUrl + '/ExportPDF/'+ idUser + "/" + month + "/" + year + "/"+ TC + "/" + regime;
+
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
     });

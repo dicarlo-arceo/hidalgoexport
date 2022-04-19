@@ -61,7 +61,7 @@ class MonthComissionController extends Controller
     //     return response()->json(['status'=>true, "data"=>$movements]);
     // }
 
-    public function ExportPDF($id,$month,$year,$TC){
+    public function ExportPDF($id,$month,$year,$TC,$regime){
 
         // dd($id,$month,$year,$TC);
         $b_amount = 0;
@@ -87,7 +87,7 @@ class MonthComissionController extends Controller
         $clientNames = "";
         foreach ($nucs as $nuc)
         {
-            $value = $this->calculo($nuc->id,$month,$year,$TC);
+            $value = $this->calculo($nuc->id,$month,$year,$TC,$regime);
             // dd($value);
             $b_amount += $value["gross_amount"];
             $IVA += $value["iva_amount"];

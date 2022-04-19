@@ -38,9 +38,10 @@ class FstMonthComissionController extends Controller
         $clients = DB::table('Nuc')->select("Nuc.id as idNuc","nuc", DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS client_name'))
         ->join('Client',"Client.id","=","fk_client")->where('fk_agent',$id)->where("month_flag","<","7")
         ->get();
-        return response()->json(['status'=>true, "data"=>$clients]);
+        $regime = DB::table('users')->select('regime')->where('id',$id)->first();
+        return response()->json(['status'=>true, "regime"=>$regime->regime, "data"=>$clients]);
     }
-    public function ExportPDF($id,$month,$year,$TC){
+    public function ExportPDF($id,$month,$year,$TC,$regime){
 
 
         // dd($id,$month,$year,$TC);
@@ -61,8 +62,8 @@ class FstMonthComissionController extends Controller
         $userName = DB::table('users')->select(DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
             ->where('users.id',$clients[0]->fk_agent)->whereNull('users.deleted_at')->first();
 
-        $value5 = $this->calculo($id,$month,$year,$TC,10);
-        $value1 = $this->calculo($id,$month,$year,$TC,35);
+        $value5 = $this->calculo($id,$month,$year,$TC,10,$regime);
+        $value1 = $this->calculo($id,$month,$year,$TC,35,$regime);
         // dd($value5,$value1);
         $b_amount += $value5["gross_amount"]*5 + $value1["gross_amount"];
         $IVA += $value5["iva_amount"]*5 + $value1["iva_amount"];
@@ -171,9 +172,145 @@ class FstMonthComissionController extends Controller
         return $pdf->download($months[intval($month)]."_".$year."_".$userName->name.'.pdf');
     }
 
+    public function ExportPDFAll($id,$month,$year,$TC,$regime){
+
+        // dd($id,$month,$year,$TC);
+        $b_amount = 0;
+        $IVA = 0;
+        $ret_isr = 0;
+        $ret_iva = 0;
+        $n_amount = 0;
+        // setlocale(LC_TIME, 'es_ES.UTF-8');
+        // $monthName = date('F', mktime(0, 0, 0, $month, 10));
+        $months = array (1=>'Enero',2=>'Febrer',3=>'Marzo',4=>'Abril',5=>'Mayo',6=>'Junio',7=>'Julio',8=>'Agosto',9=>'Septiembre',10=>'Octubre',11=>'Noviembre',12=>'Diciembre');
+        $userName = DB::table('users')->select(DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
+            ->where('users.id',$id)->whereNull('users.deleted_at')->first();
+        $nucs = DB::table('Nuc')->select("Nuc.id as id")
+            ->join('Client',"Client.id","=","fk_client")
+            ->where("month_flag","<","7")
+            ->where('fk_agent',$id)
+            ->get();
+        $clients = DB::table('Client')->select(DB::raw('CONCAT(Client.name," ",Client.firstname," ",Client.lastname) AS name'))
+            ->join('Nuc',"fk_client","=","Client.id")
+            ->where("month_flag","<","7")
+            ->groupBy("name")
+            ->where('fk_agent',$id)->get();
+        $clientNames = "";
+        foreach ($nucs as $nuc)
+        {
+            $value = $this->calculo($nuc->id,$month,$year,$TC,10,$regime);
+            // dd($value);
+            $b_amount += $value["gross_amount"];
+            $IVA += $value["iva_amount"];
+            $ret_isr += $value["ret_isr"];
+            $ret_iva += $value["ret_iva"];
+            $n_amount += $value["n_amount"];
+            // dd($clientNames);
+        }
+        // dd($b_amount,$IVA,$ret_isr,$ret_iva,$n_amount);
+        foreach ($clients as $client)
+        {
+            $clientNames = $clientNames."<tr><td>".$client->name."</tr></td>";
+            // dd($clientNames);
+        }
+        // dd($clientNames);
+        $pdf = app('dompdf.wrapper');
+        $pdf->loadHTML('
+        <html>
+        <head>
+            <style>
+                @page {
+                    margin: 0cm 0cm;
+                    font-family: Arial;
+                }
+
+                body {
+                    margin: 3cm 2cm 2cm;
+                    max-height: 500px;
+                }
+
+                header {
+                    position: fixed;
+                    top: 0cm;
+                    left: 0cm;
+                    right: 0cm;
+                    height: 2cm;
+                    background-color: #106a6a;
+                    color: white;
+                    text-align: center;
+                    line-height: 30px;
+                }
+
+                table{
+                    align: center;
+                }
+
+                footer {
+                    position: fixed;
+                    bottom: 0cm;
+                    left: 0cm;
+                    right: 0cm;
+                    height: 2cm;
+                    background-color: #2a0927;
+                    color: white;
+                    text-align: center;
+                    line-height: 35px;
+                }
+            </style>
+        </head>
+        <body>
+        <header>
+            <h1>'.$months[intval($month)]." ".$year.'</h1>
+        </header>
+
+        <main>
+            <h1>'.$userName->name.'</h1>
+            <br>
+            <h2>Clientes</h2>
+            <table class="table table-striped table-hover text-center" id="tbProf">
+
+                <tbody>
+                    '.$clientNames.'
+                </tbody>
+            </table>
+            <br>
+            <h2>Totales</h2>
+            <table class="table table-striped table-hover text-center" id="tbProf">
+
+                <tbody>
+                    <tr>
+                        <td>Monto bruto</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($b_amount,2,'.',',').'</td>
+                    </tr>
+                    <tr>
+                        <td>IVA</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($IVA,2,'.',',').'</td>
+                    </tr>
+                    <tr>
+                        <td>RET ISR</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($ret_isr,2,'.',',').'</td>
+                    </tr>
+                    <tr>
+                        <td>RET IVA</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($ret_iva,2,'.',',').'</td>
+                    </tr>
+                    <tr>
+                        <td>Monto Neto</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;$'.number_format($n_amount,2,'.',',').'</td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+        </body>
+        </html>
+        ');
+        return $pdf->download($months[intval($month)]."_".$year."_".$userName->name.'.pdf');
+    }
+
+
     public function GetInfoComition(Request $request)
     {
-        $values = $this->calculo($request->id,$request->month,$request->year,$request->TC,10);
+        $values = $this->calculo($request->id,$request->month,$request->year,$request->TC,10,$request->regime);
         // dd($request->id);
         // dd(number_format($iva_amount,2,'.',''));
         return response()->json(['status'=>true, "b_amount"=>number_format($values["b_amount"],2,'.',','),'dll_conv'=>number_format($values["dll_conv"],2,'.',','),'usd_invest'=>number_format($values["usd_invest1"],2,'.',','),
@@ -181,7 +318,7 @@ class FstMonthComissionController extends Controller
         'ret_iva'=>number_format($values["ret_iva"],2,'.',','), 'n_amount'=>number_format($values["n_amount"],2,'.',',')]);
     }
 
-    public function calculo($id, $month, $year, $TC, $dllMult)
+    public function calculo($id, $month, $year, $TC, $dllMult, $regime)
     {
         // dd($request->all());
         $b_amount=0;//Saldo cierre de mes
@@ -218,7 +355,8 @@ class FstMonthComissionController extends Controller
                 ->where('fk_nuc',$id)->where('apply_date','<',$fecha)
                 ->whereNull('Month_fund.deleted_at')
                 ->orderByRaw('Month_fund.id DESC')->first();
-                if($data == 0)
+
+                if($data == NULL)
                 {
                     $b_amount = 0;
                 }
@@ -402,7 +540,10 @@ class FstMonthComissionController extends Controller
 
         $iva_amount = $gross_amount * .16; // iva del monto bruto
 
-        $ret_isr = $gross_amount *.10; //isr del monto bruto
+        if($regime == 1)
+            $ret_isr = $gross_amount *.10; //isr del monto bruto
+        else
+            $ret_isr = $gross_amount *.0125;
 
         $ret_iva = 2*$iva_amount; //retencion de iva
         $ret_iva = $ret_iva/3; //retencion del iva
@@ -415,6 +556,12 @@ class FstMonthComissionController extends Controller
         // dd($values);
 
         return($values);
+    }
+
+    public function update(Request $request)
+    {
+        $client = User::where('id',$request->id)->update(['regime'=>$request->regime]);
+        return response()->json(['status'=>true, 'message'=>"Régimen Actualizado"]);
     }
 }
 

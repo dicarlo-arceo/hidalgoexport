@@ -67,15 +67,15 @@ Route::resource('funds/monthlycomission/monthcomission', 'MonthComissionControll
 Route::get('funds/monthlycomission/monthcomission/GetInfo/{id}','MonthComissionController@GetInfo')->name('monthcomission.GetInfo');
 // Route::get('funds/monthlycomission/monthcomission/GetInfoMonth/{id}/{month}/{year}','MonthComissionController@GetInfoMonth')->name('monthcomission.GetInfoMonth');
 // Route::get('funds/monthlycomission/monthcomission/GetInfoLast/{id}/{month}/{year}','MonthComissionController@GetInfoLast')->name('monthcomission.GetInfoLast');
-Route::get('funds/monthlycomission/monthcomission/ExportPDF/{id}/{month}/{year}/{TC}','MonthComissionController@ExportPDF');
+Route::get('funds/monthlycomission/monthcomission/ExportPDF/{id}/{month}/{year}/{TC}/{regime}','MonthComissionController@ExportPDF');
 Route::post('funds/monthlycomission/monthcomission/GetInfoComition','MonthComissionController@GetInfoComition')->name('monthcomission.GetInfoComition');
 
 //---------------------------------------------------Comisiones 6 meses fondo mensual--------------------------------------------
 Route::resource('funds/fstmonthcomission/fstmonthcomission', 'FstMonthComissionController');
 Route::get('funds/fstmonthcomission/fstmonthcomission/GetInfo/{id}','FstMonthComissionController@GetInfo')->name('fstmonthcomission.GetInfo');
-Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDF/{id}/{month}/{year}/{TC}','FstMonthComissionController@ExportPDF');
+Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDF/{id}/{month}/{year}/{TC}/{regime}','FstMonthComissionController@ExportPDF');
+Route::get('funds/fstmonthcomission/fstmonthcomission/ExportPDFAll/{id}/{month}/{year}/{TC}/{regime}','FstMonthComissionController@ExportPDFAll');
 Route::post('funds/fstmonthcomission/fstmonthcomission/GetInfoComition','FstMonthComissionController@GetInfoComition')->name('fstmonthcomission.GetInfoComition');
-Route::put('funds/fstmonthcomission/fstmonthcomission/UpdateRegime','FstMonthComissionController@UpdateRegime')->name('fstmonthcomission.UpdateRegime');
 
 
 

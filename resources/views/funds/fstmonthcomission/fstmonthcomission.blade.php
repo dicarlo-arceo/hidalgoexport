@@ -29,6 +29,12 @@
                                             <input type="month" id="month" name="month" class="form-control">
                                         </div>
                                     </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Regimen</label> <br>
+                                            <input id = "onoffRegime" type="checkbox" data-toggle="toggle" data-on = "Regimen 1" data-off="Regimen 2" data-width="120" onchange=updateRegime()>
+                                        </div>
+                                    </div>
                                 </div>
                                 <br>
                                 <div class="row">
@@ -49,7 +55,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secundary" onclick="cancelarComision()">Cancelar</button>
-                        {{-- <button type="button" onclick="calcular()" class="btn btn-primary">Descargar todo PDF</button> --}}
+                        <button type="button" onclick="calcularAll()" class="btn btn-primary">Descargar todo PDF</button>
                         {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
                     </div>
                 </div>
@@ -116,7 +122,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secundary" onclick="cancelarCalc()">Cancelar</button>
-                        <button type="button" onclick="calcular()" class="btn btn-primary">Descargar Desglose PDF</button>
+                        {{-- <button type="button" onclick="calcular()" class="btn btn-primary">Descargar Desglose PDF</button> --}}
                         {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
                     </div>
                 </div>
