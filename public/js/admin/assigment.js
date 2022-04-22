@@ -75,7 +75,7 @@ function assignment(id)
             table.clear();
             result.data.forEach(function(valor, indice, array){
                 button = '<button type="button" class="btn btn-danger"'+
-                'onclick="delete_code_edit(this)"><i class="fa fa-trash mr-2"></i></button>';
+                'onclick="delete_code_edit('+ valor.id +')"><i class="fa fa-trash mr-2"></i></button>';
                 table.row.add([valor.id, valor.name + " " + valor.firstname + " " + valor.lastname, button]).node().id=valor.id;
             })
             table.draw(false);
@@ -109,4 +109,29 @@ function assignclient()
             window.location.reload(true);
         }
     })
+}
+function delete_code_edit(id)
+{
+    var route = "assigment/"+id;
+    var data = {
+        'id':id,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+    };
+    alertify.confirm("Eliminar asignación","¿Desea borrar la asignación del Cliente?",
+        function(){
+            jQuery.ajax({
+                url:route,
+                data: data,
+                type:'delete',
+                dataType:'json',
+                success:function(result)
+                {
+                    window.location.reload(true);
+                }
+            })
+            alertify.success('Eliminado');
+        },
+        function(){
+            alertify.error('Cancelado');
+    });
 }

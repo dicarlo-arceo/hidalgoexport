@@ -52,4 +52,13 @@ class AssigmentController extends Controller
         return response()->json(['status'=>true, "message"=>"Cliente asignado"]);
     }
 
+    public function destroy($id)
+    {
+        $client = Client::where('id',$id)->first();
+        // dd($client);
+        $client->fk_agent = NULL;
+        $client->save();
+        return response()->json(['status'=>true, "message"=>"cliente eliminado"]);
+
+    }
 }
