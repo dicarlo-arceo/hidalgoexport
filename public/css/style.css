@@ -63,13 +63,13 @@ a:focus {
     left: 0;
     height: 100vh;
     z-index: 999;
-    background: #cccccc;
+    background: #464545;
     color: #fff;
     transition: all 0.3s;
 }
 .centrado{
     text-align: center;
-    background: #cccccc !important;
+    background: #464545 !important;
   }
 
 #sidebar.active {
@@ -94,6 +94,7 @@ a:focus {
     padding: 10px;
     font-size: 1.1em;
     display: block;
+    color: white;
 }
 
 #sidebar ul li a:hover {
@@ -121,7 +122,7 @@ a[data-toggle="collapse"] {
 ul ul a {
     font-size: 0.9em !important;
     padding-left: 30px !important;
-    background: #cccccc;
+    background: #5e5b5b;
 }
 
 ul.CTAs {
