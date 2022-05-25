@@ -97,4 +97,23 @@ body {
 .card-header {
     background-color: rgba(41, 41, 41, 0.877) !important;
   }
+.btn-primary {
+color: #fff !important;
+background-color: #3fab34 !important;
+border-color: #3fab34 !important;
+}
+
+.btn-primary:hover {
+color: #fff !important;
+background-color: #33882a !important;
+border-color: #33882a !important;
+}
+
+.btn-primary:focus,
+.btn-primary.focus {
+color: #fff !important;
+background-color: #33882a !important;
+border-color: #33882a !important;
+box-shadow: 0 0 0 0.2rem rgba(82, 161, 225, 0.5) !important;
+}
 /*# sourceMappingURL=login.css.map */
