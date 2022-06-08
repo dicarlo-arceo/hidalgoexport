@@ -39,4 +39,9 @@ Route::resource('admin/permission/permissions', 'PermissionsController');
 Route::get('admin/permission/permissions/{id}/{id_seccion?}/{btn?}/{reference?}',[ 'uses' => 'PermissionsController@update_store', 'as' => 'admin.permission.update_store']);
 Route::post('admin/permission/permissions/update_store','PermissionsController@update_store')->name('permissions.update_store');
 
+// empresas
+Route::get('admin/enterprise/enterprises/GetInfo/{id}','EnterpriseController@GetInfo')->name('enterprise.GetInfo');
+Route::resource('admin/enterprise/enterprises', 'EnterpriseController');
+
+
 

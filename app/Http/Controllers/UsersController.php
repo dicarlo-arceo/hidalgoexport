@@ -6,12 +6,14 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Profile;
 use App\Permission;
+use App\Enterprise;
 
 class UsersController extends Controller
 {
     public function index(){
         $users = User::get();
         $profiles = Profile::pluck('name','id');
+        $enterprises = Enterprise::pluck('name','id');
         $profile = User::findProfile();
         $perm = Permission::permView($profile,3);
         $perm_btn =Permission::permBtns($profile,3);
@@ -22,7 +24,7 @@ class UsersController extends Controller
         }
         else
         {
-            return view('admin.users.user', compact('profiles','users','perm_btn'));
+            return view('admin.users.user', compact('profiles','users','perm_btn','enterprises'));
         }
 
     }
@@ -46,6 +48,7 @@ class UsersController extends Controller
         $user->lastname = $request->lastname;
         $user->cellphone = $request->cellphone;
         $user->fk_profile = $request->fk_profile;
+        $user->fk_enterprise = $request->fk_enterprise;
         $user->save();
         return response()->json(['status'=>true, 'message'=>'Usuario Creado']);
     }
@@ -58,14 +61,14 @@ class UsersController extends Controller
             $user = User::where('id',$request->id)
             ->update(['email'=>$request->email,
             'name'=>$request->name,'firstname'=>$request->firstname,'lastname'=>$request->lastname,
-            'cellphone'=>$request->cellphone,'fk_profile'=>$request->fk_profile]);
+            'cellphone'=>$request->cellphone,'fk_profile'=>$request->fk_profile,'fk_enterprise'=>$request->fk_enterprise]);
         }
         else
         {
             $user = User::where('id',$request->id)
             ->update(['email'=>$request->email,'password'=>bcrypt($request->password),
             'name'=>$request->name,'firstname'=>$request->firstname,'lastname'=>$request->lastname,
-            'cellphone'=>$request->cellphone,'fk_profile'=>$request->fk_profile]);
+            'cellphone'=>$request->cellphone,'fk_profile'=>$request->fk_profile,'fk_enterprise'=>$request->fk_enterprise]);
         }
         // dd($codes_edit);
         return response()->json(['status'=>true, 'message'=>"Usuario Actualizado"]);

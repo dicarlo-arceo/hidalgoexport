@@ -62,7 +62,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="">Perfil:</label>
-                                            <select name="selectProfile" id="selectProfile" class="form-select">
+                                            <select name="selectProfile" id="selectProfile" class="form-select" onchange="mostrarDivEmpresa()">
                                                 <option hidden selected>Selecciona una opción</option>
                                                 @foreach ($profiles as $id => $profile)
                                                     <option value='{{ $id }}'>{{ $profile }}</option>
@@ -71,6 +71,22 @@
                                         </div>
                                     </div>
 
+                                </div>
+
+                                <div id = "empresa" style = "display: none;">
+                                    <div class = "row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="">Empresa:</label>
+                                                <select name="selectEnterprise" id="selectEnterprise" class="form-select">
+                                                    <option hidden value = '{{0}}' selected>Selecciona una opción</option>
+                                                    @foreach ($enterprises as $id => $enterprise)
+                                                        <option value='{{ $id }}'>{{ $enterprise }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>

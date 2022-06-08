@@ -41,8 +41,15 @@ function guardarUsuario()
     var lastname = $("#lastname").val();
 
     var cellphone = $("#cellphone").val();
-    var fk_profile = $("#selectProfile").val();
+    var fk_enterprise = $("#selectEnterprise").val();
     var route = "user";
+
+    var fk_profile = $("#selectProfile").val();
+    if(fk_profile == 0)
+    {
+        fk_profile = null
+    }
+
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
         'email':email,
@@ -52,6 +59,7 @@ function guardarUsuario()
         'lastname':lastname,
         'cellphone':cellphone,
         'fk_profile':fk_profile,
+        'fk_enterprise':fk_enterprise,
     };
 
     jQuery.ajax({
@@ -73,6 +81,7 @@ function editarUsuario(id)
     idupdate=id;
 
     var route = baseUrl + '/GetInfo/'+id;
+    var asegurado = document.getElementById("empresa1");
     // alert(route);
     jQuery.ajax({
         url:route,
@@ -87,7 +96,18 @@ function editarUsuario(id)
             $("#lastname1").val(result.data.lastname);
             $("#cellphone1").val(result.data.cellphone);
             $("#selectProfile1").val(result.data.fk_profile);
+            $("#selectEnterprise1").val(result.data.fk_enterprise);
+            if(result.data.fk_profile == 61)
+            {
+                asegurado.style.display = ""
+            }
+            else
+            {
+
+                asegurado.style.display = "none"
+            }
             $("#myModaledit").modal('show');
+
         }
     })
 }
@@ -108,6 +128,8 @@ function actualizarUsuario()
 
     var cellphone = $("#cellphone1").val();
     var fk_profile = $("#selectProfile1").val();
+    var fk_enterprise = $("#selectEnterprise1").val();
+
     var route = "user/"+idupdate;
     var data = {
         'id':idupdate,
@@ -119,6 +141,7 @@ function actualizarUsuario()
         'lastname':lastname,
         'cellphone':cellphone,
         'fk_profile':fk_profile,
+        'fk_enterprise':fk_enterprise,
     };
     jQuery.ajax({
         url:route,
@@ -158,3 +181,33 @@ function eliminarUsuario(id)
             alertify.error('Cancelado');
     });
 }
+
+function mostrarDivEmpresa()
+{
+    var fk_profile = $("#selectProfile").val();
+    var asegurado = document.getElementById("empresa");
+    if(fk_profile == 61)
+    {
+        asegurado.style.display = ""
+    }
+    else
+    {
+
+        asegurado.style.display = "none"
+    }
+}
+function mostrarDivEmpresa1()
+{
+    var fk_profile = $("#selectProfile1").val();
+    var asegurado = document.getElementById("empresa1");
+    if(fk_profile == 61)
+    {
+        asegurado.style.display = ""
+    }
+    else
+    {
+
+        asegurado.style.display = "none"
+    }
+}
+
