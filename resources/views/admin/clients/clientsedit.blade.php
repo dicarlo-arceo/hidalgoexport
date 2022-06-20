@@ -3,7 +3,7 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <h4 class="modal-title" id="gridModalLabek">Registro de Usuarios</h4>
+                <h4 class="modal-title" id="gridModalLabek">Registro de Clientes</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
 
@@ -56,11 +56,11 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="">Perfil:</label>
-                                    <select name="selectProfile1" id="selectProfile1" class="form-select">
-                                        <option hidden selected>Selecciona una opción</option>
-                                        @foreach ($profiles as $id => $profile)
-                                            <option value='{{ $id }}'>{{ $profile }}</option>
+                                    <label for="">Empresa:</label>
+                                    <select name="selectEnterprise1" id="selectEnterprise1" class="form-select">
+                                        <option hidden value = '{{0}}' selected>Selecciona una opción</option>
+                                        @foreach ($enterprises as $id => $enterprise)
+                                            <option value='{{ $id }}'>{{ $enterprise }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -71,8 +71,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" onclick="cancelarUsuario()" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
-                <button type="button" onclick="actualizarUsuario()" class="btn btn-primary">Guardar</button>
+                <button type="button" onclick="cancelarCliente()" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
+                <button type="button" onclick="actualizarCliente()" class="btn btn-primary">Guardar</button>
             </div>
         </div>
     </div>

@@ -31,7 +31,7 @@
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{$padres->id}}" data-padre="{{$padre = $padres->id}}">{{$padres->section}}</a>
+                    <a class="sinFondo" data-toggle="collapse" data-parent="#accordion" href="#collapse{{$padres->id}}" data-padre="{{$padre = $padres->id}}">{{$padres->section}}</a>
                 </h4>
             </div>
             <div id="collapse{{$padres->id}}" class="collapse">

@@ -1,6 +1,6 @@
 @extends('home')
 @section('content')
-    <div class="text-center"><h1>Catálogo de Usuarios</h1></div>
+    <div class="text-center"><h1>Catálogo de Clientes</h1></div>
     <div style="max-width: 1200px; margin: auto;">
         {{-- modal| --}}
         <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
@@ -8,7 +8,7 @@
                 <div class="modal-content">
 
                     <div class="modal-header">
-                        <h4 class="modal-title" id="gridModalLabek">Registro de Usuarios</h4>
+                        <h4 class="modal-title" id="gridModalLabek">Registro de Clientes</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
 
@@ -61,13 +61,13 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="">Perfil:</label>
-                                            <select name="selectProfile" id="selectProfile" class="form-select" onchange="mostrarDivEmpresa()">
-                                                <option hidden selected>Selecciona una opción</option>
-                                                @foreach ($profiles as $id => $profile)
-                                                    <option value='{{ $id }}'>{{ $profile }}</option>
-                                                @endforeach
-                                            </select>
+                                            <label for="">Empresa:</label>
+                                                <select name="selectEnterprise" id="selectEnterprise" class="form-select">
+                                                    <option hidden value = '{{0}}' selected>Selecciona una opción</option>
+                                                    @foreach ($enterprises as $id => $enterprise)
+                                                        <option value='{{ $id }}'>{{ $enterprise }}</option>
+                                                    @endforeach
+                                                </select>
                                         </div>
                                     </div>
 
@@ -78,13 +78,13 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
-                        <button type="button" onclick="guardarUsuario()" class="btn btn-primary">Guardar</button>
+                        <button type="button" onclick="guardarCliente()" class="btn btn-primary">Guardar</button>
                     </div>
                 </div>
             </div>
         </div>
         {{-- fin modal| --}}
-        @include('admin.users.usersedit')
+        @include('admin.clients.clientsedit')
         {{-- Inicia pantalla de inicio --}}
         <div class="bd-example bd-example-padded-bottom">
             @if($perm_btn['addition']==1)
@@ -110,10 +110,10 @@
                             @if ($perm_btn['erase']==1 || $perm_btn['modify']==1)
                                 <td>
                                     @if ($perm_btn['modify']==1)
-                                        <a href="#|" class="btn btn-warning" onclick="editarUsuario({{$user->id}})" >Editar</a>
+                                        <a href="#|" class="btn btn-warning" onclick="editarCliente({{$user->id}})" >Editar</a>
                                     @endif
                                     @if ($perm_btn['erase']==1)
-                                        <a href="#|" class="btn btn-danger" onclick="eliminarUsuario({{$user->id}})">Eliminar</a>
+                                        <a href="#|" class="btn btn-danger" onclick="eliminarCliente({{$user->id}})">Eliminar</a>
                                     @endif
                                 </td>
                             @endif
@@ -125,7 +125,7 @@
     </div>
 @endsection
 @push('head')
-    <script src="{{URL::asset('js/admin/users.js')}}"></script>
+    <script src="{{URL::asset('js/admin/clients.js')}}"></script>
 @endpush
 
 

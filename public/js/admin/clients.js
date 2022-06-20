@@ -31,7 +31,7 @@ $(document).ready( function () {
     });
 } );
 
-function guardarUsuario()
+function guardarCliente()
 {
     var email = $("#email").val();
     var password = $("#password").val();
@@ -41,13 +41,9 @@ function guardarUsuario()
     var lastname = $("#lastname").val();
 
     var cellphone = $("#cellphone").val();
-    var route = "user";
+    var route = "client";
 
-    var fk_profile = $("#selectProfile").val();
-    if(fk_profile == 0)
-    {
-        fk_profile = null
-    }
+    var fk_enterprise = $("#selectEnterprise").val();
 
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -57,7 +53,8 @@ function guardarUsuario()
         'firstname':firstname,
         'lastname':lastname,
         'cellphone':cellphone,
-        'fk_profile':fk_profile,
+        'fk_profile':61,
+        'fk_enterprise':fk_enterprise,
     };
 
     jQuery.ajax({
@@ -74,7 +71,7 @@ function guardarUsuario()
     })
 }
 var idupdate = 0;
-function editarUsuario(id)
+function editarCliente(id)
 {
     idupdate=id;
 
@@ -92,19 +89,19 @@ function editarUsuario(id)
             $("#firstname1").val(result.data.firstname);
             $("#lastname1").val(result.data.lastname);
             $("#cellphone1").val(result.data.cellphone);
-            $("#selectProfile1").val(result.data.fk_profile);
+            $("#selectEnterprise1").val(result.data.fk_enterprise);
             $("#myModaledit").modal('show');
 
         }
     })
 }
 
-function cancelarUsuario()
+function cancelarCliente()
 {
     $("#myModaledit").modal('hide');
 
 }
-function actualizarUsuario()
+function actualizarCliente()
 {
     var email = $("#email1").val();
     var password = $("#password1").val();
@@ -114,9 +111,9 @@ function actualizarUsuario()
     var lastname = $("#lastname1").val();
 
     var cellphone = $("#cellphone1").val();
-    var fk_profile = $("#selectProfile1").val();
+    var fk_enterprise = $("#selectEnterprise1").val();
 
-    var route = "user/"+idupdate;
+    var route = "client/"+idupdate;
     var data = {
         'id':idupdate,
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -126,7 +123,7 @@ function actualizarUsuario()
         'firstname':firstname,
         'lastname':lastname,
         'cellphone':cellphone,
-        'fk_profile':fk_profile,
+        'fk_enterprise':fk_enterprise,
     };
     jQuery.ajax({
         url:route,
@@ -141,14 +138,14 @@ function actualizarUsuario()
         }
     })
 }
-function eliminarUsuario(id)
+function eliminarCliente(id)
 {
-    var route = "user/"+id;
+    var route = "client/"+id;
     var data = {
         'id':id,
         "_token": $("meta[name='csrf-token']").attr("content"),
     };
-    alertify.confirm("Eliminar Usuario","¿Desea borrar el Usuario?",
+    alertify.confirm("Eliminar Cliente","¿Desea borrar el Cliente?",
         function(){
             jQuery.ajax({
                 url:route,

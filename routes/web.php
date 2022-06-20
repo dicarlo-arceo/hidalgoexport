@@ -34,6 +34,10 @@ Route::resource('admin/pruebas/prueba', 'PruebasController');
 Route::resource('admin/users/user', 'UsersController');
 Route::get('admin/users/user/GetInfo/{id}','UsersController@GetInfo')->name('user.GetInfo');
 
+// clientes
+Route::resource('admin/clients/client', 'ClientsController');
+Route::get('admin/clients/client/GetInfo/{id}','ClientsController@GetInfo')->name('client.GetInfo');
+
 // permisos
 Route::resource('admin/permission/permissions', 'PermissionsController');
 Route::get('admin/permission/permissions/{id}/{id_seccion?}/{btn?}/{reference?}',[ 'uses' => 'PermissionsController@update_store', 'as' => 'admin.permission.update_store']);
