@@ -2,7 +2,7 @@
 @section('content')
     <div class="text-center"><h1>Catálogo de Clientes</h1></div>
     <div style="max-width: 1200px; margin: auto;">
-        {{-- modal| --}}
+        {{-- modal nuevo --}}
         <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
@@ -84,6 +84,58 @@
             </div>
         </div>
         {{-- fin modal| --}}
+        {{-- modal orden --}}
+        <div id="orderModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Nuevo orden</h4>
+                        <button type="button" class="close" onclick="cerrarOrden()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Número de Orden</label>
+                                            <input type="text" id="order" name="order" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label for="">Proyecto: </label>
+                                        <select name="selectProject" id="selectProject" class="form-select">
+                                            <option hidden selected>Selecciona una opción</option>
+                                            @foreach ($projects as $id => $project)
+                                                <option value='{{ $id }}'>{{ $project }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-12" >
+                                        <div class="form-group">
+                                            <label for="">Dirección: </label>
+                                            <textarea name="address" id="address" class = "form-control", rows = "3"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cerrarOrden()">Cancelar</button>
+                        <button type="button" onclick="guardarOrden()" class="btn btn-primary">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- fin modal --}}
         @include('admin.clients.clientsedit')
         {{-- Inicia pantalla de inicio --}}
         <div class="bd-example bd-example-padded-bottom">
@@ -110,6 +162,7 @@
                             @if ($perm_btn['erase']==1 || $perm_btn['modify']==1)
                                 <td>
                                     @if ($perm_btn['modify']==1)
+                                        <a href="#|" class="btn btn-primary" onclick="nuevaOrden({{$user->id}})" >Nueva Orden</a>
                                         <a href="#|" class="btn btn-warning" onclick="editarCliente({{$user->id}})" >Editar</a>
                                     @endif
                                     @if ($perm_btn['erase']==1)

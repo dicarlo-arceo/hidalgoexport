@@ -37,6 +37,7 @@ Route::get('admin/users/user/GetInfo/{id}','UsersController@GetInfo')->name('use
 // clientes
 Route::resource('admin/clients/client', 'ClientsController');
 Route::get('admin/clients/client/GetInfo/{id}','ClientsController@GetInfo')->name('client.GetInfo');
+Route::post('admin/clients/client/SaveOrder','ClientsController@SaveOrder')->name('client.SaveOrder');
 
 // permisos
 Route::resource('admin/permission/permissions', 'PermissionsController');
@@ -47,5 +48,18 @@ Route::post('admin/permission/permissions/update_store','PermissionsController@u
 Route::get('admin/enterprise/enterprises/GetInfo/{id}','EnterpriseController@GetInfo')->name('enterprise.GetInfo');
 Route::resource('admin/enterprise/enterprises', 'EnterpriseController');
 
+// proyectos
+Route::get('admin/project/projects/GetInfo/{id}','ProjectsController@GetInfo')->name('projects.GetInfo');
+Route::resource('admin/project/projects', 'ProjectsController');
 
+//------------------------------------------------Procesos---------------------------------------------
+// ordenes
+Route::get('processes/order/orders/GetInfo/{id}','OrdersController@GetInfo')->name('orders.GetInfo');
+Route::get('processes/order/orders/GetInfoOrder/{id}','OrdersController@GetInfoOrder')->name('orders.GetInfoOrder');
+Route::get('processes/order/orders/GetInfoItem/{id}','OrdersController@GetInfoItem')->name('orders.GetInfoItem');
+Route::resource('processes/order/orders', 'OrdersController');
+Route::delete('processes/order/orders/DeleteItem/{id}/{idOrder}', 'OrdersController@DeleteItem')->name('orders.DeleteItem');
+Route::post('processes/order/orders/updateStatus', 'OrdersController@updateStatus')->name('orders.updateStatus');
+Route::post('processes/order/orders/updateItem', 'OrdersController@updateItem')->name('orders.updateItem');
+Route::get('processes/order/orders/GetinfoStatus/{id}', 'OrdersController@GetinfoStatus')->name('orders.GetinfoStatus');
 

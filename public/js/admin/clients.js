@@ -163,4 +163,43 @@ function eliminarCliente(id)
             alertify.error('Cancelado');
     });
 }
+idOrder = 0;
+function nuevaOrden(id)
+{
+    idOrder=id;
+    $("#orderModal").modal('show');
+}
+function cerrarOrden()
+{
+    $("#orderModal").modal('hide');
+}
+function guardarOrden()
+{
+    var order_number = $("#order").val();
+    var fk_project = $("#selectProject").val();
+    var address = $("#address").val();
+
+    var route = baseUrl + '/SaveOrder';
+    // alert(route);
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'order_number':order_number,
+        'fk_project':fk_project,
+        'fk_user':idOrder,
+        'address':address,
+    };
+    // console.log(data);
+    jQuery.ajax({
+        url:route,
+        type:"post",
+        data: data,
+        dataType: 'json',
+        success:function(result)
+        {
+            alertify.success(result.message);
+            $("#myModal").modal('hide');
+            window.location.reload(true);
+        }
+    })
+}
 

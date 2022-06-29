@@ -7,15 +7,18 @@ use App\User;
 use App\Profile;
 use App\Permission;
 use App\Enterprise;
+use App\Project;
+use App\Order;
 
 class ClientsController extends Controller
 {
     public function index(){
         $users = User::where('fk_profile','=','61')->get();
         $enterprises = Enterprise::pluck('name','id');
+        $projects = Project::pluck('name','id');
         $profile = User::findProfile();
-        $perm = Permission::permView($profile,3);
-        $perm_btn =Permission::permBtns($profile,3);
+        $perm = Permission::permView($profile,24);
+        $perm_btn =Permission::permBtns($profile,24);
         // dd($perm_btn);
         if($perm==0)
         {
@@ -23,7 +26,7 @@ class ClientsController extends Controller
         }
         else
         {
-            return view('admin.clients.client', compact('users','perm_btn','enterprises'));
+            return view('admin.clients.client', compact('users','perm_btn','enterprises','projects'));
         }
 
     }
@@ -79,5 +82,16 @@ class ClientsController extends Controller
         $user->delete();
         return response()->json(['status'=>true, "message"=>"Cliente eliminado"]);
 
+    }
+    public function SaveOrder(Request $request)
+    {
+        $order = new Order;
+        $order->order_number = $request->order_number;
+        $order->fk_project = $request->fk_project;
+        $order->fk_user = $request->fk_user;
+        $order->address = $request->address;
+        $order->save();
+        // dd("entre");
+        return response()->json(["status"=>true, "message"=>"Orden creada"]);
     }
 }
