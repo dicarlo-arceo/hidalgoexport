@@ -1,5 +1,9 @@
 <div id="myEstatusModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
+        {{-- <form action="orders/updateStatus" enctype="multipart/form-data" method="POST">
+            @csrf
+            <input type="text" id="id" name="id" hidden> --}}
+
         <div class="modal-content">
 
             <div class="modal-header">
@@ -31,15 +35,45 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row" id = "fileInput" style = "display: none;">
+                            <div class="col-md-12" >
+                                <div class="form-group">
+                                    <label for="">Imagen: </label>
+                                    <input type="file" name="imagen" id="imagen" class="form-control" accept="image/*"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div id = "imgShow" style = "display: none;">
+                            <div class="row">
+                                <div class="col-md-12" >
+                                    <div class="form-group">
+                                        <a id = "dwnldImg" title="ImageName">
+                                            <img id = "statusImg" class="img-thumbnail"/>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" >
+                                    <div class="form-group">
+                                        @if($perm_btn['modify']==1)
+                                            <button type="button" onclick="deleteFile()" class="btn btn-danger">Eliminar Imagen</button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" onclick="cerrarEstatus()" class="btn btn-secundary">Cancelar</button>
                 @if($perm_btn['modify']==1)
+                    {{-- <button type="submit" class="btn btn-primary">Guardar</button> --}}
                     <button type="button" onclick="actualizarEstatus()" class="btn btn-primary">Guardar</button>
                 @endif
             </div>
+        {{-- </form> --}}
         </div>
     </div>
 </div>

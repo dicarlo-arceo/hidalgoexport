@@ -10,6 +10,8 @@ use App\Order;
 use App\Item;
 use App\Project;
 use App\Status;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 use DB;
 
 class OrdersController extends Controller
@@ -55,6 +57,7 @@ class OrdersController extends Controller
         ->join('Status',"Status.id","=","fk_status")
         ->where('fk_order',$id)
         ->whereNull('Items.deleted_at')->get();
+        // dd($items);
         return response()->json(['status'=>true, "data"=>$items]);
     }
     public function store(Request $request)
@@ -112,11 +115,26 @@ class OrdersController extends Controller
     }
     public function updateStatus(Request $request)
     {
-        // dd($request->all());
         $status = Item::where('id',$request->id)->first();
         // dd($status);
         $status->fk_status = $request->status;
         $status->commentary=$request->commentary;
+        // dd($request);
+
+        if($request->hasFile("imagen")){
+
+            $imagen = $request->file("imagen");
+            $nombreimagen = "Item_".Str::slug($request->id)."_Orden_".Str::slug($request->idOrder).".".$imagen->guessExtension();
+            $ruta = public_path("img/itemsStatus/");
+
+            //$imagen->move($ruta,$nombreimagen);
+            copy($imagen->getRealPath(),$ruta.$nombreimagen);
+
+            $status->image = $nombreimagen;
+
+        }
+        // dd($status);
+
         $status->save();
 
         $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
@@ -124,6 +142,8 @@ class OrdersController extends Controller
         ->join('Orders',"Orders.id","=","fk_order")
         ->where('fk_order',$request->idOrder)
         ->whereNull('Items.deleted_at')->get();
+        // dd($items);
+        // return;
         return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$items]);
     }
 
@@ -155,5 +175,45 @@ class OrdersController extends Controller
 
         // dd($items);
         return response()->json(['status'=>true, 'message'=>"Orden Actualizada", "data"=>$items]);
+    }
+    public function updateOrder(Request $request)
+    {
+        // dd($request);
+        if($request->flag == 1)
+        {
+            $order = Order::where('id',$request->id)
+            ->update(['exc_rate'=>$request->exc_rate]);
+        }
+        else if($request->flag == 2)
+        {
+            $order = Order::where('id',$request->id)
+            ->update(['percentage'=>$request->percentage]);
+        }
+        else if ($request->flag == 3)
+        {
+            $order = Order::where('id',$request->id)
+            ->update(['expenses'=>$request->expenses]);
+        }
+        else if ($request->flag == 4)
+        {
+            $order = Order::where('id',$request->id)
+            ->update(['currency'=>$request->currency]);
+        }
+
+        // dd($items);
+        return response()->json(['status'=>true, 'message'=>"Orden Actualizada"]);
+    }
+    public function deleteFile(Request $request)
+    {
+        $image_path = public_path()."/img/itemsStatus/".$request->imgName;
+        if (File::exists($image_path)) {
+            File::delete($image_path);
+            // unlink($image_path);
+        }
+        $item = Item::where('id',$request->id)->first();
+        $item->image = null;
+        $item->save();
+
+        return response()->json(['status'=>true, 'message'=>"Imagen Eliminada"]);
     }
 }

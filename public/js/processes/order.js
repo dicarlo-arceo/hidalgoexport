@@ -74,6 +74,45 @@ function formatToCurrency(amount){
 idOrder = 0;
 profileOrder = 0;
 cellar = 0;
+
+function refreshTable(result)
+{
+    var table = $('#tbProf1').DataTable();
+    table.clear();
+    cellar = 0;
+    if(profileOrder != 61)
+    {
+        result.data.forEach( function(valor, indice, array) {
+            btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
+            btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
+            table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
+                formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
+            cellar += valor.total_price;
+        });
+    }
+    else
+    {
+        result.data.forEach( function(valor, indice, array) {
+            btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
+            table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
+                formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
+            cellar += valor.total_price;
+        });
+    }
+    $("#dlls").val(result.data[0].exc_rate);
+    $("#percent").val(result.data[0].percentage);
+    $("#exp").val(result.data[0].expenses);
+    $("#onoffCurrency").prop('disabled', false);
+    if(result.data[0].currency == 1)
+        $("#onoffCurrency").bootstrapToggle('on');
+    else
+        $("#onoffCurrency").bootstrapToggle('off');
+    if(profileOrder == 61)
+        $("#onoffCurrency").prop('disabled', true);
+    calculoTotales();
+    table.draw(false);
+}
+
 function nuevoItem(id,profile)
 {
     idOrder = id;
@@ -91,41 +130,12 @@ function nuevoItem(id,profile)
         dataType:'json',
         success:function(result)
         {
-            table.clear();
-            cellar = 0;
-            if(profile != 61)
-            {
-                result.data.forEach( function(valor, indice, array) {
-                    btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
-                    btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                    table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
-                        formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
-                    cellar += valor.total_price;
-                });
-            }
-            else
-            {
-                result.data.forEach( function(valor, indice, array) {
-                    btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                    table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
-                        formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
-                    cellar += valor.total_price;
-                });
-            }
-            comition = cellar * .225;
-            mxn_total = comition * parseFloat($("#dlls").val());
-            iva = mxn_total * 0.16;
-            mxn_invoice = mxn_total + iva;
-            $("#cellar").val(formatter.format(cellar));
-            $("#comition").val(formatter.format(comition));
-            $("#net_mxn").val(formatter.format(mxn_total));
-            $("#iva").val(formatter.format(iva));
-            $("#total_invoice").val(formatter.format(mxn_invoice));
-            table.draw(false);
+            refreshTable(result);
         }
     })
     $("#myModal2").modal('show');
 }
+
 function cancelarItem()
 {
     $("#myModal2").modal('hide');
@@ -170,37 +180,7 @@ function guardarItem()
         dataType:'json',
         success:function(result)
         {
-            table.clear();
-            cellar = 0;
-            if(profileOrder != 61)
-            {
-                result.data.forEach( function(valor, indice, array) {
-                    btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
-                    btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                    table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
-                        formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
-                    cellar += valor.total_price;
-                });
-            }
-            else
-            {
-                result.data.forEach( function(valor, indice, array) {
-                    btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                    table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
-                        formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
-                    cellar += valor.total_price;
-                });
-            }
-            comition = cellar * .225;
-            mxn_total = comition * parseFloat($("#dlls").val());
-            iva = mxn_total * 0.16;
-            mxn_invoice = mxn_total + iva;
-            $("#cellar").val(formatter.format(cellar));
-            $("#comition").val(formatter.format(comition));
-            $("#net_mxn").val(formatter.format(mxn_total));
-            $("#iva").val(formatter.format(iva));
-            $("#total_invoice").val(formatter.format(mxn_invoice));
-            table.draw(false);
+            refreshTable(result);
             $("#myModal").modal('hide');
             alertify.success(result.message);
         }
@@ -323,37 +303,8 @@ function deleteItem(id)
                 dataType:'json',
                 success:function(result)
                 {
-                    table.clear();
-                    cellar = 0;
-                    if(profileOrder != 61)
-                    {
-                        result.data.forEach( function(valor, indice, array) {
-                            btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
-                            btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                            table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
-                                formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
-                            cellar += valor.total_price;
-                        });
-                    }
-                    else
-                    {
-                        result.data.forEach( function(valor, indice, array) {
-                            btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                            table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
-                                formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
-                            cellar += valor.total_price;
-                        });
-                    }
-                    comition = cellar * .225;
-                    mxn_total = comition * parseFloat($("#dlls").val());
-                    iva = mxn_total * 0.16;
-                    mxn_invoice = mxn_total + iva;
-                    $("#cellar").val(formatter.format(cellar));
-                    $("#comition").val(formatter.format(comition));
-                    $("#net_mxn").val(formatter.format(mxn_total));
-                    $("#iva").val(formatter.format(iva));
-                    $("#total_invoice").val(formatter.format(mxn_invoice));
-                    table.draw(false);
+                    refreshTable(result);
+                    alertify.success(result.message);
                     $("#myModal").modal('hide');
                 }
             })
@@ -362,47 +313,19 @@ function deleteItem(id)
             alertify.error('Cancelado');
     });
 }
-function calculoTotales()
+function calculoDlls()
 {
-    comition = cellar * .225;
-    mxn_total = comition * parseFloat($("#dlls").val());
-    iva = mxn_total * 0.16;
-    mxn_invoice = mxn_total + iva;
-    $("#cellar").val(formatter.format(cellar));
-    $("#comition").val(formatter.format(comition));
-    $("#net_mxn").val(formatter.format(mxn_total));
-    $("#iva").val(formatter.format(iva));
-    $("#total_invoice").val(formatter.format(mxn_invoice));
-}
-function opcionesEstatus(id,statusId)
-{
-    id_item=id;
-    var route = baseUrl+'/GetinfoStatus/'+id_item;
-    jQuery.ajax({
-        url:route,
-        type:'get',
-        dataType:'json',
-        success:function(result){
-            $("#selectStatus").val(statusId);
-            $("#commentary").val(result.data.commentary);
-            $("#myEstatusModal").modal('show');
-        }
-    })
-}
-function actualizarEstatus()
-{
-    var status = $("#selectStatus").val();
-    var sub_status = $("#selectSubEstatus").val();
-    var commentary = $("#commentary").val();
-    var table = $('#tbProf1').DataTable();
-    var route = baseUrl+"/updateStatus";
+    if($("#dlls").val() == "")
+        $("#dlls").val(0);
+
+    var exc_rate = parseFloat($("#dlls").val());
+
+    var route = baseUrl+'/updateOrder';
     var data = {
-        'id':id_item,
-        'idOrder':idOrder,
+        'id':idOrder,
         "_token": $("meta[name='csrf-token']").attr("content"),
-        'status':status,
-        "sub_status":sub_status,
-        "commentary":commentary
+        'exc_rate':exc_rate,
+        'flag':1,
     };
     jQuery.ajax({
         url:route,
@@ -411,37 +334,201 @@ function actualizarEstatus()
         dataType:'json',
         success:function(result)
         {
-            table.clear();
-            cellar = 0;
-            if(profileOrder != 61)
+        }
+    })
+
+    calculoTotales();
+}
+function calculoPerc()
+{
+    if($("#percent").val() == "")
+        $("#percent").val(0);
+
+    var percent = parseFloat($("#percent").val());
+
+    var route = baseUrl+'/updateOrder';
+    var data = {
+        'id':idOrder,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'percentage':percent,
+        'flag':2,
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+        }
+    })
+
+    calculoTotales();
+}
+function calculoExp()
+{
+    if($("#exp").val() == "")
+        $("#exp").val(0);
+
+    var expenses = parseFloat($("#exp").val());
+
+    var route = baseUrl+'/updateOrder';
+    var data = {
+        'id':idOrder,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'expenses':expenses,
+        'flag':3,
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+        }
+    })
+
+    calculoTotales();
+}
+function calculoCurrency()
+{
+    var curr = $("#onoffCurrency").prop('checked');
+    var currency = 0;
+    if(curr)
+        currency = 1;
+    else
+        currency = 2;
+
+    var route = baseUrl+'/updateOrder';
+    var data = {
+        'id':idOrder,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'currency':currency,
+        'flag':4,
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+        }
+    })
+
+    calculoTotales();
+}
+function calculoTotales()
+{
+    mxn_total = 0;
+    var curr = $("#onoffCurrency").prop('checked');
+
+    comition = cellar * parseFloat($("#percent").val())/100;
+
+    if(curr)
+        comition += parseFloat($("#exp").val());
+    else
+        mxn_total += parseFloat($("#exp").val());
+
+    mxn_total += comition * parseFloat($("#dlls").val());
+    iva = mxn_total * 0.16;
+    mxn_invoice = mxn_total + iva;
+
+    $("#cellar").val(formatter.format(cellar));
+    $("#comition").val(formatter.format(comition));
+    $("#net_mxn").val(formatter.format(mxn_total));
+    $("#iva").val(formatter.format(iva));
+    $("#total_invoice").val(formatter.format(mxn_invoice));
+}
+imgName = "";
+function opcionesEstatus(id,statusId)
+{
+    id_item=id;
+    var fileInput = document.getElementById("fileInput");
+    var imgShow = document.getElementById("imgShow");
+    $('#imagen').val('');
+    var route = baseUrl+'/GetinfoStatus/'+id_item;
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result){
+            $("#selectStatus").val(statusId);
+            $("#commentary").val(result.data.commentary);
+            // $("#id").val(id);
+            if(result.data.image != null)
             {
-                result.data.forEach( function(valor, indice, array) {
-                    btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
-                    btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                    table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
-                        formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
-                    cellar += valor.total_price;
-                });
+                fileInput.style.display = "none";
+                imgShow.style.display = "";
+                $("#statusImg").attr("src","/img/itemsStatus/"+result.data.image);
+                $("#dwnldImg").attr("href","/img/itemsStatus/"+result.data.image);
+                $("#dwnldImg").attr("download",result.data.image);
+                imgName = result.data.image;
             }
             else
             {
-                result.data.forEach( function(valor, indice, array) {
-                    btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                    table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
-                        formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
-                    cellar += valor.total_price;
-                });
+                fileInput.style.display = "";
+                imgShow.style.display = "none";
             }
-            comition = cellar * .225;
-            mxn_total = comition * parseFloat($("#dlls").val());
-            iva = mxn_total * 0.16;
-            mxn_invoice = mxn_total + iva;
-            $("#cellar").val(formatter.format(cellar));
-            $("#comition").val(formatter.format(comition));
-            $("#net_mxn").val(formatter.format(mxn_total));
-            $("#iva").val(formatter.format(iva));
-            $("#total_invoice").val(formatter.format(mxn_invoice));
-            table.draw(false);
+            $("#myEstatusModal").modal('show');
+        }
+    })
+}
+function actualizarEstatus()
+{
+    var status = $("#selectStatus").val();
+    var commentary = $("#commentary").val();
+    var table = $('#tbProf1').DataTable();
+
+    var formData = new FormData();
+    var files = $('input[type=file]');
+    for (var i = 0; i < files.length; i++) {
+        if (files[i].value == "" || files[i].value == null)
+        {
+            // console.log(files.length);
+            // return false;
+        }
+        else
+        {
+            formData.append(files[i].name, files[i].files[0]);
+        }
+    }
+    // console.log("entre");
+    var formSerializeArray = $("#Form").serializeArray();
+    for (var i = 0; i < formSerializeArray.length; i++) {
+        formData.append(formSerializeArray[i].name, formSerializeArray[i].value)
+    }
+
+    // var $file = document.getElementById('imagen'),
+    // formData = new FormData();
+
+    // if ($file != null)
+    // {
+    //     for (var i = 0; i < $file.files.length; i++)
+    //     {
+    //         formData.append('file-' + i, $file.files[i]);
+    //     }
+    // }
+
+    formData.append('_token', $("meta[name='csrf-token']").attr("content"));
+    formData.append('status', status);
+    formData.append('id', id_item);
+    formData.append('idOrder', idOrder);
+    formData.append('commentary', commentary);
+
+    var route = baseUrl+"/updateStatus";
+
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:formData,
+        contentType: false,
+        processData: false,
+        cache: false,
+        success:function(result)
+        {
+            refreshTable(result);
             alertify.success(result.message);
             $("#myEstatusModal").modal('hide');
 
@@ -513,37 +600,7 @@ function actualizarItem()
         dataType:'json',
         success:function(result)
         {
-            table.clear();
-            cellar = 0;
-            if(profileOrder != 61)
-            {
-                result.data.forEach( function(valor, indice, array) {
-                    btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
-                    btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                    table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
-                        formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
-                    cellar += valor.total_price;
-                });
-            }
-            else
-            {
-                result.data.forEach( function(valor, indice, array) {
-                    btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                    table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
-                        formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
-                    cellar += valor.total_price;
-                });
-            }
-            comition = cellar * .225;
-            mxn_total = comition * parseFloat($("#dlls").val());
-            iva = mxn_total * 0.16;
-            mxn_invoice = mxn_total + iva;
-            $("#cellar").val(formatter.format(cellar));
-            $("#comition").val(formatter.format(comition));
-            $("#net_mxn").val(formatter.format(mxn_total));
-            $("#iva").val(formatter.format(iva));
-            $("#total_invoice").val(formatter.format(mxn_invoice));
-            table.draw(false);
+            refreshTable(result);
             $("#myModalEdit").modal('hide');
             alertify.success(result.message);
         }
@@ -573,4 +630,27 @@ function calculo1(){
     var temp = existence * net_price;
 
     $("#total_price1").val(formatToCurrency(temp));
+}
+function deleteFile()
+{
+    var fileInput = document.getElementById("fileInput");
+    var imgShow = document.getElementById("imgShow");
+    var route = baseUrl + '/deleteFile';
+    var data = {
+        'id':id_item,
+        'imgName':imgName,
+        "_token": $("meta[name='csrf-token']").attr("content")
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            fileInput.style.display = "";
+            imgShow.style.display = "none";
+            alertify.success(result.message);
+        }
+    })
 }

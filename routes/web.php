@@ -61,5 +61,7 @@ Route::resource('processes/order/orders', 'OrdersController');
 Route::delete('processes/order/orders/DeleteItem/{id}/{idOrder}', 'OrdersController@DeleteItem')->name('orders.DeleteItem');
 Route::post('processes/order/orders/updateStatus', 'OrdersController@updateStatus')->name('orders.updateStatus');
 Route::post('processes/order/orders/updateItem', 'OrdersController@updateItem')->name('orders.updateItem');
+Route::post('processes/order/orders/updateOrder', 'OrdersController@updateOrder')->name('orders.updateOrder');
+Route::post('processes/order/orders/deleteFile', 'OrdersController@deleteFile')->name('orders.deleteFile');
 Route::get('processes/order/orders/GetinfoStatus/{id}', 'OrdersController@GetinfoStatus')->name('orders.GetinfoStatus');
 

@@ -10,6 +10,6 @@ class Order extends Model
     use SoftDeletes;
 
     protected $table = "Orders";
-    protected $fillable =["order_number","address","fk_project","fk_user"];
+    protected $fillable =["order_number","address","fk_project","fk_user","exc_rate","percentage","expenses","currency"];
     protected $dates = ["deleted_at"];
 }

@@ -42,13 +42,45 @@
                             </div>
                             <div class = "col-lg-12">
                                 <div class = "row">
-                                    <div class = "col-lg-4">
+                                    <div class = "col-lg-3">
                                         <div class="form-group">
                                             <label for="">Tipo de Cambio</label>
-                                            <input type="text" id="dlls" name="dlls" class="form-control" value = "20.12" onchange = "calculoTotales()">
+                                            <input type="text" id="dlls" name="dlls" class="form-control" onchange = "calculoDlls()" @if($perm_btn['modify']!=1) disabled @endif>
+                                            {{-- <input type="text" id="dlls" name="dlls" class="form-control"> --}}
                                         </div>
                                     </div>
-                                    <div class = "col-lg-4">
+                                    <div class = "col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Porcentaje</label>
+                                            <div class="input-group mb-3">
+                                                <input type="text" id="percent" name="percent" class="form-control" onchange = "calculoPerc()" @if($perm_btn['modify']!=1) disabled @endif>
+                                                {{-- <input type="text" id="percent" name="percent" class="form-control"> --}}
+                                                <div class="input-group-append">
+                                                  <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Gastos Varios</label>
+                                            <div class="input-group mb-2 mr-sm-2">
+                                                <div class="input-group-prepend">
+                                                  <div class="input-group-text">$</div>
+                                                </div>
+                                                <input type="text" id="exp" name="exp" class="form-control" onchange = "calculoExp()" @if($perm_btn['modify']!=1) disabled @endif>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="form-group">
+                                            <label for="">Moneda</label> <br>
+                                            <input id = "onoffCurrency" type="checkbox" data-toggle="toggle" data-on = "USD" data-off="MXN" data-width="180" onchange=calculoCurrency({{$profile}})>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class = "row">
+                                    <div class = "col-lg-6">
                                         <div class="form-group">
                                             <label for="">Bodega</label>
                                             <div class="input-group mb-3">
@@ -59,7 +91,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class = "col-lg-4">
+                                    <div class = "col-lg-6">
                                         <div class="form-group">
                                             <label for="">Comisión</label>
                                             <div class="input-group mb-3">
@@ -107,6 +139,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                     <div class="modal-footer">
