@@ -63,5 +63,6 @@ Route::post('processes/order/orders/updateStatus', 'OrdersController@updateStatu
 Route::post('processes/order/orders/updateItem', 'OrdersController@updateItem')->name('orders.updateItem');
 Route::post('processes/order/orders/updateOrder', 'OrdersController@updateOrder')->name('orders.updateOrder');
 Route::post('processes/order/orders/deleteFile', 'OrdersController@deleteFile')->name('orders.deleteFile');
+Route::post('processes/order/orders/updateTR', 'OrdersController@updateTR')->name('orders.updateTR');
 Route::get('processes/order/orders/GetinfoStatus/{id}', 'OrdersController@GetinfoStatus')->name('orders.GetinfoStatus');
 

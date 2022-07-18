@@ -10,6 +10,6 @@ class Item extends Model
     use SoftDeletes;
 
     protected $table = "Items";
-    protected $fillable =["fk_order","store","item_number","description","back_order","existence","fk_status","net_price","total_price","commentary","image"];
+    protected $fillable =["fk_order","store","item_number","description","back_order","existence","fk_status","net_price","total_price","commentary","image","tr"];
     protected $dates = ["deleted_at"];
 }

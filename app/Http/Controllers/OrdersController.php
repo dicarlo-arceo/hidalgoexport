@@ -25,12 +25,14 @@ class OrdersController extends Controller
         $cmbStatus = Status::select('id','name')
         ->where("fk_section","27")
         ->pluck('name','id');
+        // dd($profile);
         if($profile != 61)
         {
             $orders = DB::table('Orders')->select('Orders.id','order_number','Projects.name AS project', DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
             ->join('users',"fk_user","=","users.id")
             ->join('Projects',"fk_project","=","Projects.id")
             ->whereNull('Orders.deleted_at')->get();
+            // dd($orders);
         }
         else
         {
@@ -40,7 +42,6 @@ class OrdersController extends Controller
             ->where("fk_user","=",User::user_id())
             ->whereNull('Orders.deleted_at')->get();
         }
-        // dd($perm_btn);
         if($perm==0)
         {
             return redirect()->route('home');
@@ -166,6 +167,21 @@ class OrdersController extends Controller
         ->update(['store'=>$request->store,'item_number'=>$request->item_number,'description'=>$request->description,
         'back_order'=>$request->back_order,'existence'=>$request->existence,'net_price'=>$request->net_price,
         'total_price'=>$request->total_price]);
+
+        $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
+        ->join('Status',"Status.id","=","fk_status")
+        ->join('Orders',"Orders.id","=","fk_order")
+        ->where('fk_order',$request->fk_order)
+        ->whereNull('Items.deleted_at')->get();
+
+        // dd($items);
+        return response()->json(['status'=>true, 'message'=>"Orden Actualizada", "data"=>$items]);
+    }
+    public function updateTR(Request $request)
+    {
+        // dd($request);
+        $item = Item::where('id',$request->id)
+        ->update(['tr'=>$request->tr]);
 
         $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
         ->join('Status',"Status.id","=","fk_status")

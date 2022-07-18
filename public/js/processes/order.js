@@ -60,7 +60,8 @@ $(document).ready( function () {
             [25, 50, 100, 200, -1],
             [25, 50, 100, 200, "All"]
         ],
-        iDisplayLength: -1
+        iDisplayLength: -1,
+
     });
 } );
 var formatter = new Intl.NumberFormat('en-US', {
@@ -84,17 +85,20 @@ function refreshTable(result)
     {
         result.data.forEach( function(valor, indice, array) {
             btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
+            if(valor.tr == 0) valTR = "-"; else valTR = valor.tr;
+            btnTR = '<button class="btn btn-info" style="background-color: #FFFFFF !important; border-color: #000000 !important; color: #000000 !important;" onclick="editTR('+ valor.id +','+ valor.tr +')">'+ valTR +'</button>'
             btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-            table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
+            table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnTR,btnStatus,
                 formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
-            cellar += valor.total_price;
+            cellar += parseFloat(valor.total_price);
+            console.log(cellar,valor.total_price);
         });
     }
     else
     {
         result.data.forEach( function(valor, indice, array) {
             btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-            table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnStatus,
+            table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,valor.tr,btnStatus,
                 formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
             cellar += valor.total_price;
         });
@@ -147,6 +151,40 @@ function newItem()
 function cancelarNewItem()
 {
     $("#myModal").modal('hide');
+}
+idTR = 0;
+function editTR(id, tr)
+{
+    idTR = id;
+    $("#tr").val(tr);
+    $("#myModalTR").modal('show');
+}
+function cancelarTR()
+{
+    $("#myModalTR").modal('hide');
+}
+function guardarTR()
+{
+    var tr = $("#tr").val();
+    var route = baseUrl + '/updateTR';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'tr':tr,
+        'id':idTR,
+        'fk_order':idOrder
+    };
+    jQuery.ajax({
+        url:route,
+        type:"post",
+        data: data,
+        dataType: 'json',
+        success:function(result)
+        {
+            refreshTable(result);
+            $("#myModalTR").modal('hide');
+            alertify.success(result.message);
+        }
+    })
 }
 function guardarItem()
 {

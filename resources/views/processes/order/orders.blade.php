@@ -3,7 +3,7 @@
 @section('content')
     <div class="text-center"><h1>Órdenes</h1></div>
     <div style="max-width: 1200px; margin: auto;">
-        {{-- inicia modal --}}
+        {{-- inicia modal abrir items --}}
         <div id="myModal2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
@@ -28,6 +28,7 @@
                                                     <th class="text-center">Descripción</th>
                                                     <th class="text-center">Back Order</th>
                                                     <th class="text-center">Existencia</th>
+                                                    <th class="text-center">TR</th>
                                                     <th class="text-center">Daños</th>
                                                     <th class="text-center">Precio Neto</th>
                                                     <th class="text-center">Precio Total</th>
@@ -153,7 +154,7 @@
             </div>
         </div>
         {{-- fin modal --}}
-        {{-- modal nuevo --}}
+        {{-- modal nuevo item --}}
         <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
@@ -239,7 +240,7 @@
             </div>
         </div>
         {{-- fin modal| --}}
-        {{-- modal edit --}}
+        {{-- modal editar item --}}
         <div id="myModalEdit" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
@@ -325,7 +326,7 @@
             </div>
         </div>
         {{-- fin modal| --}}
-        {{-- modal orden --}}
+        {{-- modal editar orden --}}
         <div id="orderModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -377,6 +378,38 @@
             </div>
         </div>
         {{-- fin modal --}}
+        {{-- modal edit TR --}}
+        <div id="myModalTR" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Trámite</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="">Número de Trámite</label>
+                                            <input type="text" id="tr" name="tr" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="cancelarTR()" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
+                        <button type="button" onclick="guardarTR()" class="btn btn-primary">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- fin modal| --}}
 
     @include('processes.status.status')
         {{-- Inicia pantalla de inicio --}}
