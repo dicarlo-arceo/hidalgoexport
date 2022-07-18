@@ -120,6 +120,7 @@ class OrdersController extends Controller
         // dd($status);
         $status->fk_status = $request->status;
         $status->commentary=$request->commentary;
+        $status->delivery_date=$request->delivery_date;
         // dd($request);
 
         if($request->hasFile("imagen")){

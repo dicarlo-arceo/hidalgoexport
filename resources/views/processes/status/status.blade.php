@@ -30,6 +30,14 @@
                         <div class="row">
                             <div class="col-md-12" >
                                 <div class="form-group">
+                                    <label for="">Fecha aproximada de llegada: </label>
+                                    <input type="date" name="date" id="date" class = "form-control", rows = "3" @if($perm_btn['modify']!=1) disabled @endif>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" >
+                                <div class="form-group">
                                     <label for="">Comentario: </label>
                                     <textarea name="commentary" id="commentary" class = "form-control", rows = "3" @if($perm_btn['modify']!=1) disabled @endif></textarea>
                                 </div>
@@ -39,7 +47,7 @@
                             <div class="col-md-12" >
                                 <div class="form-group">
                                     <label for="">Imagen: </label>
-                                    <input type="file" name="imagen" id="imagen" class="form-control" accept="image/*"/>
+                                    <input type="file" name="imagen" id="imagen" class="form-control" accept="image/*" @if($perm_btn['modify']!=1) disabled @endif/>
                                 </div>
                             </div>
                         </div>

@@ -494,6 +494,7 @@ function opcionesEstatus(id,statusId)
         success:function(result){
             $("#selectStatus").val(statusId);
             $("#commentary").val(result.data.commentary);
+            $("#date").val(result.data.delivery_date);
             // $("#id").val(id);
             if(result.data.image != null)
             {
@@ -517,7 +518,9 @@ function actualizarEstatus()
 {
     var status = $("#selectStatus").val();
     var commentary = $("#commentary").val();
+    var date = $("#date").val();
     var table = $('#tbProf1').DataTable();
+    // alert(date);
 
     var formData = new FormData();
     var files = $('input[type=file]');
@@ -553,6 +556,7 @@ function actualizarEstatus()
     formData.append('status', status);
     formData.append('id', id_item);
     formData.append('idOrder', idOrder);
+    formData.append('delivery_date', date);
     formData.append('commentary', commentary);
 
     var route = baseUrl+"/updateStatus";
