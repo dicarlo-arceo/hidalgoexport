@@ -178,6 +178,7 @@ function guardarOrden()
     var order_number = $("#order").val();
     var fk_project = $("#selectProject").val();
     var address = $("#address").val();
+    var designer = $("#designer").val();
 
     var route = baseUrl + '/SaveOrder';
     // alert(route);
@@ -187,6 +188,7 @@ function guardarOrden()
         'fk_project':fk_project,
         'fk_user':idOrder,
         'address':address,
+        'designer':designer,
     };
     // console.log(data);
     jQuery.ajax({

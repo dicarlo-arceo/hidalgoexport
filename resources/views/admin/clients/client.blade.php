@@ -118,6 +118,14 @@
                                 </div>
                                 <br>
                                 <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="">Diseñador</label>
+                                            <input type="text" id="designer" name="designer" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
                                     <div class="col-md-12" >
                                         <div class="form-group">
                                             <label for="">Dirección: </label>

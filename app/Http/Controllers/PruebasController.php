@@ -4,15 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Prueba;
-use App\Insurance;
 
 class PruebasController extends Controller
 {
     public function index(){
         $profiles = Prueba::get();
         $prof = Prueba::pluck('name','id');
-        $insurances = Insurance::get();
-        return view('admin.pruebas.prueba', compact('profiles','insurances','prof'));
+        return view('admin.pruebas.prueba', compact('profiles','prof'));
     }
 
     public function GetInfo($id)
@@ -42,5 +40,10 @@ class PruebasController extends Controller
         $profile = Prueba::find($id);
         $profile->delete();
         return response()->json(['status'=>true, "message"=>"Perfil eliminado"]);
+    }
+    public function pruebaAbrir()
+    {
+        app('App\Http\Controllers\OrdersController')->OpenSingleOrder(5);
+        // dd("entre");
     }
 }

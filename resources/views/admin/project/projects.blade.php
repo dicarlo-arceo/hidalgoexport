@@ -3,39 +3,81 @@
 @section('content')
     <div class="text-center"><h1>Catálogo de Proyectos</h1></div>
     <div style="max-width: 1200px; margin: auto;">
-        {{-- modal| --}}
-        <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
+    {{-- modal| --}}
+    <div id="myModalNewProject" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
 
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="gridModalLabek">Registro de Proyectos</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
+                <div class="modal-header">
+                    <h4 class="modal-title" id="gridModalLabek">Registro de Proyectos</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
 
-                    <div class="modal-body">
-                        <div class="container-fluid bd-example-row">
-                            <div class="col-md-12">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="">Nombre</label>
-                                            <input type="text" id="name" name="name" class="form-control">
-                                        </div>
+                <div class="modal-body">
+                    <div class="container-fluid bd-example-row">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="">Nombre</label>
+                                        <input type="text" id="name" name="name" class="form-control">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
-                        <button type="button" onclick="guardarproyecto({{$perm_btn}})" class="btn btn-primary">Guardar</button>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" onclick="guardarproyecto({{$perm_btn}})" class="btn btn-primary">Guardar</button>
                 </div>
             </div>
         </div>
-        {{-- fin modal| --}}
-        @include('admin.project.projectedit')
+    </div>
+    {{-- fin modal| --}}
+    {{-- inicia modal abrir órdenes --}}
+    <div id="myModalOpenOrders" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title" id="gridModalLabek">Órdenes</h4>
+                    <button type="button" class="close" aria-label="Close" onclick="cancelarAbrirOrden()"><span aria-hidden="true">&times;</span></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="container-fluid bd-example-row">
+                        <div class="col-lg-12">
+                            {{-- <div class="row align-items-center"> --}}
+                            <br>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
+                                        <table class="table table-striped table-hover text-center" id="tbProfOrders">
+                                            <thead>
+                                                <th class="text-center"># de orden</th>
+                                                <th class="text-center">Cliente</th>
+                                                <th class="text-center">Opciones</th>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secundary" onclick="cancelarAbrirOrden()">Cancelar</button>
+                    {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- fin modal --}}
+    @include('processes.order.items')
+    @include('admin.project.projectedit')
+    @include('processes.status.status')
+
         {{-- Inicia pantalla de inicio --}}
         <div class="bd-example bd-example-padded-bottom">
             @if ($perm_btn['addition']==1)
@@ -44,7 +86,7 @@
         </div>
         <br><br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
-            <table class="table table-striped table-hover text-center" id="tbProf">
+            <table class="table table-striped table-hover text-center" id="tbProfProject">
                 <thead>
                     <th class="text-center">Nombre</th>
                     @if ($perm_btn['modify']==1 || $perm_btn['erase']==1)
@@ -53,12 +95,13 @@
                 </thead>
 
                 <tbody>
-                    @foreach ($projects as $project)
+                    @foreach ($projectsTable as $project)
                         <tr id="{{$project->id}}">
                             <td>{{$project->name}}</td>
                             @if ($perm_btn['erase']==1 || $perm_btn['modify']==1)
                                 <td>
                                     @if ($perm_btn['modify']==1)
+                                        <a href="#|" class="btn btn-primary" onclick="abrirOrden({{$project->id}},{{$profile}})" >Ver Órdenes</a>
                                         <a href="#|" class="btn btn-warning" onclick="editarproyecto({{$project->id}})" >Editar</a>
                                     @endif
                                     @if ($perm_btn['erase']==1)
@@ -74,5 +117,6 @@
     </div>
 @endsection
 @push('head')
+    <script src="{{URL::asset('js/processes/order.js')}}"></script>
     <script src="{{URL::asset('js/admin/project.js')}}"></script>
 @endpush

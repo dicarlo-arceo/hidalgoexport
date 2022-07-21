@@ -3,7 +3,35 @@ var getUrl = window.location;
 var baseUrl = getUrl .protocol + "//" + getUrl.host + getUrl.pathname;
 
 $(document).ready( function () {
-    $('#tbProf').DataTable({
+    $('#tbProfProject').DataTable({
+        language : {
+            "sProcessing":     "Procesando...",
+            "sLengthMenu":     "Mostrar _MENU_ registros",
+            "sZeroRecords":    "No se encontraron resultados",
+            "sEmptyTable":     "Ningún dato disponible en esta tabla",
+            "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix":    "",
+            "sSearch":         "Buscar:",
+            "sUrl":            "",
+            "sInfoThousands":  ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+            },
+            "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        }
+    });
+} );
+$(document).ready( function () {
+    $('#tbProfOrders').DataTable({
         language : {
             "sProcessing":     "Procesando...",
             "sLengthMenu":     "Mostrar _MENU_ registros",
@@ -34,7 +62,7 @@ $(document).ready( function () {
 function guardarproyecto(permisos)
 {
     var name = $("#name").val();
-    var table = $('#tbProf').DataTable();
+    var table = $('#tbProfProject').DataTable();
     var route = "projects";
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -135,4 +163,32 @@ function eliminarproyecto(id)
         function(){
             alertify.error('Cancelado');
     });
+}
+function abrirOrden(id,profile)
+{
+    idProject = id;
+    var table = $('#tbProfOrders').DataTable();
+    var route = baseUrl + '/GetInfoOrder/'+ id;
+
+    table.clear();
+
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            result.data.forEach( function(valor, indice, array) {
+                btnTrash = '<button href="#|" class="btn btn-primary" onclick="nuevoItem('+valor.id+','+profile+')" >Items</button> <button type="button" class="btn btn-warning"'+'onclick="editarOrden('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="eliminarOrden('+valor.id+')"><i class="fa fa-trash"></i></button>';
+                // console.log(valor.project);
+                table.row.add([valor.order_number,valor.name,btnTrash]).node().id = valor.id;
+            });
+            table.draw(false);
+        }
+    })
+    $("#myModalOpenOrders").modal('show');
+}
+function cancelarAbrirOrden()
+{
+    $("#myModalOpenOrders").modal('hide');
 }

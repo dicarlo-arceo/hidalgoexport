@@ -1,6 +1,5 @@
-var ruta = window.location;
-var getUrl = window.location;
-var baseUrl = getUrl .protocol + "//" + getUrl.host + getUrl.pathname;
+var getUrlOrder = window.location;
+var baseUrlOrder = getUrlOrder .protocol + "//" + getUrlOrder.host + "/processes/order/orders";
 
 $(document).ready( function () {
     $('#tbProf').DataTable({
@@ -81,27 +80,30 @@ function refreshTable(result)
     var table = $('#tbProf1').DataTable();
     table.clear();
     cellar = 0;
-    if(profileOrder != 61)
+    console.log(result);
+    if(result.flag != 1)
     {
-        result.data.forEach( function(valor, indice, array) {
-            btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
-            if(valor.tr == 0) valTR = "-"; else valTR = valor.tr;
-            btnTR = '<button class="btn btn-info" style="background-color: #FFFFFF !important; border-color: #000000 !important; color: #000000 !important;" onclick="editTR('+ valor.id +','+ valor.tr +')">'+ valTR +'</button>'
-            btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-            table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnTR,btnStatus,
-                formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
-            cellar += parseFloat(valor.total_price);
-            console.log(cellar,valor.total_price);
-        });
-    }
-    else
-    {
-        result.data.forEach( function(valor, indice, array) {
-            btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-            table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,valor.tr,btnStatus,
-                formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
-            cellar += valor.total_price;
-        });
+        if(profileOrder != 61)
+        {
+            result.data.forEach( function(valor, indice, array) {
+                btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
+                if(valor.tr == 0) valTR = "-"; else valTR = valor.tr;
+                btnTR = '<button class="btn btn-info" style="background-color: #FFFFFF !important; border-color: #000000 !important; color: #000000 !important;" onclick="editTR('+ valor.id +','+ valor.tr +')">'+ valTR +'</button>'
+                btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
+                table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnTR,btnStatus,
+                    formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
+                cellar += parseFloat(valor.total_price);
+            });
+        }
+        else
+        {
+            result.data.forEach( function(valor, indice, array) {
+                btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
+                table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,valor.tr,btnStatus,
+                    formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
+                cellar += valor.total_price;
+            });
+        }
     }
     $("#dlls").val(result.data[0].exc_rate);
     $("#percent").val(result.data[0].percentage);
@@ -114,6 +116,7 @@ function refreshTable(result)
     if(profileOrder == 61)
         $("#onoffCurrency").prop('disabled', true);
     calculoTotales();
+
     table.draw(false);
 }
 
@@ -122,7 +125,7 @@ function nuevoItem(id,profile)
     idOrder = id;
     profileOrder = profile
     var table = $('#tbProf1').DataTable();
-    var route = baseUrl + '/GetInfo/'+ id;
+    var route = baseUrlOrder + '/GetInfo/'+ id;
     var btnTrash;
 
     $("#amount").val("");
@@ -166,7 +169,7 @@ function cancelarTR()
 function guardarTR()
 {
     var tr = $("#tr").val();
-    var route = baseUrl + '/updateTR';
+    var route = baseUrlOrder + '/updateTR';
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
         'tr':tr,
@@ -197,7 +200,7 @@ function guardarItem()
     var net_price = parseFloat($("#net_price").val());
     var total_price = Number($("#total_price").val().replace(/[^0-9.-]+/g,""));
 
-    var route = "orders";
+    var route = baseUrlOrder;
 
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -252,7 +255,7 @@ function editarOrden(id)
 {
     idupdate=id;
 
-    var route = baseUrl + '/GetInfoOrder/'+id;
+    var route = baseUrlOrder + '/GetInfoOrder/'+id;
     // alert(route);
     jQuery.ajax({
         url:route,
@@ -263,6 +266,7 @@ function editarOrden(id)
             $("#order").val(result.data.order_number);
             $("#selectProject").val(result.data.fk_project);
             $("#address").val(result.data.address);
+            $("#designer").val(result.data.designer);
             $("#orderModal").modal('show');
 
         }
@@ -277,14 +281,16 @@ function actualizarOrden()
     var order_number = $("#order").val();
     var fk_project = $("#selectProject").val();
     var address = $("#address").val();
+    var designer = $("#designer").val();
 
-    var route = "orders/"+idupdate;
+    var route = baseUrlOrder + "/" + idupdate;
     var data = {
         'id':idupdate,
         "_token": $("meta[name='csrf-token']").attr("content"),
         'order_number':order_number,
         'fk_project':fk_project,
         'address':address,
+        'designer':designer,
     };
     jQuery.ajax({
         url:route,
@@ -301,7 +307,7 @@ function actualizarOrden()
 }
 function eliminarOrden(id)
 {
-    var route = "orders/"+id;
+    var route = baseUrlOrder + "/" + id;
     var data = {
         'id':id,
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -327,7 +333,7 @@ function eliminarOrden(id)
 function deleteItem(id)
 {
     var table = $('#tbProf1').DataTable();
-    var route = baseUrl + '/DeleteItem/' + id + "/" + idOrder;
+    var route = baseUrlOrder + '/DeleteItem/' + id + "/" + idOrder;
     var data = {
         'id':id,
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -358,7 +364,7 @@ function calculoDlls()
 
     var exc_rate = parseFloat($("#dlls").val());
 
-    var route = baseUrl+'/updateOrder';
+    var route = baseUrlOrder+'/updateOrder';
     var data = {
         'id':idOrder,
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -384,7 +390,7 @@ function calculoPerc()
 
     var percent = parseFloat($("#percent").val());
 
-    var route = baseUrl+'/updateOrder';
+    var route = baseUrlOrder+'/updateOrder';
     var data = {
         'id':idOrder,
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -410,7 +416,7 @@ function calculoExp()
 
     var expenses = parseFloat($("#exp").val());
 
-    var route = baseUrl+'/updateOrder';
+    var route = baseUrlOrder+'/updateOrder';
     var data = {
         'id':idOrder,
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -438,7 +444,7 @@ function calculoCurrency()
     else
         currency = 2;
 
-    var route = baseUrl+'/updateOrder';
+    var route = baseUrlOrder+'/updateOrder';
     var data = {
         'id':idOrder,
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -486,7 +492,7 @@ function opcionesEstatus(id,statusId)
     var fileInput = document.getElementById("fileInput");
     var imgShow = document.getElementById("imgShow");
     $('#imagen').val('');
-    var route = baseUrl+'/GetinfoStatus/'+id_item;
+    var route = baseUrlOrder+'/GetinfoStatus/'+id_item;
     jQuery.ajax({
         url:route,
         type:'get',
@@ -559,7 +565,7 @@ function actualizarEstatus()
     formData.append('delivery_date', date);
     formData.append('commentary', commentary);
 
-    var route = baseUrl+"/updateStatus";
+    var route = baseUrlOrder+"/updateStatus";
 
     jQuery.ajax({
         url:route,
@@ -588,7 +594,7 @@ function editItem(id)
 {
     idupdateItem=id;
 
-    var route = baseUrl + '/GetInfoItem/'+id;
+    var route = baseUrlOrder + '/GetInfoItem/'+id;
     // alert(route);
     jQuery.ajax({
         url:route,
@@ -601,8 +607,8 @@ function editItem(id)
             $("#description1").val(result.data.description);
             $("#back_order1").val(result.data.back_order);
             $("#existence1").val(result.data.existence);
-            $("#net_price1").val(formatToCurrency(result.data.net_price));
-            $("#total_price1").val(formatToCurrency(result.data.total_price));
+            $("#net_price1").val(result.data.net_price);
+            $("#total_price1").val(result.data.total_price);
             $("#myModalEdit").modal('show');
 
         }
@@ -619,7 +625,7 @@ function actualizarItem()
     var net_price = Number($("#net_price1").val().replace(/[^0-9.-]+/g,""));
     var total_price = Number($("#total_price1").val().replace(/[^0-9.-]+/g,""));
 
-    var route = baseUrl + '/updateItem';
+    var route = baseUrlOrder + '/updateItem';
 
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -677,7 +683,7 @@ function deleteFile()
 {
     var fileInput = document.getElementById("fileInput");
     var imgShow = document.getElementById("imgShow");
-    var route = baseUrl + '/deleteFile';
+    var route = baseUrlOrder + '/deleteFile';
     var data = {
         'id':id_item,
         'imgName':imgName,

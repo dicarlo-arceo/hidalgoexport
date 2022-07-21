@@ -155,6 +155,9 @@
         <div class="bd-example bd-example-padded-bottom">
             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Nuevo</button>
         </div>
+        <div class="bd-example bd-example-padded-bottom">
+            <button type="button" class="btn btn-primary" onclick="pruebaAbrir()">abrir</button>
+        </div>
         <br><br>
 
         <ul class="nav nav-tabs" id="mytab" role="tablist">
@@ -204,15 +207,7 @@
                             </thead>
 
                             <tbody>
-                                @foreach ($insurances as $insurance)
-                                    <tr id="{{$insurance->id}}">
-                                        <td>{{$insurance->name}}</td>
-                                        <td>
-                                            <a href="#|" class="btn btn-warning" onclick="editarAseguradora({{$insurance->id}})" >Editar</a>
-                                            <a href="#|" class="btn btn-danger" onclick="eliminarAseguradora({{$insurance->id}})">Eliminar</a>
-                                        </td>
-                                    </tr>
-                                @endforeach
+
                             </tbody>
                         </table>
                     </div>

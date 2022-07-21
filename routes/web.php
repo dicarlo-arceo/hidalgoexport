@@ -29,6 +29,7 @@ Route::resource('admin/profile/profiles', 'ProfilesController');
 // prueba
 Route::get('admin/pruebas/prueba/GetInfo/{id}','PruebasController@GetInfo')->name('prueba.GetInfo');
 Route::resource('admin/pruebas/prueba', 'PruebasController');
+Route::post('admin/pruebas/prueba/pruebaAbrir', 'PruebasController@pruebaAbrir')->name('prueba.pruebaAbrir');
 
 // usuarios
 Route::resource('admin/users/user', 'UsersController');
@@ -50,6 +51,7 @@ Route::resource('admin/enterprise/enterprises', 'EnterpriseController');
 
 // proyectos
 Route::get('admin/project/projects/GetInfo/{id}','ProjectsController@GetInfo')->name('projects.GetInfo');
+Route::get('admin/project/projects/GetInfoOrder/{id}', 'ProjectsController@GetInfoOrder')->name('projects.GetInfoOrder');
 Route::resource('admin/project/projects', 'ProjectsController');
 
 //------------------------------------------------Procesos---------------------------------------------
@@ -57,6 +59,7 @@ Route::resource('admin/project/projects', 'ProjectsController');
 Route::get('processes/order/orders/GetInfo/{id}','OrdersController@GetInfo')->name('orders.GetInfo');
 Route::get('processes/order/orders/GetInfoOrder/{id}','OrdersController@GetInfoOrder')->name('orders.GetInfoOrder');
 Route::get('processes/order/orders/GetInfoItem/{id}','OrdersController@GetInfoItem')->name('orders.GetInfoItem');
+Route::get('processes/order/orders/OpenSingleOrder/{id}','OrdersController@OpenSingleOrder')->name('orders.OpenSingleOrder');
 Route::resource('processes/order/orders', 'OrdersController');
 Route::delete('processes/order/orders/DeleteItem/{id}/{idOrder}', 'OrdersController@DeleteItem')->name('orders.DeleteItem');
 Route::post('processes/order/orders/updateStatus', 'OrdersController@updateStatus')->name('orders.updateStatus');

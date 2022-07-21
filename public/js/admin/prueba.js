@@ -1,3 +1,6 @@
+var ruta = window.location;
+var getUrl = window.location;
+var baseUrl = getUrl .protocol + "//" + getUrl.host + getUrl.pathname;
 function showimp()
 {
    var get_value = document.getElementById("selectProfile");
@@ -69,7 +72,7 @@ function mostrarDiv()
     }
     else
     {
-        
+
         fisica.style.display = "none"
         moral.style.display = "block"
     }
@@ -87,7 +90,7 @@ function mostrarAsegurado()
     }
     else
     {
-        
+
         fisica.style.display = "none"
         moral.style.display = "block"
     }
@@ -103,7 +106,29 @@ function mostrarDivAsegurado()
     }
     else
     {
-        
+
         asegurado.style.display = "none"
     }
+}
+function pruebaAbrir()
+{
+    var tr = $("#tr").val();
+    var route = baseUrl + '/pruebaAbrir';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content")
+    };
+    jQuery.ajax({
+        url:route,
+        type:"post",
+        data: data,
+        dataType: 'json',
+        success:function(result)
+        {
+
+        }
+    })
+    // window.open(URL,nombre_de_la_ventana,forma_de_la_ventana);
+    // processes.order.orders
+    window.open("../../processes/order/orders/OpenSingleOrder/5");
+
 }

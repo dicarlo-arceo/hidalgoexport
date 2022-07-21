@@ -28,7 +28,7 @@ class OrdersController extends Controller
         // dd($profile);
         if($profile != 61)
         {
-            $orders = DB::table('Orders')->select('Orders.id','order_number','Projects.name AS project', DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
+            $orders = DB::table('Orders')->select('Orders.id','order_number','Projects.name AS project', DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
             ->join('users',"fk_user","=","users.id")
             ->join('Projects',"fk_project","=","Projects.id")
             ->whereNull('Orders.deleted_at')->get();
@@ -36,7 +36,7 @@ class OrdersController extends Controller
         }
         else
         {
-            $orders = DB::table('Orders')->select('Orders.id','order_number','Projects.name AS project', DB::raw('CONCAT(users.name," ",users.firstname," ",users.lastname) AS name'))
+            $orders = DB::table('Orders')->select('Orders.id','order_number','Projects.name AS project', DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
             ->join('users',"fk_user","=","users.id")
             ->join('Projects',"fk_project","=","Projects.id")
             ->where("fk_user","=",User::user_id())
@@ -53,13 +53,22 @@ class OrdersController extends Controller
     }
     public function GetInfo($id)
     {
+        $flag = 0;
         $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
         ->join('Orders',"Orders.id","=","fk_order")
         ->join('Status',"Status.id","=","fk_status")
         ->where('fk_order',$id)
         ->whereNull('Items.deleted_at')->get();
         // dd($items);
-        return response()->json(['status'=>true, "data"=>$items]);
+        if(count($items) == 0)
+        {
+            // dd("entre");
+            $flag = 1;
+            $items = DB::table('Orders')->select("*")
+                ->where('id',$id)
+                ->whereNull('deleted_at')->get();
+        }
+        return response()->json(['status'=>true, "data"=>$items, "flag"=>$flag]);
     }
     public function store(Request $request)
     {
@@ -93,7 +102,7 @@ class OrdersController extends Controller
     {
         $order = Order::where('id',$request->id)
         ->update(['order_number'=>$request->order_number,
-        'fk_project'=>$request->fk_project,'address'=>$request->address]);
+        'fk_project'=>$request->fk_project,'address'=>$request->address,'designer'=>$request->designer]);
 
         return response()->json(['status'=>true, 'message'=>"Orden Actualizada"]);
     }
