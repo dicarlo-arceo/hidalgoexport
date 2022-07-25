@@ -58,6 +58,7 @@ class OrdersController extends Controller
         ->join('Orders',"Orders.id","=","fk_order")
         ->join('Status',"Status.id","=","fk_status")
         ->where('fk_order',$id)
+        ->where('Status.id',"!=",8)
         ->whereNull('Items.deleted_at')->get();
         // dd($items);
         if(count($items) == 0)
@@ -72,6 +73,8 @@ class OrdersController extends Controller
     }
     public function store(Request $request)
     {
+        if($request->back_order == "") $request->back_order = 0;
+        if($request->existence == "") $request->existence = 0;
         // dd($request->all());
         $item = new Item;
         $item->fk_order = $request->fk_order;
@@ -89,6 +92,7 @@ class OrdersController extends Controller
         ->join('Status',"Status.id","=","fk_status")
         ->join('Orders',"Orders.id","=","fk_order")
         ->where('fk_order',$request->fk_order)
+        ->where('Status.id',"!=",8)
         ->whereNull('Items.deleted_at')->get();
         return response()->json(["status"=>true, "message"=>"Item Registrado", "data"=>$items]);
     }
@@ -112,21 +116,46 @@ class OrdersController extends Controller
         $order->delete();
         return response()->json(['status'=>true, "message"=>"Orden eliminado"]);
     }
-    public function DeleteItem($id,$idOrder)
+    public function DeleteItem($id,$idOrder,$flagTR)
     {
+        $flag = 0;
         $item = Item::find($id);
         $item->delete();
-        $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
-        ->join('Status',"Status.id","=","fk_status")
-        ->join('Orders',"Orders.id","=","fk_order")
-        ->where('fk_order',$idOrder)
-        ->whereNull('Items.deleted_at')->get();
-        return response()->json(['status'=>true, "message"=>"Item eliminado", "data"=>$items]);
+
+        $items = $this->GetItemsBack($idOrder,$flagTR);
+        if(count($items) == 0)
+        {
+            // dd("entre");
+            $flag = 1;
+            $items = DB::table('Orders')->select("*")
+                ->where('id',$idOrder)
+                ->whereNull('deleted_at')->get();
+        }
+        // dd($items);
+
+        return response()->json(['status'=>true, "message"=>"Item eliminado", "data"=>$items, "flag"=>$flag]);
     }
     public function updateStatus(Request $request)
     {
+        $flag = 0;
         $status = Item::where('id',$request->id)->first();
-        // dd($status);
+        // dd($status->description);
+
+        if($request->status == 8 && $status->back_order != 0 && $status->fk_status != 8)
+        {
+            $item = new Item;
+            $item->fk_order = $status->fk_order;
+            $item->store = $status->store;
+            $item->item_number = $status->item_number;
+            $item->description = $status->description;
+            $item->back_order = $status->back_order;
+            $item->existence = 0;
+            $item->fk_status = 6;
+            $item->net_price = $status->net_price;
+            $item->total_price = $status->total_price;
+            $item->save();
+        }
+
         $status->fk_status = $request->status;
         $status->commentary=$request->commentary;
         $status->delivery_date=$request->delivery_date;
@@ -148,14 +177,18 @@ class OrdersController extends Controller
 
         $status->save();
 
-        $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
-        ->join('Status',"Status.id","=","fk_status")
-        ->join('Orders',"Orders.id","=","fk_order")
-        ->where('fk_order',$request->idOrder)
-        ->whereNull('Items.deleted_at')->get();
-        // dd($items);
+        $items = $this->GetItemsBack($request->idOrder,$request->flagTR);
+        if(count($items) == 0)
+        {
+            // dd("entre");
+            $flag = 1;
+            $items = DB::table('Orders')->select("*")
+                ->where('id',$request->idOrder)
+                ->whereNull('deleted_at')->get();
+        }
+        // dd($request->flagTR);
         // return;
-        return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$items]);
+        return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$items,"flag"=>$flag]);
     }
 
     public function GetinfoStatus($id)
@@ -173,16 +206,15 @@ class OrdersController extends Controller
     public function updateItem(Request $request)
     {
         // dd($request);
+        if($request->back_order == "") $request->back_order = 0;
+        if($request->existence == "") $request->existence = 0;
+        // dd($request->back_order,$request->existence);
         $item = Item::where('id',$request->id)
         ->update(['store'=>$request->store,'item_number'=>$request->item_number,'description'=>$request->description,
         'back_order'=>$request->back_order,'existence'=>$request->existence,'net_price'=>$request->net_price,
         'total_price'=>$request->total_price]);
 
-        $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
-        ->join('Status',"Status.id","=","fk_status")
-        ->join('Orders',"Orders.id","=","fk_order")
-        ->where('fk_order',$request->fk_order)
-        ->whereNull('Items.deleted_at')->get();
+        $items = $this->GetItemsBack($request->fk_order,$request->flagTR);
 
         // dd($items);
         return response()->json(['status'=>true, 'message'=>"Orden Actualizada", "data"=>$items]);
@@ -193,12 +225,7 @@ class OrdersController extends Controller
         $item = Item::where('id',$request->id)
         ->update(['tr'=>$request->tr]);
 
-        $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
-        ->join('Status',"Status.id","=","fk_status")
-        ->join('Orders',"Orders.id","=","fk_order")
-        ->where('fk_order',$request->fk_order)
-        ->whereNull('Items.deleted_at')->get();
-
+        $items = $this->GetItemsBack($request->fk_order,$request->flagTR);
         // dd($items);
         return response()->json(['status'=>true, 'message'=>"Orden Actualizada", "data"=>$items]);
     }
@@ -241,5 +268,77 @@ class OrdersController extends Controller
         $item->save();
 
         return response()->json(['status'=>true, 'message'=>"Imagen Eliminada"]);
+    }
+    public function GetinfoTR($id)
+    {
+        $items = DB::table('Items')->select("tr")
+        ->where('fk_order',$id)
+        ->where('fk_status',"=",8)
+        ->whereNull('Items.deleted_at')
+        ->groupBy('tr')->get();
+        // dd($items);
+        // dd($initial->commentary);
+        return response()->json(['status'=>true, "data"=>$items]);
+    }
+    public function GetItemsTR($id,$tr)
+    {
+        if($tr == 0)
+        {
+            $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
+            ->join('Orders',"Orders.id","=","fk_order")
+            ->join('Status',"Status.id","=","fk_status")
+            ->where('fk_order',$id)
+            ->where('Status.id',"=",8)
+            ->whereNull('Items.deleted_at')->get();
+        }
+        else
+        {
+            $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
+            ->join('Orders',"Orders.id","=","fk_order")
+            ->join('Status',"Status.id","=","fk_status")
+            ->where('fk_order',$id)
+            ->where('Status.id',"=",8)
+            ->where('tr',"=",$tr)
+            ->whereNull('Items.deleted_at')->get();
+        }
+        // dd($items);
+        // dd($initial->commentary);
+        return response()->json(['status'=>true, "data"=>$items]);
+    }
+    public function GetItemsBack($order,$tr)
+    {
+        if($tr == null || $tr == "null")
+        {
+            // dd("entre a null");
+            $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
+            ->join('Status',"Status.id","=","fk_status")
+            ->join('Orders',"Orders.id","=","fk_order")
+            ->where('fk_order',$order)
+            ->where('Status.id',"!=",8)
+            ->whereNull('Items.deleted_at')->get();
+        }
+        else
+        {
+            if($tr == 0)
+            {
+                $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
+                ->join('Orders',"Orders.id","=","fk_order")
+                ->join('Status',"Status.id","=","fk_status")
+                ->where('fk_order',$order)
+                ->where('Status.id',"=",8)
+                ->whereNull('Items.deleted_at')->get();
+            }
+            else
+            {
+                $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
+                ->join('Orders',"Orders.id","=","fk_order")
+                ->join('Status',"Status.id","=","fk_status")
+                ->where('fk_order',$order)
+                ->where('Status.id',"=",8)
+                ->where('tr',"=",$tr)
+                ->whereNull('Items.deleted_at')->get();
+            }
+        }
+        return $items;
     }
 }

@@ -74,6 +74,9 @@ function formatToCurrency(amount){
 idOrder = 0;
 profileOrder = 0;
 cellar = 0;
+flagTR = null;
+
+
 
 function refreshTable(result)
 {
@@ -126,7 +129,9 @@ function nuevoItem(id,profile)
     profileOrder = profile
     var table = $('#tbProf1').DataTable();
     var route = baseUrlOrder + '/GetInfo/'+ id;
-    var btnTrash;
+    var btnNewItem = document.getElementById("btnNewItem");
+
+    flagTR = null;
 
     $("#amount").val("");
     table.clear();
@@ -138,6 +143,7 @@ function nuevoItem(id,profile)
         success:function(result)
         {
             refreshTable(result);
+            btnNewItem.style.display = "";
         }
     })
     $("#myModal2").modal('show');
@@ -174,7 +180,8 @@ function guardarTR()
         "_token": $("meta[name='csrf-token']").attr("content"),
         'tr':tr,
         'id':idTR,
-        'fk_order':idOrder
+        'fk_order':idOrder,
+        'flagTR':flagTR
     };
     jQuery.ajax({
         url:route,
@@ -212,6 +219,7 @@ function guardarItem()
         'existence':existence,
         'net_price':net_price,
         'total_price':total_price,
+        'flagTR':flagTR
     };
 
     jQuery.ajax({
@@ -333,10 +341,11 @@ function eliminarOrden(id)
 function deleteItem(id)
 {
     var table = $('#tbProf1').DataTable();
-    var route = baseUrlOrder + '/DeleteItem/' + id + "/" + idOrder;
+    var route = baseUrlOrder + '/DeleteItem/' + id + "/" + idOrder + "/" + flagTR;
     var data = {
         'id':id,
         "_token": $("meta[name='csrf-token']").attr("content"),
+        'flagTR':flagTR
     };
     alertify.confirm("Eliminar Item","¿Desea borrar el Item?",
         function(){
@@ -564,6 +573,7 @@ function actualizarEstatus()
     formData.append('idOrder', idOrder);
     formData.append('delivery_date', date);
     formData.append('commentary', commentary);
+    formData.append('flagTR', flagTR);
 
     var route = baseUrlOrder+"/updateStatus";
 
@@ -638,6 +648,7 @@ function actualizarItem()
         'net_price':net_price,
         'total_price':total_price,
         'fk_order':idOrder,
+        'flagTR':flagTR,
     };
 
     // alert(route);
@@ -699,6 +710,69 @@ function deleteFile()
             fileInput.style.display = "";
             imgShow.style.display = "none";
             alertify.success(result.message);
+        }
+    })
+}
+function verEntregados(id,profile)
+{
+    idOrder = id;
+    var selectTR = $('#selectTR');
+    var sTR = document.getElementById("sTR");
+    var lvl = document.getElementById("lvl");
+    var btnAcceptTr = document.getElementById("btnAcceptTr");
+    var route = baseUrlOrder + '/GetinfoTR/'+id;
+
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            console.log(result.data);
+            if((result.data.length == 1 && result.data[0].tr == 0) || result.data.length == 0)
+            {
+                lvl.style.display = "";
+                sTR.style.display = "none";
+                btnAcceptTr.style.display = "none";
+            }
+            else
+            {
+                $("#selectTR").empty();
+                selectTR.append('<option selected hidden value="">Seleccione una opción</option>');
+                result.data.forEach( function(valor, indice, array) {
+                    if(valor.tr != 0) selectTR.append("<option value='" + valor.tr + "'>" + valor.tr + "</option>");
+                });
+                selectTR.append('<option value="0">Todos</option>');
+                sTR.style.display = "";
+                lvl.style.display = "none";
+                btnAcceptTr.style.display = "";
+            }
+            $("#mySelectTRModal").modal('show');
+        }
+    })
+
+}
+function cerrarSelectTR()
+{
+    $("#mySelectTRModal").modal('hide');
+}
+function abrirSeleccionTR()
+{
+    var selectTR = $('#selectTR').val();
+    var btnNewItem = document.getElementById("btnNewItem");
+    var route = baseUrlOrder + '/GetItemsTR/' + idOrder + "/" + selectTR;
+
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            $("#mySelectTRModal").modal('hide');
+            btnNewItem.style.display = "none";
+            flagTR = selectTR;
+            refreshTable(result);
+            $("#myModal2").modal('show');
         }
     })
 }

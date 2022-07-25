@@ -23,6 +23,7 @@
                             <td>{{$order->project}}</td>
                             <td>{{$order->name}}</td>
                             <td>
+                                <a href="#|" class="btn btn-primary" onclick="verEntregados({{$order->id}},{{$profile}})" >Items Entregados</a>
                                 <a href="#|" class="btn btn-primary" onclick="nuevoItem({{$order->id}},{{$profile}})" >Items</a>
                                 @if ($perm_btn['erase']==1 || $perm_btn['modify']==1)
                                         @if ($perm_btn['modify']==1)

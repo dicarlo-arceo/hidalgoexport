@@ -81,7 +81,7 @@
         {{-- Inicia pantalla de inicio --}}
         <div class="bd-example bd-example-padded-bottom">
             @if ($perm_btn['addition']==1)
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Nuevo</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModalNewProject">Nuevo</button>
             @endif
         </div>
         <br><br>

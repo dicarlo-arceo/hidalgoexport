@@ -61,11 +61,13 @@ Route::get('processes/order/orders/GetInfoOrder/{id}','OrdersController@GetInfoO
 Route::get('processes/order/orders/GetInfoItem/{id}','OrdersController@GetInfoItem')->name('orders.GetInfoItem');
 Route::get('processes/order/orders/OpenSingleOrder/{id}','OrdersController@OpenSingleOrder')->name('orders.OpenSingleOrder');
 Route::resource('processes/order/orders', 'OrdersController');
-Route::delete('processes/order/orders/DeleteItem/{id}/{idOrder}', 'OrdersController@DeleteItem')->name('orders.DeleteItem');
+Route::delete('processes/order/orders/DeleteItem/{id}/{idOrder}/{tr}', 'OrdersController@DeleteItem')->name('orders.DeleteItem');
 Route::post('processes/order/orders/updateStatus', 'OrdersController@updateStatus')->name('orders.updateStatus');
 Route::post('processes/order/orders/updateItem', 'OrdersController@updateItem')->name('orders.updateItem');
 Route::post('processes/order/orders/updateOrder', 'OrdersController@updateOrder')->name('orders.updateOrder');
 Route::post('processes/order/orders/deleteFile', 'OrdersController@deleteFile')->name('orders.deleteFile');
 Route::post('processes/order/orders/updateTR', 'OrdersController@updateTR')->name('orders.updateTR');
 Route::get('processes/order/orders/GetinfoStatus/{id}', 'OrdersController@GetinfoStatus')->name('orders.GetinfoStatus');
+Route::get('processes/order/orders/GetinfoTR/{id}', 'OrdersController@GetinfoTR')->name('orders.GetinfoTR');
+Route::get('processes/order/orders/GetItemsTR/{id}/{tr}', 'OrdersController@GetItemsTR')->name('orders.GetItemsTR');
 

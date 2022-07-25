@@ -24,7 +24,7 @@
                                             <th class="text-center">Back Order</th>
                                             <th class="text-center">Existencia</th>
                                             <th class="text-center">TR</th>
-                                            <th class="text-center">Daños</th>
+                                            <th class="text-center">Estatus</th>
                                             <th class="text-center">Precio Neto</th>
                                             <th class="text-center">Precio Total</th>
                                             @if ($perm_btn['erase']==1)
@@ -141,7 +141,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secundary" onclick="cancelarItem()">Cancelar</button>
                 @if ($perm_btn['addition']==1)
-                    <button type="button" onclick="newItem()" class="btn btn-primary">Agregar Item</button>
+                    <button type="button" id="btnNewItem" style="display: none;" onclick="newItem()" class="btn btn-primary">Agregar Item</button>
                 @endif
                 {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
             </div>
@@ -413,3 +413,49 @@
     </div>
 </div>
 {{-- fin modal| --}}
+{{-- inicia modal selector de tr --}}
+<div id="mySelectTRModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        {{-- <form action="orders/updateStatus" enctype="multipart/form-data" method="POST">
+            @csrf
+            <input type="text" id="id" name="id" hidden> --}}
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="gridModalLabek">Trámite</h4>
+                <button type="button" onclick="cerrarSelectTR()" class="close" aria-label="Close">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid bd-example-row">
+                    <div class="col-md-12">
+                        <div class="row" id = "sTR" style="display: none;">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="">Seleccionar el número de trámite:</label>
+                                    <select name="selectTR" id="selectTR" class="form-select">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="lvl" style="display: none;">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>No hay trámites disponibles</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="cerrarSelectTR()" class="btn btn-secundary">Cancelar</button>
+                <button type="button" id="btnAcceptTr" style="display: none;" onclick="abrirSeleccionTR()" class="btn btn-primary">Aceptar</button>
+            </div>
+        {{-- </form> --}}
+        </div>
+    </div>
+</div>
+
+{{-- fin modal --}}
