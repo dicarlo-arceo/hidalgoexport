@@ -155,6 +155,12 @@ function cancelarItem()
 }
 function newItem()
 {
+    $("#item_number").val("");
+    $("#description").val("");
+    $("#back_order").val("");
+    $("#existence").val("");
+    $("#net_price").val("");
+    $("#total_price").val("");
     $("#myModal").modal('show');
 }
 function cancelarNewItem()
@@ -729,7 +735,7 @@ function verEntregados(id,profile)
         success:function(result)
         {
             console.log(result.data);
-            if((result.data.length == 1 && result.data[0].tr == 0) || result.data.length == 0)
+            if(result.data.length == 0)
             {
                 lvl.style.display = "";
                 sTR.style.display = "none";

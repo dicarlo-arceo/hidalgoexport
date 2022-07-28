@@ -151,8 +151,8 @@ class OrdersController extends Controller
             $item->back_order = $status->back_order;
             $item->existence = 0;
             $item->fk_status = 6;
-            $item->net_price = $status->net_price;
-            $item->total_price = $status->total_price;
+            $item->net_price = 0;
+            $item->total_price = 0;
             $item->save();
         }
 
