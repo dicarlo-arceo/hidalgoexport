@@ -12,6 +12,8 @@ use App\Project;
 use App\Status;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use Codedge\Fpdf\Fpdf\Fpdf;
+use App\Controllers\PdfClass;
 use DB;
 
 class OrdersController extends Controller
@@ -340,5 +342,26 @@ class OrdersController extends Controller
             }
         }
         return $items;
+    }
+    public function GetPDF($id,$cellar,$comition,$dlls,$date,$pkgs)
+    {
+        $order = DB::table('Orders')->select("Projects.name as projectName","address",'cellphone',"order_number")
+                ->join('Projects',"Projects.id","=","fk_project")
+                ->join('users',"users.id","=","fk_user")
+                ->where('Orders.id',"=",$id)->first();
+        $pdf = new PDF();
+        $pdf->PrintChapter($order,$cellar,$comition,$dlls,$date,$pkgs);
+        $pdf->Output('D',"Orden_".$order->order_number.".pdf");
+        return;
+    }
+    public function ItemsPDF($order,$tr)
+    {
+        $items = $this->GetItemsBack($order,$tr);
+        $pdf = new PDFItems();
+        $pdf->PrintPDF($items);
+        $orderName = Order::select("order_number")->where('id',$order)->first();
+        // dd($orderName);
+        $pdf->Output('D',"Items_de_orden_".$orderName->order_number.".pdf");
+        return;
     }
 }

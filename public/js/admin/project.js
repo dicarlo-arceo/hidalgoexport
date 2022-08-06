@@ -179,7 +179,7 @@ function abrirOrden(id,profile)
         success:function(result)
         {
             result.data.forEach( function(valor, indice, array) {
-                btnTrash = '<button href="#|" class="btn btn-primary" onclick="verEntregados('+valor.id+','+profile+')" >Ver Entregados</button> <button href="#|" class="btn btn-primary" onclick="nuevoItem('+valor.id+','+profile+')" >Items</button> <button type="button" class="btn btn-warning"'+'onclick="editarOrden('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="eliminarOrden('+valor.id+')"><i class="fa fa-trash"></i></button>';
+                btnTrash = '<button href="#|" class="btn btn-primary" onclick="verEntregados('+valor.id+','+profile+')" title = "Items Entregados"><i class="fas fa-clipboard-check"></i></button> <button href="#|" class="btn btn-primary" onclick="nuevoItem('+valor.id+','+profile+')" title = "Items Pendientes"><i class="fas fa-clipboard-list"></i></button> <button type="button" class="btn btn-warning"'+'onclick="editarOrden('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="eliminarOrden('+valor.id+')"><i class="fa fa-trash"></i></button>';
                 // console.log(valor.project);
                 table.row.add([valor.order_number,valor.name,btnTrash]).node().id = valor.id;
             });

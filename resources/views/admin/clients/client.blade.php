@@ -109,7 +109,7 @@
                                     <div class="col-md-12">
                                         <label for="">Proyecto: </label>
                                         <select name="selectProject" id="selectProject" class="form-select">
-                                            <option hidden selected>Selecciona una opción</option>
+                                            <option hidden value='0' selected>Selecciona una opción</option>
                                             @foreach ($projects as $id => $project)
                                                 <option value='{{ $id }}'>{{ $project }}</option>
                                             @endforeach

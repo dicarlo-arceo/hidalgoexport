@@ -74,8 +74,8 @@ function formatToCurrency(amount){
 idOrder = 0;
 profileOrder = 0;
 cellar = 0;
-flagTR = null;
-
+flagTR = "null";
+pdfResult = null;
 
 
 function refreshTable(result)
@@ -83,9 +83,11 @@ function refreshTable(result)
     var table = $('#tbProf1').DataTable();
     table.clear();
     cellar = 0;
-    console.log(result);
+    // console.log(result);
     if(result.flag != 1)
     {
+        pdfResult = result.data;
+        console.log(pdfResult);
         if(profileOrder != 61)
         {
             result.data.forEach( function(valor, indice, array) {
@@ -104,7 +106,7 @@ function refreshTable(result)
                 btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
                 table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,valor.tr,btnStatus,
                     formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
-                cellar += valor.total_price;
+                cellar += parseFloat(valor.total_price);
             });
         }
     }
@@ -131,7 +133,7 @@ function nuevoItem(id,profile)
     var route = baseUrlOrder + '/GetInfo/'+ id;
     var btnNewItem = document.getElementById("btnNewItem");
 
-    flagTR = null;
+    flagTR = "null";
 
     $("#amount").val("");
     table.clear();
@@ -781,4 +783,82 @@ function abrirSeleccionTR()
             $("#myModal2").modal('show');
         }
     })
+}
+function dwnldPDF()
+{
+    var paymntDetails = $("#paymntDetails").prop('checked');
+    if(paymntDetails)
+    {
+        cellar = $("#cellar").val();
+        comition = $("#comition").val();
+        dlls = $("#dlls").val();
+    }
+    else
+    {
+        cellar = 1;
+        comition = 1;
+        dlls = 1;
+    }
+    var route = baseUrlOrder + '/GetPDF/' + idOrder + '/' + cellar + '/' + comition + '/' + dlls + '/' + $("#datePDF").val() + '/' + $("#pkgs").val();
+
+    $.ajaxSetup({
+        headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
+    });
+
+    var form = $('<form></form>');
+    form.attr("method", "get");
+    form.attr("action", route);
+    form.attr('_token',$("meta[name='csrf-token']").attr("content"));
+    $.each(function(key, value) {
+        var field = $('<input></input>');
+        field.attr("type", "hidden");
+        field.attr("name", key);
+        field.attr("value", value);
+        form.append(field);
+    });
+    var field = $('<input></input>');
+    field.attr("type", "hidden");
+    field.attr("name", "_token");
+    field.attr("value", $("meta[name='csrf-token']").attr("content"));
+    form.append(field);
+    $(document.body).append(form);
+    form.submit();
+}
+function abrirPDF()
+{
+    $("#datePDF").val("");
+    $("#pkgs").val("");
+    $("#myModalPDF").modal('show');
+}
+function cerrarPDF()
+{
+    $("#myModalPDF").modal('hide');
+}
+function ItemsPDF()
+{
+    var route = baseUrlOrder + '/ItemsPDF/' + idOrder + '/' + flagTR;
+
+    $.ajaxSetup({
+        headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
+    });
+
+    var form = $('<form></form>');
+    form.attr("method", "get");
+    form.attr("action", route);
+    form.attr("data", pdfResult);
+    form.attr('_token',$("meta[name='csrf-token']").attr("content"));
+    $.each(function(key, value) {
+        var field = $('<input></input>');
+        field.attr("type", "hidden");
+        field.attr("name", key);
+        field.attr("value", value);
+        form.append(field);
+    });
+    var field = $('<input></input>');
+    field.attr("type", "hidden");
+    field.attr("name", "_token");
+    field.attr("value", $("meta[name='csrf-token']").attr("content"));
+    form.append(field);
+    $(document.body).append(form);
+    form.submit();
 }

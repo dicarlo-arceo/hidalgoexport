@@ -70,4 +70,6 @@ Route::post('processes/order/orders/updateTR', 'OrdersController@updateTR')->nam
 Route::get('processes/order/orders/GetinfoStatus/{id}', 'OrdersController@GetinfoStatus')->name('orders.GetinfoStatus');
 Route::get('processes/order/orders/GetinfoTR/{id}', 'OrdersController@GetinfoTR')->name('orders.GetinfoTR');
 Route::get('processes/order/orders/GetItemsTR/{id}/{tr}', 'OrdersController@GetItemsTR')->name('orders.GetItemsTR');
+Route::get('processes/order/orders/GetPDF/{id}/{cellar}/{comition}/{dlls}/{date}/{pkgs}', 'OrdersController@GetPDF')->name('orders.GetPDF');
+Route::get('processes/order/orders/ItemsPDF/{order}/{tr}', 'OrdersController@ItemsPDF')->name('orders.ItemsPDF');
 
