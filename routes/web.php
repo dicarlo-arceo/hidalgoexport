@@ -63,13 +63,15 @@ Route::get('processes/order/orders/OpenSingleOrder/{id}','OrdersController@OpenS
 Route::resource('processes/order/orders', 'OrdersController');
 Route::delete('processes/order/orders/DeleteItem/{id}/{idOrder}/{tr}', 'OrdersController@DeleteItem')->name('orders.DeleteItem');
 Route::post('processes/order/orders/updateStatus', 'OrdersController@updateStatus')->name('orders.updateStatus');
+Route::post('processes/order/orders/updateStatusOrder', 'OrdersController@updateStatusOrder')->name('orders.updateStatusOrder');
 Route::post('processes/order/orders/updateItem', 'OrdersController@updateItem')->name('orders.updateItem');
 Route::post('processes/order/orders/updateOrder', 'OrdersController@updateOrder')->name('orders.updateOrder');
 Route::post('processes/order/orders/deleteFile', 'OrdersController@deleteFile')->name('orders.deleteFile');
 Route::post('processes/order/orders/updateTR', 'OrdersController@updateTR')->name('orders.updateTR');
 Route::get('processes/order/orders/GetinfoStatus/{id}', 'OrdersController@GetinfoStatus')->name('orders.GetinfoStatus');
+Route::get('processes/order/orders/GetinfoStatusOrder/{id}', 'OrdersController@GetinfoStatusOrder')->name('orders.GetinfoStatusOrder');
 Route::get('processes/order/orders/GetinfoTR/{id}', 'OrdersController@GetinfoTR')->name('orders.GetinfoTR');
 Route::get('processes/order/orders/GetItemsTR/{id}/{tr}', 'OrdersController@GetItemsTR')->name('orders.GetItemsTR');
 Route::get('processes/order/orders/GetPDF/{id}/{cellar}/{comition}/{dlls}/{date}/{pkgs}', 'OrdersController@GetPDF')->name('orders.GetPDF');
-Route::get('processes/order/orders/ItemsPDF/{order}/{tr}', 'OrdersController@ItemsPDF')->name('orders.ItemsPDF');
+Route::get('processes/order/orders/ItemsPDF/{order}/{tr}/{cellar}/{comition}/{mxn_total}/{iva}/{mxn_invoice}', 'OrdersController@ItemsPDF')->name('orders.ItemsPDF');
 

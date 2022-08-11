@@ -61,6 +61,10 @@ function guardarempresa(permisos)
             });
             table.draw(false);
             // window.location.reload(true);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 
@@ -80,6 +84,10 @@ function editarempresa(id)
         {
             $("#name1").val(result.data.name);
             $("#myModaledit").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -107,6 +115,10 @@ function actualizarempresa()
             alertify.success(result.message);
             $("#myModaledit").modal('hide');
             window.location.reload(true);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -128,6 +140,10 @@ function eliminarempresa(id)
                 success:function(result)
                 {
                     window.location.reload(true);
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
                 }
             })
             alertify.success('Eliminado');

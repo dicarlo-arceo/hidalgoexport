@@ -354,14 +354,65 @@ class OrdersController extends Controller
         $pdf->Output('D',"Orden_".$order->order_number.".pdf");
         return;
     }
-    public function ItemsPDF($order,$tr)
+    public function ItemsPDF($order,$tr,$cellar,$comition,$mxn_total,$iva,$mxn_invoice)
     {
         $items = $this->GetItemsBack($order,$tr);
+        $ord = Order::where('id',$order)->first();
         $pdf = new PDFItems();
-        $pdf->PrintPDF($items);
+        $pdf->PrintPDF($items,$ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice);
         $orderName = Order::select("order_number")->where('id',$order)->first();
         // dd($orderName);
         $pdf->Output('D',"Items_de_orden_".$orderName->order_number.".pdf");
         return;
+    }
+    public function GetinfoStatusOrder($id)
+    {
+        $item = DB::table('Items')->select("Status.id","name")
+            ->join('Status',"Status.id","=","fk_status")
+            ->groupBy('fk_status')
+            ->where('fk_order',"=",$id)
+            ->whereNull('Items.deleted_at')->get();
+        // dd($item);
+        return response()->json(['status'=>true, "data"=>$item]);
+    }
+    public function updateStatusOrder(Request $request)
+    {
+        $flag = 0;
+        foreach ($request->ids as $item)
+        {
+            $itm = Item::where('id',$item)->first();
+            // dd($request->statusNew,$itm->back_order,$itm->fk_status);
+            if($request->statusNew == "8" && $itm->back_order != 0 && $itm->fk_status != 8)
+            {
+                $newitem = new Item;
+                $newitem->fk_order = $itm->fk_order;
+                $newitem->store = $itm->store;
+                $newitem->item_number = $itm->item_number;
+                $newitem->description = $itm->description;
+                $newitem->back_order = $itm->back_order;
+                $newitem->existence = 0;
+                $newitem->fk_status = 6;
+                $newitem->net_price = 0;
+                $newitem->total_price = 0;
+                $newitem->save();
+            }
+
+            if($request->trStatusAll == "") $itm = Item::where('id',$item)->update(['fk_status'=>$request->statusNew]);
+            else if($request->statusNew == null) $itm = Item::where('id',$item)->update(['tr'=>$request->trStatusAll]);
+            else $itm = Item::where('id',$item)->update(['fk_status'=>$request->statusNew,'tr'=>$request->trStatusAll]);
+        }
+
+        $items = $this->GetItemsBack($request->idOrder,$request->flagTR);
+        if(count($items) == 0)
+        {
+            // dd("entre");
+            $flag = 1;
+            $items = DB::table('Orders')->select("*")
+                ->where('id',$request->idOrder)
+                ->whereNull('deleted_at')->get();
+        }
+        // dd($request->flagTR);
+        // return;
+        return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$items,"flag"=>$flag]);
     }
 }

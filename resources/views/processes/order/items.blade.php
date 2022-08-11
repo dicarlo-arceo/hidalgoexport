@@ -9,6 +9,18 @@
             </div>
 
             <div class="modal-body">
+                <div class="form-group">
+                    @if ($perm_btn['modify']==1)
+                        &nbsp;&nbsp;
+                        <input class="form-check-input" type="checkbox" onclick="chkAll()" id="chkAll">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label class="form-check-label">
+                            Seleccionar Todos
+                        </label>
+                        &nbsp;&nbsp;
+                        <button type="button" id="btnChangeAll" class="btn btn-primary" onclick="abrirEstatusTodos()" disabled>Editar Selección</a>
+                    @endif
+                </div>
                 <div class="container-fluid bd-example-row">
                     <div class="col-lg-12">
                         {{-- <div class="row align-items-center"> --}}
@@ -18,6 +30,7 @@
                                 <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
                                     <table class="table table-striped table-hover text-center" id="tbProf1">
                                         <thead>
+                                            <th class="text-center"></th>
                                             <th class="text-center">Tienda</th>
                                             <th class="text-center"># de Item</th>
                                             <th class="text-center">Descripción</th>
@@ -142,9 +155,9 @@
                 <button type="button" class="btn btn-secundary" onclick="cancelarItem()">Cancelar</button>
                 @if ($perm_btn['addition']==1)
                     <button type="button" id="btnNewItem" style="display: none;" onclick="newItem()" class="btn btn-primary">Agregar Item</button>
-                    <button type="button" id="btnNewItem" onclick="abrirPDF()" class="btn btn-primary">Descargar PDF</button>
+                    <button type="button" id="btnNewItem" onclick="abrirPDF()" class="btn btn-primary">Hoja de Cobro</button>
                 @endif
-                <button type="button" id="btnNewItem" onclick="ItemsPDF()" class="btn btn-primary">Descargar Items en PDF</button>
+                <button type="button" id="btnNewItem" onclick="abrirPDFItems()" class="btn btn-primary">Descargar Items en PDF</button>
                 {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
             </div>
         </div>
@@ -460,8 +473,8 @@
     </div>
 </div>
 {{-- fin modal --}}
-{{-- modal edit TR --}}
-<div id="myModalPDF" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+{{-- modal modal descargar PDF --}}
+<div id="myModalPDFItems" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
 
@@ -474,26 +487,10 @@
                 <div class="container-fluid bd-example-row">
                     <div class="col-md-12">
                         <div class="row">
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <label for="">Fecha</label>
-                                    <input type="date" name="datePDF" id="datePDF" class = "form-control", rows = "3">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <label for="">Número de Bultos</label>
-                                    <input type="text" id="pkgs" name="pkgs" class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class = "col-lg-12">
                                 <div class="form-group">
                                     <label for="">¿Incluir datos de pago?  </label>
-                                    <input id = "paymntDetails" type="checkbox" data-toggle="toggle" data-on = "Si" data-off="No" data-width="180">
+                                    <input id = "paymntDetailsItems" type="checkbox" data-toggle="toggle" data-on = "Si" data-off="No" data-width="180">
                                     {{-- <input type="text" id="dlls" name="dlls" class="form-control"> --}}
                                 </div>
                             </div>
@@ -502,8 +499,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" onclick="cerrarPDF()" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
-                <button type="button" onclick="dwnldPDF()" class="btn btn-primary">Descargar</button>
+                <button type="button" onclick="cerrarPDFItems()" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
+                <button type="button" onclick="ItemsPDF()" class="btn btn-primary">Descargar</button>
             </div>
         </div>
     </div>

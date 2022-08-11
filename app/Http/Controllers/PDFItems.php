@@ -19,77 +19,77 @@ class PDFItems extends FPDF
         $this->SetFont('Arial','',10);
         // Cabecera
         $this->SetY(10);
-        $this->MultiCell(20,10,"Tienda",1,'C',true);
+        $this->MultiCell(30,10,"Tienda",1,'C',true);
         $this->SetY(10);
-        $this->SetX(30);
-        $this->MultiCell(20,10,"# de Item",1,'C',true);
+        $this->SetX(40);
+        $this->MultiCell(30,10,"# de Item",1,'C',true);
         $this->SetY(10);
-        $this->SetX(50);
-        $this->MultiCell(50,10,utf8_decode("Descripción"),1,'C',true);
+        $this->SetX(70);
+        $this->MultiCell(100,10,utf8_decode("Descripción"),1,'C',true);
         $yprev = $this->GetY();
         $this->SetY(10);
-        $this->SetX(100);
+        $this->SetX(170);
         $this->MultiCell(10,10,"BO",1,'C',true);
         $this->SetY(10);
-        $this->SetX(110);
+        $this->SetX(180);
         $this->MultiCell(10,10,"Exist",1,'C',true);
         $this->SetY(10);
-        $this->SetX(120);
+        $this->SetX(190);
         $this->MultiCell(10,10,"TR",1,'C',true);
         $this->SetY(10);
-        $this->SetX(130);
+        $this->SetX(200);
         $this->MultiCell(20,10,"Estatus",1,'C',true);
         $this->SetY(10);
-        $this->SetX(150);
-        $this->MultiCell(20,10,"$ Net",1,'C',true);
+        $this->SetX(220);
+        $this->MultiCell(30,10,"$ Net",1,'C',true);
         $this->SetY(10);
-        $this->SetX(170);
-        $this->MultiCell(20,10,"$ Total",1,'C',true);
+        $this->SetX(250);
+        $this->MultiCell(30,10,"$ Total",1,'C',true);
         $this->Ln();
         $this->SetFont('Arial','',8);
 
         foreach($data as $row)
         {
             // dd($row->description);
-            if($ycurr > 260)
+            if($ycurr > 180)
             {
-                $this->AddPage();
+                $this->AddPage('L');
                 $yprev = 10;
             }
             $this->SetY($yprev);
-            $this->MultiCell(20,10,utf8_decode($row->store),"T",'C',false);
+            $this->MultiCell(30,6,utf8_decode($row->store),"T",'C',false);
             $ycurr = $this->GetY();
             $this->SetY($yprev);
-            $this->SetX(30);
-            $this->MultiCell(20,10,utf8_decode($row->item_number),"T",'C',false);
+            $this->SetX(40);
+            $this->MultiCell(30,6,utf8_decode($row->item_number),"T",'C',false);
             if($ycurr < $this->GetY()) $ycurr = $this->GetY();
             $this->SetY($yprev);
-            $this->SetX(50);
-            $this->MultiCell(50,10,utf8_decode($row->description),"T",'L',false);
-            if($ycurr < $this->GetY()) $ycurr = $this->GetY();
-            $this->SetY($yprev);
-            $this->SetX(100);
-            $this->MultiCell(10,10,utf8_decode($row->back_order),"T",'C',false);
-            if($ycurr < $this->GetY()) $ycurr = $this->GetY();
-            $this->SetY($yprev);
-            $this->SetX(110);
-            $this->MultiCell(10,10,utf8_decode($row->existence),"T",'C',false);
-            if($ycurr < $this->GetY()) $ycurr = $this->GetY();
-            $this->SetY($yprev);
-            $this->SetX(120);
-            $this->MultiCell(10,10,utf8_decode($row->tr),"T",'C',false);
-            if($ycurr < $this->GetY()) $ycurr = $this->GetY();
-            $this->SetY($yprev);
-            $this->SetX(130);
-            $this->MultiCell(20,10,utf8_decode($row->name),"T",'C',false);
-            if($ycurr < $this->GetY()) $ycurr = $this->GetY();
-            $this->SetY($yprev);
-            $this->SetX(150);
-            $this->MultiCell(20,10,"$" . number_format(floatval(preg_replace('/[^\d\.]+/', '', $row->net_price)), 2, ".", ","),"T",'C',false);
+            $this->SetX(70);
+            $this->MultiCell(100,6,utf8_decode($row->description),"T",'L',false);
             if($ycurr < $this->GetY()) $ycurr = $this->GetY();
             $this->SetY($yprev);
             $this->SetX(170);
-            $this->MultiCell(20,10,"$" . number_format(floatval(preg_replace('/[^\d\.]+/', '', $row->total_price)), 2, ".", ","),"T",'C',false);
+            $this->MultiCell(10,6,utf8_decode($row->back_order),"T",'C',false);
+            if($ycurr < $this->GetY()) $ycurr = $this->GetY();
+            $this->SetY($yprev);
+            $this->SetX(180);
+            $this->MultiCell(10,6,utf8_decode($row->existence),"T",'C',false);
+            if($ycurr < $this->GetY()) $ycurr = $this->GetY();
+            $this->SetY($yprev);
+            $this->SetX(190);
+            $this->MultiCell(10,6,utf8_decode($row->tr),"T",'C',false);
+            if($ycurr < $this->GetY()) $ycurr = $this->GetY();
+            $this->SetY($yprev);
+            $this->SetX(200);
+            $this->MultiCell(20,6,utf8_decode($row->name),"T",'C',false);
+            if($ycurr < $this->GetY()) $ycurr = $this->GetY();
+            $this->SetY($yprev);
+            $this->SetX(220);
+            $this->MultiCell(30,6,"$" . number_format(floatval(preg_replace('/[^\d\.]+/', '', $row->net_price)), 2, ".", ","),"T",'C',false);
+            if($ycurr < $this->GetY()) $ycurr = $this->GetY();
+            $this->SetY($yprev);
+            $this->SetX(250);
+            $this->MultiCell(30,6,"$" . number_format(floatval(preg_replace('/[^\d\.]+/', '', $row->total_price)), 2, ".", ","),"T",'C',false);
             if($ycurr < $this->GetY()) $ycurr = $this->GetY();
             $yprev = $ycurr;
             $this->Ln();
@@ -98,28 +98,61 @@ class PDFItems extends FPDF
         $this->SetFillColor(224,235,255);
         $this->SetTextColor(0);
         $this->SetFont('Arial','',13);
-        // Datos
-        // $fill = false;
-        // foreach($data as $row)
-        // {
-        //     $this->Cell($w[0],6,$row[0],'LR',0,'L',$fill);
-        //     $this->Cell($w[1],6,$row[1],'LR',0,'L',$fill);
-        //     $this->Cell($w[2],6,number_format($row[2]),'LR',0,'R',$fill);
-        //     $this->Cell($w[3],6,number_format($row[3]),'LR',0,'R',$fill);
-        //     $this->Ln();
-        //     $fill = !$fill;
-        // }
-        // // Línea de cierre
-        // $this->Cell(array_sum($w),0,'','T');
     }
-    function PrintPDF($data)
+    function AddPayment($ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice)
+    {
+        $this->SetMargins(10, 20, 10);
+        $this->AddPage();
+        $this->SetFont('Arial','B',22);
+        $this->Cell(180,10,"Detalles de Pago",0,0,'C');
+        $this->Ln();
+        $this->Ln();
+        $this->SetFont('Arial','B',13);
+        $this->Cell(60,10,'TIPO DE CAMBIO',1,0,'C',true);
+        $this->Cell(60,10,'PORCENTAJE',1,0,'C',true);
+        $this->Cell(60,10,'GASTOS VARIOS',1,0,'C',true);
+        $this->Ln();
+        $this->SetFont('Arial','',13);
+        $this->Cell(60,10,$ord->exc_rate,1,0,'C');
+        $this->Cell(60,10,$ord->percentage,1,0,'C');
+        $this->Cell(60,10,$ord->expenses,1,0,'C');
+        $this->Ln();
+        $this->Ln();
+        $this->SetFont('Arial','B',13);
+        $this->Cell(90,10,'CONCEPTO',1,0,'C',true);
+        $this->Cell(90,10,'TOTAL',1,0,'C',true);
+        $this->Ln();
+        $this->SetFont('Arial','',13);
+        $this->Cell(90,10,"BODEGA","LR",0,'L');
+        $this->Cell(90,10,$cellar,"LR",0,'L');
+        $this->Ln();
+        $this->SetFont('Arial','',13);
+        $this->Cell(90,10,utf8_decode("COMISIÓN"),"LR",0,'L');
+        $this->Cell(90,10,$comition,"LR",0,'L');
+        $this->Ln();
+        $this->SetFont('Arial','',13);
+        $this->Cell(90,10,"TOTAL EN PESOS","LR",0,'L');
+        $this->Cell(90,10,$mxn_total,"LR",0,'L');
+        $this->Ln();
+        $this->SetFont('Arial','',13);
+        $this->Cell(90,10,"IVA","LR",0,'L');
+        $this->Cell(90,10,$iva,"LR",0,'L');
+        $this->Ln();
+        $this->SetFont('Arial','',13);
+        $this->Cell(90,10,"PRECIO A FACTURAR","LRB",0,'L');
+        $this->Cell(90,10,$mxn_invoice,"LRB",0,'L');
+    }
+    function PrintPDF($data,$ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice)
     {
         // dd($data);
 
         // $this->SetMargins(0, 0, 0);
         $this->SetAutoPageBreak(false);
-        $this->AddPage();
+        $this->AddPage('L');
         $this->FancyTable($data);
+        // dd($ord);
+        if($cellar != "1" && $comition != "1")
+            $this->AddPayment($ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice);
     }
 }
 ?>

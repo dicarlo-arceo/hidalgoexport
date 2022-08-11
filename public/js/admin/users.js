@@ -70,6 +70,10 @@ function guardarUsuario()
             alertify.success(result.message);
             $("#myModal").modal('hide');
             window.location.reload(true);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -95,6 +99,10 @@ function editarUsuario(id)
             $("#selectProfile1").val(result.data.fk_profile);
             $("#myModaledit").modal('show');
 
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -138,6 +146,10 @@ function actualizarUsuario()
             alertify.success(result.message);
             $("#myModaledit").modal('hide');
             window.location.reload(true);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -158,6 +170,10 @@ function eliminarUsuario(id)
                 success:function(result)
                 {
                     window.location.reload(true);
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
                 }
             })
             alertify.success('Eliminado');

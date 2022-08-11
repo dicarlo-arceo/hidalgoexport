@@ -67,6 +67,10 @@ function guardarCliente()
             alertify.success(result.message);
             $("#myModal").modal('hide');
             window.location.reload(true);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -92,6 +96,10 @@ function editarCliente(id)
             $("#selectEnterprise1").val(result.data.fk_enterprise);
             $("#myModaledit").modal('show');
 
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -135,6 +143,10 @@ function actualizarCliente()
             alertify.success(result.message);
             $("#myModaledit").modal('hide');
             window.location.reload(true);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -155,6 +167,10 @@ function eliminarCliente(id)
                 success:function(result)
                 {
                     window.location.reload(true);
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
                 }
             })
             alertify.success('Eliminado');
@@ -201,6 +217,10 @@ function guardarOrden()
             alertify.success(result.message);
             $("#myModal").modal('hide');
             window.location.reload(true);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }

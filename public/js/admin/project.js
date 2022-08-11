@@ -89,6 +89,10 @@ function guardarproyecto(permisos)
             });
             table.draw(false);
             // window.location.reload(true);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 
@@ -108,6 +112,10 @@ function editarproyecto(id)
         {
             $("#name1").val(result.data.name);
             $("#myModaledit").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -135,6 +143,10 @@ function actualizarproyecto()
             alertify.success(result.message);
             $("#myModaledit").modal('hide');
             window.location.reload(true);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -156,6 +168,10 @@ function eliminarproyecto(id)
                 success:function(result)
                 {
                     window.location.reload(true);
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
                 }
             })
             alertify.success('Eliminado');
@@ -179,11 +195,15 @@ function abrirOrden(id,profile)
         success:function(result)
         {
             result.data.forEach( function(valor, indice, array) {
-                btnTrash = '<button href="#|" class="btn btn-primary" onclick="verEntregados('+valor.id+','+profile+')" title = "Items Entregados"><i class="fas fa-clipboard-check"></i></button> <button href="#|" class="btn btn-primary" onclick="nuevoItem('+valor.id+','+profile+')" title = "Items Pendientes"><i class="fas fa-clipboard-list"></i></button> <button type="button" class="btn btn-warning"'+'onclick="editarOrden('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="eliminarOrden('+valor.id+')"><i class="fa fa-trash"></i></button>';
+                btnTrash = '<button href="#|" class="btn btn-primary" onclick="verEntregados('+valor.id+','+profile+')" title = "Items Entregados"><i class="fas fa-clipboard-check"></i></button> <button href="#|" class="btn btn-primary" onclick="nuevoItem('+valor.id+','+profile+')" title = "Items Pendientes"><i class="fas fa-clipboard-list"></i></button> <a href="#|" class="btn btn-primary" onclick="abrirEstatusTodos('+valor.id+')" >Estatus Items</a> <button type="button" class="btn btn-warning"'+'onclick="editarOrden('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="eliminarOrden('+valor.id+')"><i class="fa fa-trash"></i></button>';
                 // console.log(valor.project);
                 table.row.add([valor.order_number,valor.name,btnTrash]).node().id = valor.id;
             });
             table.draw(false);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
     $("#myModalOpenOrders").modal('show');

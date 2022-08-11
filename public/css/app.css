@@ -2291,8 +2291,8 @@ textarea.form-control {
 
 .form-check-input {
   position: absolute;
-  margin-top: 0.3rem;
-  margin-left: -1.25rem;
+  margin-top: 0.6rem;
+  /* margin-left: -1.25rem; */
 }
 
 .form-check-input[disabled] ~ .form-check-label,
@@ -10943,4 +10943,5 @@ a.text-dark:focus {
 }
 
 .modal { overflow-y: auto !important; }
+
 

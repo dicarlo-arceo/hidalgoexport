@@ -1,3 +1,4 @@
+{{-- modal cambiar status --}}
 <div id="myEstatusModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         {{-- <form action="orders/updateStatus" enctype="multipart/form-data" method="POST">
@@ -85,3 +86,57 @@
         </div>
     </div>
 </div>
+{{-- fin modal --}}
+{{-- modal cambiar todos los status --}}
+<div id="myEstatusModalTodos" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        {{-- <form action="orders/updateStatus" enctype="multipart/form-data" method="POST">
+            @csrf
+            <input type="text" id="id" name="id" hidden> --}}
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="gridModalLabek">Cambiar estatus a toda la orden:</h4>
+                <button type="button" onclick="cerrarEstatusTodos()" class="close" aria-label="Close">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid bd-example-row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="">Número de Trámite</label>
+                                    <input type="text" id="trStatusAll" name="trStatusAll" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="">Estatus nuevo:</label>
+                                    <select name="selectStatusNew" id="selectStatusNew" class="form-select">
+                                        <option hidden selected value="">Selecciona una opción</option>
+                                        @foreach ($cmbStatus as $id => $status)
+                                            <option value='{{ $id }}'>{{ $status }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="cerrarEstatusTodos()" class="btn btn-secundary">Cancelar</button>
+                @if($perm_btn['modify']==1)
+                    {{-- <button type="submit" class="btn btn-primary">Guardar</button> --}}
+                    <button type="button" id="btnSaveStatusAll" onclick="actualizarEstatusTodos()" class="btn btn-primary">Guardar</button>
+                @endif
+            </div>
+        {{-- </form> --}}
+        </div>
+    </div>
+</div>
+{{-- fin modal --}}

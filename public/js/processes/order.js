@@ -60,6 +60,11 @@ $(document).ready( function () {
             [25, 50, 100, 200, "All"]
         ],
         iDisplayLength: -1,
+        columnDefs: [ {
+            orderable: false,
+            targets:   0
+        } ],
+        order: [[ 1, 'asc' ]]
 
     });
 } );
@@ -76,6 +81,8 @@ profileOrder = 0;
 cellar = 0;
 flagTR = "null";
 pdfResult = null;
+checkedChkb = [];
+chkbIds = [];
 
 
 function refreshTable(result)
@@ -87,24 +94,27 @@ function refreshTable(result)
     if(result.flag != 1)
     {
         pdfResult = result.data;
-        console.log(pdfResult);
+        // console.log(pdfResult);
         if(profileOrder != 61)
         {
+            chkbIds = [];
             result.data.forEach( function(valor, indice, array) {
                 btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
                 if(valor.tr == 0) valTR = "-"; else valTR = valor.tr;
+                chkbox = '<input class="form-check-input" type="checkbox" onclick="chkChange('+valor.id+')" id="chk'+valor.id+'">';
                 btnTR = '<button class="btn btn-info" style="background-color: #FFFFFF !important; border-color: #000000 !important; color: #000000 !important;" onclick="editTR('+ valor.id +','+ valor.tr +')">'+ valTR +'</button>'
                 btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnTR,btnStatus,
+                table.row.add([chkbox,valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnTR,btnStatus,
                     formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
                 cellar += parseFloat(valor.total_price);
+                chkbIds.push(valor.id);
             });
         }
         else
         {
             result.data.forEach( function(valor, indice, array) {
                 btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,valor.tr,btnStatus,
+                table.row.add(["",valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,valor.tr,btnStatus,
                     formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
                 cellar += parseFloat(valor.total_price);
             });
@@ -144,8 +154,18 @@ function nuevoItem(id,profile)
         dataType:'json',
         success:function(result)
         {
+            if(profileOrder != 61)
+            {
+                document.getElementById('btnChangeAll').disabled = false;
+                document.getElementById('chkAll').checked = false;
+                checkedChkb = [];
+            }
             refreshTable(result);
             btnNewItem.style.display = "";
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
     $("#myModal2").modal('show');
@@ -201,6 +221,10 @@ function guardarTR()
             refreshTable(result);
             $("#myModalTR").modal('hide');
             alertify.success(result.message);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -240,6 +264,10 @@ function guardarItem()
             refreshTable(result);
             $("#myModal").modal('hide');
             alertify.success(result.message);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -285,6 +313,10 @@ function editarOrden(id)
             $("#designer").val(result.data.designer);
             $("#orderModal").modal('show');
 
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -318,6 +350,10 @@ function actualizarOrden()
             alertify.success(result.message);
             $("#orderModal").modal('hide');
             window.location.reload(true);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -338,6 +374,10 @@ function eliminarOrden(id)
                 success:function(result)
                 {
                     window.location.reload(true);
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
                 }
             })
             alertify.success('Eliminado');
@@ -367,6 +407,10 @@ function deleteItem(id)
                     refreshTable(result);
                     alertify.success(result.message);
                     $("#myModal").modal('hide');
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
                 }
             })
         },
@@ -486,6 +530,8 @@ function calculoTotales()
     var curr = $("#onoffCurrency").prop('checked');
 
     comition = cellar * parseFloat($("#percent").val())/100;
+    if(comition > 0 && comition < 100)
+        comition = 100;
 
     if(curr)
         comition += parseFloat($("#exp").val());
@@ -534,6 +580,10 @@ function opcionesEstatus(id,statusId)
                 imgShow.style.display = "none";
             }
             $("#myEstatusModal").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -598,6 +648,10 @@ function actualizarEstatus()
             alertify.success(result.message);
             $("#myEstatusModal").modal('hide');
 
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -629,6 +683,10 @@ function editItem(id)
             $("#total_price1").val(result.data.total_price);
             $("#myModalEdit").modal('show');
 
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -670,6 +728,10 @@ function actualizarItem()
             refreshTable(result);
             $("#myModalEdit").modal('hide');
             alertify.success(result.message);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -718,6 +780,10 @@ function deleteFile()
             fileInput.style.display = "";
             imgShow.style.display = "none";
             alertify.success(result.message);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -756,6 +822,10 @@ function verEntregados(id,profile)
                 btnAcceptTr.style.display = "";
             }
             $("#mySelectTRModal").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 
@@ -779,8 +849,16 @@ function abrirSeleccionTR()
             $("#mySelectTRModal").modal('hide');
             btnNewItem.style.display = "none";
             flagTR = selectTR;
+            document.getElementById('btnChangeAll').disabled = false;
+            document.getElementById('chkAll').checked = false;
+            checkedChkb = [];
+
             refreshTable(result);
             $("#myModal2").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
         }
     })
 }
@@ -834,9 +912,31 @@ function cerrarPDF()
 {
     $("#myModalPDF").modal('hide');
 }
+function abrirPDFItems()
+{
+    $("#myModalPDFItems").modal('show');
+}
+function cerrarPDFItems()
+{
+    $("#myModalPDFItems").modal('hide');
+}
 function ItemsPDF()
 {
-    var route = baseUrlOrder + '/ItemsPDF/' + idOrder + '/' + flagTR;
+    var paymntDetails = $("#paymntDetailsItems").prop('checked');
+    if(paymntDetails)
+    {
+        cellar = $("#cellar").val();
+        comition = $("#comition").val();
+        mxn_total = $("#net_mxn").val();
+        iva = $("#iva").val();
+        mxn_invoice = $("#total_invoice").val();
+    }
+    else
+    {
+        cellar = 1;
+        comition = 1;
+    }
+    var route = baseUrlOrder + '/ItemsPDF/' + idOrder + '/' + flagTR + '/' + cellar + '/' + comition + '/' + mxn_total + '/' + iva + '/' + mxn_invoice;
 
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
@@ -861,4 +961,95 @@ function ItemsPDF()
     form.append(field);
     $(document.body).append(form);
     form.submit();
+}
+idItemsOrder = 0;
+function abrirEstatusTodos()
+{
+    $('#selectStatusNew').val("");
+    $('#trStatusAll').val("");
+    $("#myEstatusModalTodos").modal('show');
+}
+function cerrarEstatusTodos()
+{
+    $("#myEstatusModalTodos").modal('hide');
+}
+function actualizarEstatusTodos()
+{
+    var selectStatusNew = $('#selectStatusNew').val();
+    var trStatusAll = $('#trStatusAll').val();
+
+    var route = baseUrlOrder+'/updateStatusOrder';
+    var data = {
+        'id':idItemsOrder,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'statusNew':selectStatusNew,
+        'trStatusAll':trStatusAll,
+        'ids':checkedChkb,
+        'idOrder':idOrder,
+        'flagTR':flagTR,
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            refreshTable(result);
+            document.getElementById('btnChangeAll').disabled = false;
+            document.getElementById('chkAll').checked = false;
+            checkedChkb = [];
+            $("#myEstatusModalTodos").modal('hide');
+            alertify.success('Orden Actualizada');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}
+function chkChange(id)
+{
+    if (document.getElementById('chk'+id).checked)
+    {
+        checkedChkb.push(id);
+    }
+    else
+    {
+        for(var i = 0; i < checkedChkb.length; i++)
+        {
+            if(checkedChkb[i] == id)
+            {
+                checkedChkb.splice(i, 1);
+                break;
+            }
+        }
+    }
+    if(checkedChkb.length == 0) document.getElementById('btnChangeAll').disabled = true;
+    else document.getElementById('btnChangeAll').disabled = false;
+    console.log(checkedChkb);
+}
+function chkAll()
+{
+    chkbIds.forEach(function chechChecked(item)
+    {
+        if (document.getElementById('chkAll').checked)
+        {
+            document.getElementById('chk'+item).checked = true;
+            checkedChkb = chkbIds;
+            chkbIds = [];
+            checkedChkb.forEach(function chechChecked(item)
+            {
+                chkbIds.push(item);
+            });
+            document.getElementById('btnChangeAll').disabled = false;
+        }
+        else
+        {
+            checkedChkb = [];
+            document.getElementById('chk'+item).checked = false;
+            document.getElementById('btnChangeAll').disabled = true;
+        }
+    });
+    console.log(checkedChkb);
 }
