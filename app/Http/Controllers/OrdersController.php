@@ -415,4 +415,134 @@ class OrdersController extends Controller
         // return;
         return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$items,"flag"=>$flag]);
     }
+    public function GetinfoTROrders($id, Request $request)
+    {
+        $trs = array();
+        $adrss = array();
+        foreach ($request->ids as $id)
+        {
+            $items = DB::table('Items')->select("tr")
+            ->where('fk_order',$id)
+            ->where('fk_status',"=",8)
+            ->whereNull('Items.deleted_at')
+            ->groupBy('tr')->get();
+
+            $address = DB::table('Orders')->select("id","address")
+            ->where('id',$id)->first();
+            $auxaddr = array('id' => $address->id, 'address' => $address->address);
+            array_push($adrss, $auxaddr);
+            // array_splice($adrss,$address->id,0,$address->address);
+            // $adrss += $auxaddr;
+
+            foreach($items as $item)
+            {
+                array_push($trs,$item->tr);
+            }
+        }
+        $trs = array_unique($trs);
+        $adrss = $this->unique_multidim_array($adrss,'address');
+        sort($trs);
+        return response()->json(['status'=>true, "data"=>$trs, "address"=>$adrss]);
+    }
+    function unique_multidim_array($array, $key) {
+        $temp_array = array();
+        $i = 0;
+        $key_array = array();
+
+        foreach($array as $val) {
+            if (!in_array($val[$key], $key_array)) {
+                $key_array[$i] = $val[$key];
+                $temp_array[$i] = $val;
+            }
+            $i++;
+        }
+        return $temp_array;
+    }
+    public function GetPDFCobroTodos($flag,$date,$pkgs,$tr,$address,$ids)
+    {
+        $totalCellar = 0;
+        $totalComition = 0;
+        // dd($flag);
+        if($flag == "0")
+        {
+            $ids = explode("-", $ids);
+            // dd($ids);
+            $cellar = 0;
+            $prices = array();
+            foreach($ids as $id)
+            {
+                $cellar = 0;
+                $items = DB::table('Items')->select("total_price")
+                ->join('Orders',"Orders.id","=","fk_order")
+                ->join('Status',"Status.id","=","fk_status")
+                ->where('fk_order',$id)
+                ->where('Status.id',"=",8)
+                ->where('tr',"=",$tr)
+                ->whereNull('Items.deleted_at')->get();
+
+                $order = DB::table('Orders')->select("exc_rate","percentage","expenses","currency")
+                    ->where('Orders.id',"=",$id)->first();
+
+                foreach($items as $item)
+                {
+                    $cellar += floatval($item->total_price);
+                }
+
+                $mxn_total = 0;
+                $comition = $cellar * floatval($order->percentage)/100;
+                if($comition > 0 && $comition < 100) $comition = 100;
+                if(intval($order->currency) == 1) $comition += floatval($order->expenses);
+                $auxarray = array('cellar' => $cellar, 'comition' => $comition);
+                array_push($prices,$auxarray);
+            }
+
+            foreach($prices as $price)
+            {
+                // dd($price);
+                $totalCellar += $price['cellar'];
+                $totalComition += $price['comition'];
+            }
+            // dd(number_format(floatval($totalCellar),2,".",","),number_format(floatval($totalComition),2,".",","));
+
+        }
+        else
+        {
+            $totalCellar = "1";
+            $totalComition = "1";
+        }
+        // dd($totalCellar,$totalComition);
+
+        $order = DB::table('Orders')->select("Projects.name as projectName","address",'cellphone',"order_number","exc_rate")
+                ->join('Projects',"Projects.id","=","fk_project")
+                ->join('users',"users.id","=","fk_user")
+                ->where('Orders.id',"=",$address)->first();
+        $pdf = new PDF();
+        $pdf->PrintChapter($order,"$".number_format(floatval($totalCellar),2,".",","),"$".number_format(floatval($totalComition),2,".",","),number_format(floatval($order->exc_rate),2,".",","),$date,$pkgs);
+        $pdf->Output('D',"HojaDeCobro.pdf");
+    }
+    public function updateBOAll(Request $request)
+    {
+        $flag = 0;
+        foreach ($request->ids as $item)
+        {
+            $itm = Item::where('id',$item)->first();
+            if($itm->back_order != 0)
+            {
+                $itm = Item::where('id',$item)->update(['back_order'=>0,'existence'=>$itm->existence + $itm->back_order]);
+            }
+        }
+
+        $items = $this->GetItemsBack($request->idOrder,$request->flagTR);
+        if(count($items) == 0)
+        {
+            // dd("entre");
+            $flag = 1;
+            $items = DB::table('Orders')->select("*")
+                ->where('id',$request->idOrder)
+                ->whereNull('deleted_at')->get();
+        }
+        // dd($request->flagTR);
+        // return;
+        return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$items,"flag"=>$flag]);
+    }
 }

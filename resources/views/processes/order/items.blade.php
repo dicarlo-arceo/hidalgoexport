@@ -9,28 +9,39 @@
             </div>
 
             <div class="modal-body">
-                <div class="form-group">
-                    @if ($perm_btn['modify']==1)
-                        &nbsp;&nbsp;
-                        <input class="form-check-input" type="checkbox" onclick="chkAll()" id="chkAll">
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <label class="form-check-label">
-                            Seleccionar Todos
-                        </label>
-                        &nbsp;&nbsp;
-                        <button type="button" id="btnChangeAll" class="btn btn-primary" onclick="abrirEstatusTodos()" disabled>Editar Selección</a>
-                    @endif
-                </div>
                 <div class="container-fluid bd-example-row">
                     <div class="col-lg-12">
                         {{-- <div class="row align-items-center"> --}}
                         <br>
                         <div class="row">
+                            @if ($perm_btn['modify']==1)
+                                <div class = "col-lg-2">
+                                    <div class="form-group">
+                                        <input class="form-check-input" type="checkbox" onclick="chkAll()" id="chkAll">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <label class="form-check-label">
+                                            Seleccionar Todos
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class = "col-lg-2">
+                                    <div class="form-group">
+                                        <button type="button" id="btnChangeAll" class="btn btn-primary" onclick="abrirEstatusTodos()" disabled>Editar Selección</a>
+                                    </div>
+                                </div>
+                                <div class = "col-lg-2">
+                                    <div class="form-group">
+                                        <button type="button" id="btnBOAll" class="btn btn-primary" onclick="moverBO()" disabled>BO -> Exist.</a>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="row">
                             <div class="col-lg-12">
                                 <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
                                     <table class="table table-striped table-hover text-center" id="tbProf1">
                                         <thead>
-                                            <th class="text-center"></th>
+                                            @if($perm_btn['modify']==1) <th class="text-center"></th> @endif
                                             <th class="text-center">Tienda</th>
                                             <th class="text-center"># de Item</th>
                                             <th class="text-center">Descripción</th>
@@ -473,6 +484,55 @@
     </div>
 </div>
 {{-- fin modal --}}
+{{-- modal PDF --}}
+<div id="myModalPDF" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="gridModalLabek">PDF</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid bd-example-row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label for="">Fecha</label>
+                                    <input type="date" name="datePDF" id="datePDF" class = "form-control", rows = "3">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label for="">Número de Bultos</label>
+                                    <input type="text" id="pkgs" name="pkgs" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class = "col-lg-12">
+                                <div class="form-group">
+                                    <label for="">¿Incluir datos de pago?  </label>
+                                    <input id = "paymntDetails" type="checkbox" data-toggle="toggle" data-on = "Si" data-off="No" data-width="180">
+                                    {{-- <input type="text" id="dlls" name="dlls" class="form-control"> --}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="cerrarPDF()" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
+                <button type="button" onclick="dwnldPDF()" class="btn btn-primary">Descargar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{-- fin modal| --}}
 {{-- modal modal descargar PDF --}}
 <div id="myModalPDFItems" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -506,3 +566,84 @@
     </div>
 </div>
 {{-- fin modal| --}}
+{{-- inicia modal selector de tr y cobro para hoja cobro --}}
+<div id="mySelectHojaC" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        {{-- <form action="orders/updateStatus" enctype="multipart/form-data" method="POST">
+            @csrf
+            <input type="text" id="id" name="id" hidden> --}}
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="gridModalLabek">Trámite</h4>
+                <button type="button" onclick="cerrarSelectTR()" class="close" aria-label="Close">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid bd-example-row">
+                    <div class="col-md-12">
+                        <div class="row" id = "sTROrder" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Seleccionar el número de trámite:</label>
+                                        <select name="selectTROrder" id="selectTROrder" class="form-select">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Seleccionar la dirección:</label>
+                                        <select name="selectAddressOrder" id="selectAddressOrder" class="form-select">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label for="">Fecha</label>
+                                        <input type="date" name="datePDFOrder" id="datePDFOrder" class = "form-control", rows = "3">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <label for="">Número de Bultos</label>
+                                        <input type="text" id="pkgsOrder" name="pkgs" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class = "col-lg-12">
+                                    <div class="form-group">
+                                        <label for="">¿Incluir datos de pago?  </label>
+                                        <input id = "paymntDetailsOrder" type="checkbox" data-toggle="toggle" data-on = "Si" data-off="No" data-width="180">
+                                        {{-- <input type="text" id="dlls" name="dlls" class="form-control"> --}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="lvlOrder" style="display: none;">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>No hay trámites disponibles</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="cerrarSelectTROrder()" class="btn btn-secundary">Cancelar</button>
+                <button type="button" id="btnAcceptOrder" style="display: none;" onclick="DwnldHojaCobroTodos()" class="btn btn-primary">Aceptar</button>
+            </div>
+        {{-- </form> --}}
+        </div>
+    </div>
+</div>
+{{-- fin modal --}}

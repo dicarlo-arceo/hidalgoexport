@@ -26,7 +26,12 @@ $(document).ready( function () {
               "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
               "sSortDescending": ": Activar para ordenar la columna de manera descendente"
             }
-        }
+        },
+        columnDefs: [ {
+            orderable: false,
+            targets:   0
+        } ],
+        order: [[ 1, 'asc' ]]
     });
 } );
 $(document).ready( function () {
@@ -83,6 +88,8 @@ flagTR = "null";
 pdfResult = null;
 checkedChkb = [];
 chkbIds = [];
+checkedOrderChkb = [];
+chkbOrderIds = [];
 
 
 function refreshTable(result)
@@ -156,7 +163,7 @@ function nuevoItem(id,profile)
         {
             if(profileOrder != 61)
             {
-                document.getElementById('btnChangeAll').disabled = false;
+                document.getElementById('btnChangeAll').disabled = true;
                 document.getElementById('chkAll').checked = false;
                 checkedChkb = [];
             }
@@ -849,7 +856,7 @@ function abrirSeleccionTR()
             $("#mySelectTRModal").modal('hide');
             btnNewItem.style.display = "none";
             flagTR = selectTR;
-            document.getElementById('btnChangeAll').disabled = false;
+            document.getElementById('btnChangeAll').disabled = true;
             document.getElementById('chkAll').checked = false;
             checkedChkb = [];
 
@@ -996,7 +1003,8 @@ function actualizarEstatusTodos()
         success:function(result)
         {
             refreshTable(result);
-            document.getElementById('btnChangeAll').disabled = false;
+            document.getElementById('btnChangeAll').disabled = true;
+            document.getElementById('btnBOAll').disabled = true;
             document.getElementById('chkAll').checked = false;
             checkedChkb = [];
             $("#myEstatusModalTodos").modal('hide');
@@ -1025,9 +1033,17 @@ function chkChange(id)
             }
         }
     }
-    if(checkedChkb.length == 0) document.getElementById('btnChangeAll').disabled = true;
-    else document.getElementById('btnChangeAll').disabled = false;
-    console.log(checkedChkb);
+    if(checkedChkb.length == 0)
+    {
+        document.getElementById('btnChangeAll').disabled = true;
+        document.getElementById('btnBOAll').disabled = true;
+    }
+    else
+    {
+        document.getElementById('btnChangeAll').disabled = false;
+        document.getElementById('btnBOAll').disabled = false;
+    }
+    // console.log(checkedChkb);
 }
 function chkAll()
 {
@@ -1042,14 +1058,200 @@ function chkAll()
             {
                 chkbIds.push(item);
             });
-            document.getElementById('btnChangeAll').disabled = false;
+        document.getElementById('btnBOAll').disabled = false;
+        document.getElementById('btnChangeAll').disabled = false;
         }
         else
         {
             checkedChkb = [];
             document.getElementById('chk'+item).checked = false;
-            document.getElementById('btnChangeAll').disabled = true;
+        document.getElementById('btnBOAll').disabled = true;
+        document.getElementById('btnChangeAll').disabled = true;
         }
     });
-    console.log(checkedChkb);
+    // console.log(checkedChkb);
+}
+function chkOrderChange(id)
+{
+    if (document.getElementById('chkOrder'+id).checked)
+    {
+        checkedOrderChkb.push(id);
+    }
+    else
+    {
+        for(var i = 0; i < checkedOrderChkb.length; i++)
+        {
+            if(checkedOrderChkb[i] == id)
+            {
+                checkedOrderChkb.splice(i, 1);
+                break;
+            }
+        }
+    }
+    if(checkedOrderChkb.length == 0)
+    {
+        document.getElementById('btnOrderUncheckAll').disabled = true;
+        document.getElementById('btnOrderChangeAll').disabled = true;
+    }
+
+    else
+    {
+        document.getElementById('btnOrderUncheckAll').disabled = false;
+        document.getElementById('btnOrderChangeAll').disabled = false;
+    }
+    // console.log(checkedOrderChkb);
+}
+function UncheckTodos()
+{
+    checkedOrderChkb.forEach(function chechChecked(item)
+    {
+        document.getElementById('chkOrder'+item).checked = false;
+    });
+    checkedOrderChkb = [];
+    document.getElementById('btnOrderChangeAll').disabled = true;
+    document.getElementById('btnOrderUncheckAll').disabled = true;
+    // console.log(checkedOrderChkb);
+}
+function HojaCobroTodos()
+{
+    var selectTR = $('#selectTROrder');
+    var selectAddress = $('#selectAddressOrder');
+    var sTR = document.getElementById("sTROrder");
+    var lvl = document.getElementById("lvlOrder");
+    var btnAcceptTr = document.getElementById("btnAcceptOrder");
+    var route = baseUrlOrder + '/GetinfoTROrders/1';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'ids':checkedOrderChkb
+    };
+
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            console.log(result);
+            if(result.data.length == 0)
+            {
+                lvl.style.display = "";
+                sTR.style.display = "none";
+                btnAcceptTr.style.display = "none";
+            }
+            else
+            {
+                $("#datePDFOrder").val("");
+                $("#pkgsOrder").val("");
+
+                $("#selectTROrder").empty();
+                selectTR.append('<option selected hidden value="">Seleccione una opción</option>');
+                result.data.forEach( function(valor, indice, array) {
+                    if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
+                });
+
+                $("#selectAddressOrder").empty();
+                selectAddress.append('<option selected hidden value="">Seleccione una opción</option>');
+                // result.address.forEach( function(valor, indice, array) {
+                //     selectAddress.append("<option value='" + valor.id + "'>" + valor.address + "</option>");
+                // });
+                Object.values(result.address).forEach(val => {
+                    selectAddress.append("<option value='" + val['id'] + "'>" + val['address'] + "</option>");
+                  });
+
+                sTR.style.display = "";
+                lvl.style.display = "none";
+                btnAcceptTr.style.display = "";
+            }
+            $("#mySelectHojaC").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}
+function cerrarSelectTROrder()
+{
+    $("#mySelectHojaC").modal('hide');
+}
+function DwnldHojaCobroTodos()
+{
+    var paymntDetails = $("#paymntDetailsOrder").prop('checked');
+    if(paymntDetails)
+    {
+        flag = 0;
+        // cellar = $("#cellar").val();
+        // comition = $("#comition").val();
+        // dlls = $("#dlls").val();
+    }
+    else
+    {
+        flag = 1;
+    }
+    stringaux = "";
+    checkedOrderChkb.forEach(function(valor, indice, array) {
+        stringaux = stringaux.concat(String(valor));
+        if(checkedOrderChkb.length-1 != indice) stringaux = stringaux.concat("-");
+    });
+
+    var route = baseUrlOrder + '/GetPDFCobroTodos/' + flag + '/' + $("#datePDFOrder").val() + '/' + $("#pkgsOrder").val() + '/' + $("#selectTROrder").val() + '/' + $("#selectAddressOrder").val() + '/' + stringaux;
+
+    $.ajaxSetup({
+        headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
+    });
+
+    var form = $('<form></form>');
+    form.attr("method", "get");
+    form.attr("action", route);
+    form.attr('_token',$("meta[name='csrf-token']").attr("content"));
+    $.each(function(key, value) {
+        var field = $('<input></input>');
+        field.attr("type", "hidden");
+        field.attr("name", key);
+        field.attr("value", value);
+        form.append(field);
+    });
+    var field = $('<input></input>');
+    field.attr("type", "hidden");
+    field.attr("name", "_token");
+    field.attr("value", $("meta[name='csrf-token']").attr("content"));
+    form.append(field);
+    $(document.body).append(form);
+    form.submit();
+}
+function moverBO()
+{
+    var route = baseUrlOrder+'/updateBOAll';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'ids':checkedChkb,
+        'idOrder':idOrder,
+        'flagTR':flagTR,
+    };
+    alertify.confirm("Back Order","¿Desea transferir la back order a existencias?",
+        function(){
+            jQuery.ajax({
+                url:route,
+                type:'post',
+                data:data,
+                dataType:'json',
+                success:function(result)
+                {
+                    refreshTable(result);
+                    document.getElementById('btnChangeAll').disabled = true;
+                    document.getElementById('btnBOAll').disabled = true;
+                    document.getElementById('chkAll').checked = false;
+                    checkedChkb = [];
+                    alertify.success('Orden Actualizada');
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
+                }
+            })
+        },
+        function(){
+            alertify.error('Cancelado');
+    });
 }

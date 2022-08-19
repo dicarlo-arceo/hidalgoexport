@@ -2291,7 +2291,7 @@ textarea.form-control {
 
 .form-check-input {
   position: absolute;
-  margin-top: 0.6rem;
+  margin-top: 0 rem;
   /* margin-left: -1.25rem; */
 }
 

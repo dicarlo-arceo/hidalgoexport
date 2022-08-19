@@ -74,4 +74,7 @@ Route::get('processes/order/orders/GetinfoTR/{id}', 'OrdersController@GetinfoTR'
 Route::get('processes/order/orders/GetItemsTR/{id}/{tr}', 'OrdersController@GetItemsTR')->name('orders.GetItemsTR');
 Route::get('processes/order/orders/GetPDF/{id}/{cellar}/{comition}/{dlls}/{date}/{pkgs}', 'OrdersController@GetPDF')->name('orders.GetPDF');
 Route::get('processes/order/orders/ItemsPDF/{order}/{tr}/{cellar}/{comition}/{mxn_total}/{iva}/{mxn_invoice}', 'OrdersController@ItemsPDF')->name('orders.ItemsPDF');
+Route::get('processes/order/orders/GetinfoTROrders/{id}', 'OrdersController@GetinfoTROrders')->name('orders.GetinfoTROrders');
+Route::get('processes/order/orders/GetPDFCobroTodos/{flag}/{date}/{pkgs}/{tr}/{address}/{ids}', 'OrdersController@GetPDFCobroTodos')->name('orders.GetPDFCobroTodos');
+Route::post('processes/order/orders/updateBOAll', 'OrdersController@updateBOAll')->name('orders.updateBOAll');
 

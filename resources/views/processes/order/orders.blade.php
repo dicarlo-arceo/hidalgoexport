@@ -7,9 +7,16 @@
     @include('processes.order.items')
     @include('processes.status.status')
         {{-- Inicia pantalla de inicio --}}
+        @if ($perm_btn['modify']==1)
+            <button type="button" id="btnOrderUncheckAll" class="btn btn-primary" onclick="UncheckTodos()" disabled>Quitar Selección</button>
+            &nbsp;&nbsp;
+            <button type="button" id="btnOrderChangeAll" class="btn btn-primary" onclick="HojaCobroTodos()" disabled>Hoja de Cobro</button>
+        @endif
+        <br><br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
             <table class="table table-striped table-hover text-center" id="tbProf">
                 <thead>
+                    <th class="text-center"></th>
                     <th class="text-center"># de orden</th>
                     <th class="text-center">Proyecto</th>
                     <th class="text-center">Cliente</th>
@@ -19,6 +26,7 @@
                 <tbody>
                     @foreach ($orders as $order)
                         <tr id="{{$order->id}}">
+                            <td><input class="form-check-input" type="checkbox" onclick="chkOrderChange({{$order->id}})" id="chkOrder{{$order->id}}"></td>
                             <td>{{$order->order_number}}</td>
                             <td>{{$order->project}}</td>
                             <td>{{$order->name}}</td>
