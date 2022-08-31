@@ -83,7 +83,7 @@
                             </div>
                             <div class="col-lg-3">
                                 <div class="form-group">
-                                    <label for="">Gastos Varios</label>
+                                    <label for="">Paquetería</label>
                                     <div class="input-group mb-2 mr-sm-2">
                                         <div class="input-group-prepend">
                                           <div class="input-group-text">$</div>
@@ -92,30 +92,61 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-3">
+                            <div class="col-lg-1">
                                 <div class="form-group">
                                     <label for="">Moneda</label> <br>
-                                    <input id = "onoffCurrency" type="checkbox" data-toggle="toggle" data-on = "USD" data-off="MXN" data-width="180" onchange=calculoCurrency({{$profile}})>
+                                    <input id = "onoffCurrency" type="checkbox" data-toggle="toggle" data-on = "USD" data-off="MXN" data-width="80" onchange=calculoCurrency({{$profile}})>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-group">
+                                    <label for="">Redondeo a 100</label> <br>
+                                    <input id = "onoffRound" type="checkbox" data-toggle="toggle" data-on = "SI" data-off="NO" data-width="80" onchange=calculoRound({{$profile}})>
                                 </div>
                             </div>
                         </div>
                         <div class = "row">
-                            <div class = "col-lg-6">
+                            <div class = "col-lg-3">
                                 <div class="form-group">
                                     <label for="">Bodega</label>
                                     <div class="input-group mb-3">
                                         <input type="text" id="cellar" name="cellar" class="form-control" disabled>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">USD</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class = "col-lg-3">
+                                <div class="form-group">
+                                    <label for="">Importación</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" id="comition" name="comition" class="form-control" disabled>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">USD</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class = "col-lg-3">
+                                <div class="form-group">
+                                    <label for="">Broker</label>
+                                    <div class="input-group mb-3">
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">$</div>
+                                        </div>
+                                        <input type="text" id="broker" name="broker" class="form-control" onchange=calculoBroker()>
                                         <div class="input-group-append">
                                           <span class="input-group-text">USD</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class = "col-lg-6">
+                            <div class = "col-lg-3">
                                 <div class="form-group">
-                                    <label for="">Comisión</label>
+                                    <label for="">Total a pagar</label>
                                     <div class="input-group mb-3">
-                                        <input type="text" id="comition" name="comition" class="form-control" disabled>
+                                        <input type="text" id="paytotal" name="paytotal" class="form-control" disabled>
                                         <div class="input-group-append">
                                           <span class="input-group-text">USD</span>
                                         </div>
@@ -647,3 +678,54 @@
     </div>
 </div>
 {{-- fin modal --}}
+{{-- modal modal descargar PDF de varias ordenes --}}
+<div id="myModalPDFItemsAll" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="gridModalLabek">PDF</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid bd-example-row">
+                    <div class="col-md-12">
+                        <div class="row" id="sTRItems" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Seleccionar el número de trámite:</label>
+                                        <select name="selectTRItems" id="selectTRItems" class="form-select">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class = "col-lg-12">
+                                    <div class="form-group">
+                                        <label for="">¿Incluir datos de pago?  </label>
+                                        <input id = "paymntDetailsItemsAll" type="checkbox" data-toggle="toggle" data-on = "Si" data-off="No" data-width="180">
+                                        {{-- <input type="text" id="dlls" name="dlls" class="form-control"> --}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="lvlItems" style="display: none;">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>No hay trámites disponibles</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="cerrarPDFItemsAll()" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnAcceptItems" style="display: none;" onclick="DwnldItemsTodos()" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{-- fin modal| --}}

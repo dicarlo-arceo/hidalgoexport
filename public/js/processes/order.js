@@ -95,6 +95,8 @@ chkbOrderIds = [];
 function refreshTable(result)
 {
     var table = $('#tbProf1').DataTable();
+    var onoffRound = document.getElementById("onoffRound");
+
     table.clear();
     cellar = 0;
     // console.log(result);
@@ -121,7 +123,7 @@ function refreshTable(result)
         {
             result.data.forEach( function(valor, indice, array) {
                 btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                table.row.add(["",valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,valor.tr,btnStatus,
+                table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,valor.tr,btnStatus,
                     formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
                 cellar += parseFloat(valor.total_price);
             });
@@ -130,13 +132,23 @@ function refreshTable(result)
     $("#dlls").val(result.data[0].exc_rate);
     $("#percent").val(result.data[0].percentage);
     $("#exp").val(result.data[0].expenses);
+    $("#broker").val(result.data[0].broker);
     $("#onoffCurrency").prop('disabled', false);
+    onoffRound.style.display = "";
     if(result.data[0].currency == 1)
         $("#onoffCurrency").bootstrapToggle('on');
     else
         $("#onoffCurrency").bootstrapToggle('off');
+    if(result.data[0].roundout == 1)
+        $("#onoffRound").bootstrapToggle('on');
+    else
+        $("#onoffRound").bootstrapToggle('off');
     if(profileOrder == 61)
+    {
         $("#onoffCurrency").prop('disabled', true);
+        onoffRound.style.display = "none";
+    }
+
     calculoTotales();
 
     table.draw(false);
@@ -531,24 +543,83 @@ function calculoCurrency()
 
     calculoTotales();
 }
+function calculoRound()
+{
+    var round = $("#onoffRound").prop('checked');
+    var roundout = 0;
+    if(round)
+        roundout = 1;
+    else
+        roundout = 2;
+
+    var route = baseUrlOrder+'/updateOrder';
+    var data = {
+        'id':idOrder,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'roundout':roundout,
+        'flag':6,
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+        }
+    })
+
+    calculoTotales();
+}
+function calculoBroker()
+{
+    if($("#broker").val() == "")
+        $("#broker").val(0);
+
+    var broker = parseFloat($("#broker").val());
+
+    var route = baseUrlOrder+'/updateOrder';
+    var data = {
+        'id':idOrder,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'broker':broker,
+        'flag':5,
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+        }
+    })
+
+    calculoTotales();
+}
 function calculoTotales()
 {
     mxn_total = 0;
+    usd_total = 0;
     var curr = $("#onoffCurrency").prop('checked');
+    var round = $("#onoffRound").prop('checked');
 
     comition = cellar * parseFloat($("#percent").val())/100;
-    if(comition > 0 && comition < 100)
-        comition = 100;
+    if(round)
+        if(comition > 0 && comition < 100)
+            comition = 100;
 
     if(curr)
-        comition += parseFloat($("#exp").val());
+        usd_total += parseFloat($("#exp").val());
     else
         mxn_total += parseFloat($("#exp").val());
 
-    mxn_total += comition * parseFloat($("#dlls").val());
+    usd_total += comition + parseFloat($("#broker").val());
+    mxn_total += usd_total * parseFloat($("#dlls").val());
     iva = mxn_total * 0.16;
     mxn_invoice = mxn_total + iva;
 
+    $("#paytotal").val(formatter.format(usd_total));
     $("#cellar").val(formatter.format(cellar));
     $("#comition").val(formatter.format(comition));
     $("#net_mxn").val(formatter.format(mxn_total));
@@ -937,13 +1008,15 @@ function ItemsPDF()
         mxn_total = $("#net_mxn").val();
         iva = $("#iva").val();
         mxn_invoice = $("#total_invoice").val();
+        usd_total = $("#paytotal").val();
+        broker = $("#broker").val();
     }
     else
     {
         cellar = 1;
         comition = 1;
     }
-    var route = baseUrlOrder + '/ItemsPDF/' + idOrder + '/' + flagTR + '/' + cellar + '/' + comition + '/' + mxn_total + '/' + iva + '/' + mxn_invoice;
+    var route = baseUrlOrder + '/ItemsPDF/' + idOrder + '/' + flagTR + '/' + cellar + '/' + comition + '/' + mxn_total + '/' + iva + '/' + mxn_invoice + '/' + usd_total + '/' + broker;
 
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
@@ -1092,12 +1165,14 @@ function chkOrderChange(id)
     {
         document.getElementById('btnOrderUncheckAll').disabled = true;
         document.getElementById('btnOrderChangeAll').disabled = true;
+        document.getElementById('btnItemsAll').disabled = true;
     }
 
     else
     {
         document.getElementById('btnOrderUncheckAll').disabled = false;
         document.getElementById('btnOrderChangeAll').disabled = false;
+        document.getElementById('btnItemsAll').disabled = false;
     }
     // console.log(checkedOrderChkb);
 }
@@ -1110,6 +1185,7 @@ function UncheckTodos()
     checkedOrderChkb = [];
     document.getElementById('btnOrderChangeAll').disabled = true;
     document.getElementById('btnOrderUncheckAll').disabled = true;
+    document.getElementById('btnItemsAll').disabled = true;
     // console.log(checkedOrderChkb);
 }
 function HojaCobroTodos()
@@ -1254,4 +1330,104 @@ function moverBO()
         function(){
             alertify.error('Cancelado');
     });
+}
+orderItemsAll = 0;
+function HojaItemsTodos()
+{
+    var selectTR = $('#selectTRItems');
+    var sTR = document.getElementById("sTRItems");
+    var lvl = document.getElementById("lvlItems");
+    var btnAcceptTr = document.getElementById("btnAcceptItems");
+    var route = baseUrlOrder + '/GetinfoTROrders/1';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'ids':checkedOrderChkb
+    };
+
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            console.log(result);
+            orderItemsAll =  result.address[0].id;
+            if(result.data.length == 0)
+            {
+                lvl.style.display = "";
+                sTR.style.display = "none";
+                btnAcceptTr.style.display = "none";
+            }
+            else
+            {
+                $("#selectTRItems").empty();
+                selectTR.append('<option selected hidden value="">Seleccione una opción</option>');
+                result.data.forEach( function(valor, indice, array) {
+                    if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
+                });
+                // result.address.forEach( function(valor, indice, array) {
+                //     selectAddress.append("<option value='" + valor.id + "'>" + valor.address + "</option>");
+                // });
+
+                sTR.style.display = "";
+                lvl.style.display = "none";
+                btnAcceptTr.style.display = "";
+            }
+            $("#myModalPDFItemsAll").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}
+function cerrarPDFItemsAll()
+{
+    $("#myModalPDFItemsAll").modal('hide');
+}
+function DwnldItemsTodos()
+{
+    var paymntDetails = $("#paymntDetailsItemsAll").prop('checked');
+    if(paymntDetails)
+    {
+        flag = 0;
+        // cellar = $("#cellar").val();
+        // comition = $("#comition").val();
+        // dlls = $("#dlls").val();
+    }
+    else
+    {
+        flag = 1;
+    }
+    stringaux = "";
+    checkedOrderChkb.forEach(function(valor, indice, array) {
+        stringaux = stringaux.concat(String(valor));
+        if(checkedOrderChkb.length-1 != indice) stringaux = stringaux.concat("-");
+    });
+
+    var route = baseUrlOrder + '/GetPDFItemsTodos/' + flag + '/' + $("#selectTRItems").val() + '/' + stringaux;
+
+    $.ajaxSetup({
+        headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
+    });
+
+    var form = $('<form></form>');
+    form.attr("method", "get");
+    form.attr("action", route);
+    form.attr('_token',$("meta[name='csrf-token']").attr("content"));
+    $.each(function(key, value) {
+        var field = $('<input></input>');
+        field.attr("type", "hidden");
+        field.attr("name", key);
+        field.attr("value", value);
+        form.append(field);
+    });
+    var field = $('<input></input>');
+    field.attr("type", "hidden");
+    field.attr("name", "_token");
+    field.attr("value", $("meta[name='csrf-token']").attr("content"));
+    form.append(field);
+    $(document.body).append(form);
+    form.submit();
 }

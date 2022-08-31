@@ -11,6 +11,8 @@
             <button type="button" id="btnOrderUncheckAll" class="btn btn-primary" onclick="UncheckTodos()" disabled>Quitar Selección</button>
             &nbsp;&nbsp;
             <button type="button" id="btnOrderChangeAll" class="btn btn-primary" onclick="HojaCobroTodos()" disabled>Hoja de Cobro</button>
+            &nbsp;&nbsp;
+            <button type="button" id="btnItemsAll" class="btn btn-primary" onclick="HojaItemsTodos()" disabled>Items en pdf</button>
         @endif
         <br><br>
         <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">

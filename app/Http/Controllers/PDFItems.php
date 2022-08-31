@@ -99,7 +99,7 @@ class PDFItems extends FPDF
         $this->SetTextColor(0);
         $this->SetFont('Arial','',13);
     }
-    function AddPayment($ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice)
+    function AddPayment($ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$expenses)
     {
         $this->SetMargins(10, 20, 10);
         $this->AddPage();
@@ -108,14 +108,12 @@ class PDFItems extends FPDF
         $this->Ln();
         $this->Ln();
         $this->SetFont('Arial','B',13);
-        $this->Cell(60,10,'TIPO DE CAMBIO',1,0,'C',true);
-        $this->Cell(60,10,'PORCENTAJE',1,0,'C',true);
-        $this->Cell(60,10,'GASTOS VARIOS',1,0,'C',true);
+        $this->Cell(90,10,'TIPO DE CAMBIO',1,0,'C',true);
+        $this->Cell(90,10,'PORCENTAJE',1,0,'C',true);
         $this->Ln();
         $this->SetFont('Arial','',13);
-        $this->Cell(60,10,$ord->exc_rate,1,0,'C');
-        $this->Cell(60,10,$ord->percentage,1,0,'C');
-        $this->Cell(60,10,$ord->expenses,1,0,'C');
+        $this->Cell(90,10,$ord->exc_rate,1,0,'C');
+        $this->Cell(90,10,$ord->percentage,1,0,'C');
         $this->Ln();
         $this->Ln();
         $this->SetFont('Arial','B',13);
@@ -127,8 +125,20 @@ class PDFItems extends FPDF
         $this->Cell(90,10,$cellar,"LR",0,'L');
         $this->Ln();
         $this->SetFont('Arial','',13);
-        $this->Cell(90,10,utf8_decode("COMISIÓN"),"LR",0,'L');
+        $this->Cell(90,10,utf8_decode("IMPORTACIÓN"),"LR",0,'L');
         $this->Cell(90,10,$comition,"LR",0,'L');
+        $this->Ln();
+        $this->SetFont('Arial','',13);
+        $this->Cell(90,10,utf8_decode("BROKER"),"LR",0,'L');
+        $this->Cell(90,10,"$".number_format(floatval(preg_replace('/[^\d\.]+/', '', $broker)), 2, ".", ","),"LR",0,'L');
+        $this->Ln();
+        $this->SetFont('Arial','',13);
+        $this->Cell(90,10,utf8_decode("PAQUETERÍA"),"LR",0,'L');
+        $this->Cell(90,10,"$".number_format(floatval(preg_replace('/[^\d\.]+/', '', $expenses)), 2, ".", ","),"LR",0,'L');
+        $this->Ln();
+        $this->SetFont('Arial','',13);
+        $this->Cell(90,10,"TOTAL A PAGAR","LR",0,'L');
+        $this->Cell(90,10,$usd_total,"LR",0,'L');
         $this->Ln();
         $this->SetFont('Arial','',13);
         $this->Cell(90,10,"TOTAL EN PESOS","LR",0,'L');
@@ -142,7 +152,7 @@ class PDFItems extends FPDF
         $this->Cell(90,10,"PRECIO A FACTURAR","LRB",0,'L');
         $this->Cell(90,10,$mxn_invoice,"LRB",0,'L');
     }
-    function PrintPDF($data,$ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice)
+    function PrintPDF($data,$ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$expenses)
     {
         // dd($data);
 
@@ -152,7 +162,7 @@ class PDFItems extends FPDF
         $this->FancyTable($data);
         // dd($ord);
         if($cellar != "1" && $comition != "1")
-            $this->AddPayment($ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice);
+            $this->AddPayment($ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$expenses);
     }
 }
 ?>

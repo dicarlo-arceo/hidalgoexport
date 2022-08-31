@@ -36,7 +36,7 @@ class PDF extends FPDF
         $this->SetFont('Arial','B',13);
         $this->Cell(50,10,'SR(A):',0,0);
         $this->SetFont('Arial','',13);
-        $this->Cell(0,10,utf8_decode($order->projectName),0,0);//Aqui nombre
+        $this->Cell(0,10,utf8_decode($order->name)." / ".utf8_decode($order->projectName),0,0);//Aqui nombre
         $this->Ln();
         $this->Ln();
         $this->SetFont('Arial','B',13);
@@ -104,7 +104,7 @@ class PDF extends FPDF
         $this->Cell(30,8,'',"B",'C');
         $this->Cell(60,5,'',"",'C');
         $this->Cell(40,12,'TOTAL BULTOS:',"",'C');
-        $this->Cell(40,12,'2',"",'C');
+        $this->Cell(40,12,$pkgs,"",'C');
         $this->Ln();
         $this->Cell(60,8,'EMAIL:',0,0,"C");
         $this->Cell(80,6,'',"B",'C');
@@ -118,7 +118,7 @@ class PDF extends FPDF
         $this->SetFont('Arial','B',13);
         $this->Cell(50,10,'SR(A):',0,0);
         $this->SetFont('Arial','',13);
-        $this->Cell(0,10,utf8_decode($order->projectName),0,0);//Aqui nombre
+        $this->Cell(0,10,utf8_decode($order->name)." / ".utf8_decode($order->projectName),0,0);//Aqui nombre
         $this->Ln();
         $this->Ln();
         $this->SetFont('Arial','B',13);
@@ -182,7 +182,7 @@ class PDF extends FPDF
         $this->Cell(30,8,'',"B",'C');
         $this->Cell(60,5,'',"",'C');
         $this->Cell(40,12,'TOTAL BULTOS:',"",'C');
-        $this->Cell(40,12,'2',"",'C');
+        $this->Cell(40,12,$pkgs,"",'C');
         $this->Ln();
         $this->Cell(60,8,'EMAIL:',0,0,"C");
         $this->Cell(80,6,'',"B",'C');
@@ -190,7 +190,7 @@ class PDF extends FPDF
 
     function PrintChapter($order,$cellar,$comition,$dlls,$date,$pkgs)
     {
-        // dd($order);
+        // dd(intval($cellar), intval($comition));
         setlocale(LC_ALL,"es_ES");
         $this->SetMargins(20, 40, 2);
         $this->AddPage();
@@ -199,7 +199,7 @@ class PDF extends FPDF
         list($year, $month, $day) = preg_split('[-]', $date);
         $auxDate = $day." ".$meses[intval($month)-1]." ".$year;
         // dd($cellar,$comition);
-        if($cellar == "1" && $comition == "1")
+        if(intval($cellar) == 1 && intval($comition) == 1)
             $this->NoPayment($order,$auxDate,$pkgs);
         else
             $this->Payment($order,$cellar,$comition,$dlls,$auxDate,$pkgs);
