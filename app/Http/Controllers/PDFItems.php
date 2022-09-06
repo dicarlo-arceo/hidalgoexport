@@ -7,7 +7,7 @@ use Codedge\Fpdf\Fpdf\Fpdf;
 class PDFItems extends FPDF
 {
     // Tabla coloreada
-    function FancyTable($data)
+    function FancyTable($data,$ord)
     {
         $ycurr = 0;
         $yprev = 0;
@@ -17,32 +17,37 @@ class PDFItems extends FPDF
         $this->SetDrawColor(0);
         $this->SetLineWidth(.3);
         $this->SetFont('Arial','',10);
-        // Cabecera
         $this->SetY(10);
-        $this->MultiCell(30,10,"Tienda",1,'C',true);
+        $this->MultiCell(30,10,"Cliente:",1,'C',true);
         $this->SetY(10);
         $this->SetX(40);
+        $this->MultiCell(240,10,utf8_decode($ord->name)." / ".utf8_decode($ord->projectName),1,'C',true);
+        // Cabecera
+        $this->SetY(20);
+        $this->MultiCell(30,10,"Tienda",1,'C',true);
+        $this->SetY(20);
+        $this->SetX(40);
         $this->MultiCell(30,10,"# de Item",1,'C',true);
-        $this->SetY(10);
+        $this->SetY(20);
         $this->SetX(70);
         $this->MultiCell(100,10,utf8_decode("Descripción"),1,'C',true);
         $yprev = $this->GetY();
-        $this->SetY(10);
+        $this->SetY(20);
         $this->SetX(170);
         $this->MultiCell(10,10,"BO",1,'C',true);
-        $this->SetY(10);
+        $this->SetY(20);
         $this->SetX(180);
         $this->MultiCell(10,10,"Exist",1,'C',true);
-        $this->SetY(10);
+        $this->SetY(20);
         $this->SetX(190);
         $this->MultiCell(10,10,"TR",1,'C',true);
-        $this->SetY(10);
+        $this->SetY(20);
         $this->SetX(200);
         $this->MultiCell(20,10,"Estatus",1,'C',true);
-        $this->SetY(10);
+        $this->SetY(20);
         $this->SetX(220);
         $this->MultiCell(30,10,"$ Net",1,'C',true);
-        $this->SetY(10);
+        $this->SetY(20);
         $this->SetX(250);
         $this->MultiCell(30,10,"$ Total",1,'C',true);
         $this->Ln();
@@ -54,7 +59,7 @@ class PDFItems extends FPDF
             if($ycurr > 180)
             {
                 $this->AddPage('L');
-                $yprev = 10;
+                $yprev = 20;
             }
             $this->SetY($yprev);
             $this->MultiCell(30,6,utf8_decode($row->store),"T",'C',false);
@@ -99,7 +104,7 @@ class PDFItems extends FPDF
         $this->SetTextColor(0);
         $this->SetFont('Arial','',13);
     }
-    function AddPayment($ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$expenses)
+    function AddPayment($ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$expenses,$flaginvoice)
     {
         $this->SetMargins(10, 20, 10);
         $this->AddPage();
@@ -140,29 +145,42 @@ class PDFItems extends FPDF
         $this->Cell(90,10,"TOTAL A PAGAR","LR",0,'L');
         $this->Cell(90,10,$usd_total,"LR",0,'L');
         $this->Ln();
-        $this->SetFont('Arial','',13);
-        $this->Cell(90,10,"TOTAL EN PESOS","LR",0,'L');
-        $this->Cell(90,10,$mxn_total,"LR",0,'L');
-        $this->Ln();
-        $this->SetFont('Arial','',13);
-        $this->Cell(90,10,"IVA","LR",0,'L');
-        $this->Cell(90,10,$iva,"LR",0,'L');
-        $this->Ln();
-        $this->SetFont('Arial','',13);
-        $this->Cell(90,10,"PRECIO A FACTURAR","LRB",0,'L');
-        $this->Cell(90,10,$mxn_invoice,"LRB",0,'L');
+        if(intval($flaginvoice) == 0)
+        {
+            $this->SetFont('Arial','',13);
+            $this->Cell(90,10,"TOTAL EN PESOS","LR",0,'L');
+            $this->Cell(90,10,$mxn_total,"LR",0,'L');
+            $this->Ln();
+        }
+        else
+        {
+            $this->SetFont('Arial','',13);
+            $this->Cell(90,10,"TOTAL EN PESOS","LRB",0,'L');
+            $this->Cell(90,10,$mxn_total,"LRB",0,'L');
+            $this->Ln();
+        }
+        if(intval($flaginvoice) == 0)
+        {
+            $this->SetFont('Arial','',13);
+            $this->Cell(90,10,"IVA","LR",0,'L');
+            $this->Cell(90,10,$iva,"LR",0,'L');
+            $this->Ln();
+            $this->SetFont('Arial','',13);
+            $this->Cell(90,10,"PRECIO A FACTURAR","LRB",0,'L');
+            $this->Cell(90,10,$mxn_invoice,"LRB",0,'L');
+        }
     }
-    function PrintPDF($data,$ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$expenses)
+    function PrintPDF($data,$ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$expenses,$flaginvoice)
     {
         // dd($data);
 
         // $this->SetMargins(0, 0, 0);
         $this->SetAutoPageBreak(false);
         $this->AddPage('L');
-        $this->FancyTable($data);
+        $this->FancyTable($data,$ord);
         // dd($ord);
         if($cellar != "1" && $comition != "1")
-            $this->AddPayment($ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$expenses);
+            $this->AddPayment($ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$expenses,$flaginvoice);
     }
 }
 ?>

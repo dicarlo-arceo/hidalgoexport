@@ -993,6 +993,7 @@ function cerrarPDF()
 function abrirPDFItems()
 {
     $("#myModalPDFItems").modal('show');
+    $("#invoiceDetailsItems").bootstrapToggle('off');
 }
 function cerrarPDFItems()
 {
@@ -1001,6 +1002,7 @@ function cerrarPDFItems()
 function ItemsPDF()
 {
     var paymntDetails = $("#paymntDetailsItems").prop('checked');
+    var invoiceDetails = $("#invoiceDetailsItems").prop('checked');
     if(paymntDetails)
     {
         cellar = $("#cellar").val();
@@ -1016,7 +1018,16 @@ function ItemsPDF()
         cellar = 1;
         comition = 1;
     }
-    var route = baseUrlOrder + '/ItemsPDF/' + idOrder + '/' + flagTR + '/' + cellar + '/' + comition + '/' + mxn_total + '/' + iva + '/' + mxn_invoice + '/' + usd_total + '/' + broker;
+    if(invoiceDetails)
+    {
+        invoiceflag = 0;
+    }
+    else
+    {
+        invoiceflag = 1;
+    }
+
+    var route = baseUrlOrder + '/ItemsPDF/' + idOrder + '/' + flagTR + '/' + cellar + '/' + comition + '/' + mxn_total + '/' + iva + '/' + mxn_invoice + '/' + usd_total + '/' + broker + '/' + invoiceflag;
 
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
@@ -1373,6 +1384,7 @@ function HojaItemsTodos()
                 sTR.style.display = "";
                 lvl.style.display = "none";
                 btnAcceptTr.style.display = "";
+                $("#invoiceDetailsItemsAll").bootstrapToggle('off');
             }
             $("#myModalPDFItemsAll").modal('show');
         },
@@ -1389,6 +1401,7 @@ function cerrarPDFItemsAll()
 function DwnldItemsTodos()
 {
     var paymntDetails = $("#paymntDetailsItemsAll").prop('checked');
+    var invoiceDetails = $("#invoiceDetailsItemsAll").prop('checked');
     if(paymntDetails)
     {
         flag = 0;
@@ -1400,13 +1413,22 @@ function DwnldItemsTodos()
     {
         flag = 1;
     }
+    if(invoiceDetails)
+    {
+        invoiceflag = 0;
+    }
+    else
+    {
+        invoiceflag = 1;
+    }
+
     stringaux = "";
     checkedOrderChkb.forEach(function(valor, indice, array) {
         stringaux = stringaux.concat(String(valor));
         if(checkedOrderChkb.length-1 != indice) stringaux = stringaux.concat("-");
     });
 
-    var route = baseUrlOrder + '/GetPDFItemsTodos/' + flag + '/' + $("#selectTRItems").val() + '/' + stringaux;
+    var route = baseUrlOrder + '/GetPDFItemsTodos/' + flag + '/' + $("#selectTRItems").val() + '/' + stringaux + '/' + invoiceflag;
 
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
@@ -1430,4 +1452,30 @@ function DwnldItemsTodos()
     form.append(field);
     $(document.body).append(form);
     form.submit();
+}
+function showInvoiceAll()
+{
+    var invoiceDetailschk = $("#paymntDetailsItemsAll").prop('checked');
+    var invoiceDetails = document.getElementById("invoiceRowAll");
+    if(invoiceDetailschk)
+    {
+        invoiceDetails.style.display = "";
+    }
+    else
+    {
+        invoiceDetails.style.display = "none";
+    }
+}
+function showInvoice()
+{
+    var invoiceDetailschk = $("#paymntDetailsItems").prop('checked');
+    var invoiceDetails = document.getElementById("invoiceRow");
+    if(invoiceDetailschk)
+    {
+        invoiceDetails.style.display = "";
+    }
+    else
+    {
+        invoiceDetails.style.display = "none";
+    }
 }

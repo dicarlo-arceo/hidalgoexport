@@ -224,12 +224,21 @@ class OrdersController extends Controller
     public function updateTR(Request $request)
     {
         // dd($request);
+        $flag = 0;
         $item = Item::where('id',$request->id)
         ->update(['tr'=>$request->tr]);
 
         $items = $this->GetItemsBack($request->fk_order,$request->flagTR);
+        if(count($items) == 0)
+        {
+            // dd("entre");
+            $flag = 1;
+            $items = DB::table('Orders')->select("*")
+                ->where('id',$request->fk_order)
+                ->whereNull('deleted_at')->get();
+        }
         // dd($items);
-        return response()->json(['status'=>true, 'message'=>"Orden Actualizada", "data"=>$items]);
+        return response()->json(['status'=>true, 'message'=>"Orden Actualizada", "data"=>$items,"flag"=>$flag]);
     }
     public function updateOrder(Request $request)
     {
@@ -360,16 +369,19 @@ class OrdersController extends Controller
                 ->join('users',"users.id","=","fk_user")
                 ->where('Orders.id',"=",$id)->first();
         $pdf = new PDF();
-        $pdf->PrintChapter($order,$cellar,$comition,$dlls,$date,$pkgs);
+        $pdf->PrintChapter($order,$cellar,$comition,$dlls,$date,$pkgs,number_format(floatval(preg_replace('/[^\d\.]+/', '', $cellar)) * floatval($dlls),2,".",","),number_format(floatval(preg_replace('/[^\d\.]+/', '', $comition)) * floatval($dlls),2,".",","));
         $pdf->Output('D',"Orden_".$order->order_number.".pdf");
         return;
     }
-    public function ItemsPDF($order,$tr,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker)
+    public function ItemsPDF($order,$tr,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$flaginvoice)
     {
         $items = $this->GetItemsBack($order,$tr);
-        $ord = Order::where('id',$order)->first();
+        $ord = DB::table('Orders')->select("*","Projects.name as projectName",DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
+                    ->join('Projects',"Projects.id","=","fk_project")
+                    ->join('users',"users.id","=","fk_user")
+                    ->where('Orders.id',"=",$order)->first();
         $pdf = new PDFItems();
-        $pdf->PrintPDF($items,$ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$ord->expenses);
+        $pdf->PrintPDF($items,$ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$ord->expenses,$flaginvoice);
         $orderName = Order::select("order_number")->where('id',$order)->first();
         // dd($orderName);
         $pdf->Output('D',"Items_de_orden_".$orderName->order_number.".pdf");
@@ -472,6 +484,10 @@ class OrdersController extends Controller
     {
         $totalCellar = 0;
         $totalComition = 0;
+        $mxnCellar = 0;
+        $mxnComition = 0;
+        $totalmxnCellar = 0;
+        $totalmxnComition = 0;
         // dd($flag);
         if($flag == "0")
         {
@@ -493,19 +509,25 @@ class OrdersController extends Controller
                 $order = DB::table('Orders')->select("exc_rate","percentage","expenses","currency","broker","roundout")
                     ->where('Orders.id',"=",$id)->first();
 
-                foreach($items as $item)
+                // dd($order);
+                if($items->count() != 0)
                 {
-                    $cellar += floatval($item->total_price);
-                }
+                    foreach($items as $item)
+                    {
+                        $cellar += floatval($item->total_price);
+                    }
 
-                $mxn_total = 0;
-                $comition = $cellar * floatval($order->percentage)/100;
-                if($comition > 0 && $comition < 100 && $order->roundout == 1) $comition = 100;
-                if(intval($order->currency) == 1) $comition += floatval($order->expenses);
-                $comition += floatval($order->broker);
-                // dd($comition);
-                $auxarray = array('cellar' => $cellar, 'comition' => $comition);
-                array_push($prices,$auxarray);
+
+                    $comition = $cellar * floatval($order->percentage)/100;
+                    if($comition > 0 && $comition < 100 && $order->roundout == 1) $comition = 100;
+                    if(intval($order->currency) == 1) $comition += floatval($order->expenses);
+                    $comition += floatval($order->broker);
+                    $mxnCellar = $cellar * floatval($order->exc_rate);
+                    $mxnComition = $comition * floatval($order->exc_rate);
+                    $auxarray = array('cellar' => $cellar, 'comition' => $comition, 'mxnCellar' => $mxnCellar, 'mxnComition' => $mxnComition);
+                    array_push($prices,$auxarray);
+                    // dd(number_format($cellar, 2, ".", ","),number_format(floatval($order->exc_rate), 2, ".", ","));
+                }
             }
 
             foreach($prices as $price)
@@ -513,6 +535,8 @@ class OrdersController extends Controller
                 // dd($price);
                 $totalCellar += $price['cellar'];
                 $totalComition += $price['comition'];
+                $totalmxnCellar += $price['mxnCellar'];
+                $totalmxnComition += $price['mxnComition'];
             }
             // dd(number_format(floatval($totalCellar),2,".",","),number_format(floatval($totalComition),2,".",","));
             $order = DB::table('Orders')->select("Projects.name as projectName","address",'cellphone',"order_number","exc_rate",DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
@@ -520,7 +544,7 @@ class OrdersController extends Controller
                     ->join('users',"users.id","=","fk_user")
                     ->where('Orders.id',"=",$address)->first();
             $pdf = new PDF();
-            $pdf->PrintChapter($order,"$".number_format(floatval($totalCellar),2,".",","),"$".number_format(floatval($totalComition),2,".",","),number_format(floatval($order->exc_rate),2,".",","),$date,$pkgs);
+            $pdf->PrintChapter($order,"$".number_format(floatval($totalCellar),2,".",","),"$".number_format(floatval($totalComition),2,".",","),number_format(floatval($order->exc_rate),2,".",","),$date,$pkgs,number_format(floatval($totalmxnCellar),2,".",","),number_format(floatval($totalmxnComition),2,".",","));
 
         }
         else
@@ -532,7 +556,7 @@ class OrdersController extends Controller
                     ->join('users',"users.id","=","fk_user")
                     ->where('Orders.id',"=",$address)->first();
             $pdf = new PDF();
-            $pdf->PrintChapter($order,$totalCellar,$totalComition,number_format(floatval($order->exc_rate),2,".",","),$date,$pkgs);
+            $pdf->PrintChapter($order,$totalCellar,$totalComition,number_format(floatval($order->exc_rate),2,".",","),$date,$pkgs,$totalmxnCellar,$totalmxnComition);
         }
         // dd($totalCellar,$totalComition);
 
@@ -563,7 +587,7 @@ class OrdersController extends Controller
         // return;
         return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$items,"flag"=>$flag]);
     }
-    public function GetPDFItemsTodos($flag,$tr,$ids)
+    public function GetPDFItemsTodos($flag,$tr,$ids,$flaginvoice)
     {
         $totalCellar = 0;
         $totalComition = 0;
@@ -602,30 +626,32 @@ class OrdersController extends Controller
 
                 $order = DB::table('Orders')->select("exc_rate","percentage","expenses","currency","broker","roundout")
                 ->where('Orders.id',"=",$id)->first();
-
-                foreach($items as $item)
+                if($items->count() != 0)
                 {
-                    $cellar += floatval($item->total_price);
+                    foreach($items as $item)
+                    {
+                        $cellar += floatval($item->total_price);
+                    }
+
+                    $usd_total = 0;
+                    $mxn_total = 0;
+
+                    $comition = $cellar * floatval($order->percentage)/100;
+
+                    if($comition > 0 && $comition < 100 && $order->roundout == 1) $comition = 100;
+
+                    if(intval($order->currency) == 1) $usd_total += floatval($order->expenses);
+                    else $mxn_total += floatval($order->expenses);
+
+                    $usd_total += $comition + floatval($order->broker);
+                    $mxn_total += $usd_total * floatval($order->exc_rate);
+                    $iva = $mxn_total * 0.16;
+                    $mxn_invoice = $mxn_total + $iva;
+
+                    $auxarray = array('cellar' => $cellar, 'comition' => $comition, 'broker' => $order->broker, 'expenses' => $order->expenses, 'usd_total' => $usd_total, 'mxn_total' => $mxn_total, 'iva' => $iva, 'mxn_invoice' => $mxn_invoice);
+                    array_push($prices,$auxarray);
+                    $cont ++;
                 }
-
-                $usd_total = 0;
-                $mxn_total = 0;
-
-                $comition = $cellar * floatval($order->percentage)/100;
-
-                if($comition > 0 && $comition < 100 && $order->roundout == 1) $comition = 100;
-
-                if(intval($order->currency) == 1) $usd_total += floatval($order->expenses);
-                else $mxn_total += floatval($order->expenses);
-
-                $usd_total += $comition + floatval($order->broker);
-                $mxn_total += $usd_total * floatval($order->exc_rate);
-                $iva = $mxn_total * 0.16;
-                $mxn_invoice = $mxn_total + $iva;
-
-                $auxarray = array('cellar' => $cellar, 'comition' => $comition, 'broker' => $order->broker, 'expenses' => $order->expenses, 'usd_total' => $usd_total, 'mxn_total' => $mxn_total, 'iva' => $iva, 'mxn_invoice' => $mxn_invoice);
-                array_push($prices,$auxarray);
-                $cont ++;
             }
 
             foreach($prices as $price)
@@ -641,7 +667,10 @@ class OrdersController extends Controller
                 $totalMxn_invoice += $price['mxn_invoice'];
             }
             // dd(number_format(floatval($totalCellar),2,".",","),number_format(floatval($totalComition),2,".",","));
-            $ord = Order::where('id',$ids[0])->first();
+            $ord = DB::table('Orders')->select("*","Projects.name as projectName",DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
+                    ->join('Projects',"Projects.id","=","fk_project")
+                    ->join('users',"users.id","=","fk_user")
+                    ->where('Orders.id',"=",$ids[0])->first();
 
             $pdf = new PDFItems();
             $pdf->PrintPDF($itm,$ord,
@@ -652,7 +681,7 @@ class OrdersController extends Controller
             "$".number_format(floatval($totalMxn_invoice),2,".",","),
             "$".number_format(floatval($totalUsd_total),2,".",","),
             number_format(floatval($totalBroker),2,".",","),
-            number_format(floatval($totalExpenses),2,".",","));
+            number_format(floatval($totalExpenses),2,".",","),$flaginvoice);
 
         }
         else
@@ -666,7 +695,10 @@ class OrdersController extends Controller
                 ->whereNull('Items.deleted_at')->get();
             $totalCellar = "1";
             $totalComition = "1";
-            $ord = Order::where('id',$ids[0])->first();
+            $ord = DB::table('Orders')->select("*","Projects.name as projectName",DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
+                    ->join('Projects',"Projects.id","=","fk_project")
+                    ->join('users',"users.id","=","fk_user")
+                    ->where('Orders.id',"=",$ids[0])->first();
             $pdf = new PDFItems();
             $pdf->PrintPDF($itm,$ord,$totalCellar,$totalComition,
             "$".number_format(floatval($totalMxn_total),2,".",","),

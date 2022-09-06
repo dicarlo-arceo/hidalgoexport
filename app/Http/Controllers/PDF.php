@@ -27,7 +27,7 @@ class PDF extends FPDF
     {
     }
 
-    function Payment($order,$cellar,$comition,$dlls,$date,$pkgs)
+    function Payment($order,$cellar,$comition,$dlls,$date,$pkgs,$mxnCellar,$mxnComition)
     {
         // dd("entre a pay");
         $this->SetFont('Arial','',13);
@@ -59,13 +59,13 @@ class PDF extends FPDF
         $this->Cell(70,10,'TOTAL DE MERCANCIA',0,0);
         $this->SetFont('Arial','',13);
         $this->Cell(50,10,$cellar,0,0,'C');
-        $this->Cell(50,10,"$" . number_format((floatval(preg_replace('/[^\d\.]+/', '', $cellar)) * floatval($dlls)), 2, ".", ","),0,0,'C');
+        $this->Cell(50,10,"$" . $mxnCellar,0,0,'C');
         $this->Ln();
         $this->SetFont('Arial','B',13);
         $this->Cell(70,10,'% DE IMPORTACION',0,0);
         $this->SetFont('Arial','',13);
         $this->Cell(50,10,$comition,0,0,'C');
-        $this->Cell(50,10,"$" . number_format((floatval(preg_replace('/[^\d\.]+/', '', $comition)) * floatval($dlls)), 2, ".", ","),0,0,'C');
+        $this->Cell(50,10,"$" . $mxnComition,0,0,'C');
         $this->Ln();
         $this->SetFont('Arial','B',13);
         $this->Cell(70,10,'MANIFIESTO',0,0);
@@ -76,7 +76,7 @@ class PDF extends FPDF
         $this->Cell(70,10,'TOTAL $',0,0);
         $this->SetFont('Arial','',13);
         $this->Cell(50,10,$comition,0,0,'C');
-        $this->Cell(50,10,"$" . number_format((floatval(preg_replace('/[^\d\.]+/', '', $comition)) * floatval($dlls)), 2, ".", ","),0,0,'C');
+        $this->Cell(50,10,"$" . $mxnComition,0,0,'C');
         $this->Ln();
         $this->Cell(70,10,'TIPO DE CAMBIO $',0,0);
         $this->SetFont('Arial','',13);
@@ -188,7 +188,7 @@ class PDF extends FPDF
         $this->Cell(80,6,'',"B",'C');
     }
 
-    function PrintChapter($order,$cellar,$comition,$dlls,$date,$pkgs)
+    function PrintChapter($order,$cellar,$comition,$dlls,$date,$pkgs,$mxnCellar,$mxnComition)
     {
         // dd(intval($cellar), intval($comition));
         setlocale(LC_ALL,"es_ES");
@@ -202,7 +202,7 @@ class PDF extends FPDF
         if(intval($cellar) == 1 && intval($comition) == 1)
             $this->NoPayment($order,$auxDate,$pkgs);
         else
-            $this->Payment($order,$cellar,$comition,$dlls,$auxDate,$pkgs);
+            $this->Payment($order,$cellar,$comition,$dlls,$auxDate,$pkgs,$mxnCellar,$mxnComition);
     }
 }
 

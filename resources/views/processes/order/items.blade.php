@@ -581,7 +581,16 @@
                             <div class = "col-lg-12">
                                 <div class="form-group">
                                     <label for="">¿Incluir datos de pago?  </label>
-                                    <input id = "paymntDetailsItems" type="checkbox" data-toggle="toggle" data-on = "Si" data-off="No" data-width="180">
+                                    <input id = "paymntDetailsItems" type="checkbox" data-toggle="toggle" data-on = "Si" data-off="No" data-width="180" onchange="showInvoice()">
+                                    {{-- <input type="text" id="dlls" name="dlls" class="form-control"> --}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="invoiceRow" style="display: none;">
+                            <div class = "col-lg-12">
+                                <div class="form-group">
+                                    <label for="">¿Incluir datos de facturación?  </label>
+                                    <input id = "invoiceDetailsItems" type="checkbox" data-toggle="toggle" data-on = "Si" data-off="No" data-width="180">
                                     {{-- <input type="text" id="dlls" name="dlls" class="form-control"> --}}
                                 </div>
                             </div>
@@ -705,7 +714,16 @@
                                 <div class = "col-lg-12">
                                     <div class="form-group">
                                         <label for="">¿Incluir datos de pago?  </label>
-                                        <input id = "paymntDetailsItemsAll" type="checkbox" data-toggle="toggle" data-on = "Si" data-off="No" data-width="180">
+                                        <input id = "paymntDetailsItemsAll" type="checkbox" data-toggle="toggle" data-on = "Si" data-off="No" data-width="180" onchange="showInvoiceAll()">
+                                        {{-- <input type="text" id="dlls" name="dlls" class="form-control"> --}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" id="invoiceRowAll" style="display: none;">
+                                <div class = "col-lg-12">
+                                    <div class="form-group">
+                                        <label for="">¿Incluir datos de facturación?  </label>
+                                        <input id = "invoiceDetailsItemsAll" type="checkbox" data-toggle="toggle" data-on = "Si" data-off="No" data-width="180">
                                         {{-- <input type="text" id="dlls" name="dlls" class="form-control"> --}}
                                     </div>
                                 </div>
