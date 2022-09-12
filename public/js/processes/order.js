@@ -1364,19 +1364,20 @@ function HojaItemsTodos()
         {
             console.log(result);
             orderItemsAll =  result.address[0].id;
-            if(result.data.length == 0)
-            {
-                lvl.style.display = "";
-                sTR.style.display = "none";
-                btnAcceptTr.style.display = "none";
-            }
-            else
-            {
+            // if(result.data.length == 0)
+            // {
+            //     lvl.style.display = "";
+            //     sTR.style.display = "none";
+            //     btnAcceptTr.style.display = "none";
+            // }
+            // else
+            // {
                 $("#selectTRItems").empty();
                 selectTR.append('<option selected hidden value="">Seleccione una opción</option>');
                 result.data.forEach( function(valor, indice, array) {
                     if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
                 });
+                selectTR.append('<option value="0">Todos</option>');
                 // result.address.forEach( function(valor, indice, array) {
                 //     selectAddress.append("<option value='" + valor.id + "'>" + valor.address + "</option>");
                 // });
@@ -1385,7 +1386,7 @@ function HojaItemsTodos()
                 lvl.style.display = "none";
                 btnAcceptTr.style.display = "";
                 $("#invoiceDetailsItemsAll").bootstrapToggle('off');
-            }
+            // }
             $("#myModalPDFItemsAll").modal('show');
         },
         error:function(result,error,errorTrown)
