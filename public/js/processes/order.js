@@ -1373,7 +1373,7 @@ function HojaItemsTodos()
             // else
             // {
                 $("#selectTRItems").empty();
-                selectTR.append('<option selected hidden value="">Seleccione una opción</option>');
+                selectTR.append('<option selected hidden value="0">Seleccione una opción</option>');
                 result.data.forEach( function(valor, indice, array) {
                     if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
                 });
@@ -1429,7 +1429,7 @@ function DwnldItemsTodos()
         if(checkedOrderChkb.length-1 != indice) stringaux = stringaux.concat("-");
     });
 
-    var route = baseUrlOrder + '/GetPDFItemsTodos/' + flag + '/' + $("#selectTRItems").val() + '/' + stringaux + '/' + invoiceflag;
+    var route = baseUrlOrder + '/GetPDFItemsTodos/' + flag + '/' + $("#selectTRItems").val() + '/' + stringaux + '/' + invoiceflag + '/' + $("#selectStatusItemsAll").val();
 
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }

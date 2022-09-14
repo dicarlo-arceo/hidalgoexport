@@ -553,6 +553,7 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -706,6 +707,20 @@
                                     <div class="form-group">
                                         <label for="">Seleccionar el número de trámite:</label>
                                         <select name="selectTRItems" id="selectTRItems" class="form-select">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Estatus:</label>
+                                        <select name="selectStatusItemsAll" id="selectStatusItemsAll" class="form-select" @if($perm_btn['modify']!=1) disabled @endif>
+                                            <option hidden selected value="0">Selecciona una opción</option>
+                                            @foreach ($cmbStatus as $id => $status)
+                                                <option value='{{ $id }}'>{{ $status }}</option>
+                                            @endforeach
+                                            <option value="0">Todos</option>
                                         </select>
                                     </div>
                                 </div>

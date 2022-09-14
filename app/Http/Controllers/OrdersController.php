@@ -25,8 +25,8 @@ class OrdersController extends Controller
         $perm = Permission::permView($profile,27);
         $perm_btn =Permission::permBtns($profile,27);
         $cmbStatus = Status::select('id','name')
-        ->where("fk_section","27")
-        ->pluck('name','id');
+            ->where("fk_section","27")
+            ->pluck('name','id');
         // dd($profile);
         if($profile != 61)
         {
@@ -587,7 +587,7 @@ class OrdersController extends Controller
         // return;
         return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$items,"flag"=>$flag]);
     }
-    public function GetPDFItemsTodos($flag,$tr,$ids,$flaginvoice)
+    public function GetPDFItemsTodos($flag,$tr,$ids,$flaginvoice,$status)
     {
         $totalCellar = 0;
         $totalComition = 0;
@@ -599,19 +599,15 @@ class OrdersController extends Controller
         $totalMxn_invoice = 0;
         // dd($flag);
         $ids = explode("-", $ids);
-        if($flag == "0")
+
+        if(intval($tr) != 0)
         {
-            // dd($ids);
-            $cellar = 0;
-            $prices = array();
-            $cont = 0;
-            if($tr != 0)
+            if(intval($status) == 0)
             {
                 $itm = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
                     ->join('Orders',"Orders.id","=","fk_order")
                     ->join('Status',"Status.id","=","fk_status")
                     ->whereIn('fk_order',$ids)
-                    ->where('Status.id',"=",8)
                     ->where('tr',"=",$tr)
                     ->whereNull('Items.deleted_at')->get();
             }
@@ -621,29 +617,84 @@ class OrdersController extends Controller
                     ->join('Orders',"Orders.id","=","fk_order")
                     ->join('Status',"Status.id","=","fk_status")
                     ->whereIn('fk_order',$ids)
+                    ->where('Status.id',"=",intval($status))
+                    ->where('tr',"=",$tr)
                     ->whereNull('Items.deleted_at')->get();
             }
+        }
+        else
+        {
+            if(intval($status) == 0)
+            {
+                $itm = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
+                    ->join('Orders',"Orders.id","=","fk_order")
+                    ->join('Status',"Status.id","=","fk_status")
+                    ->whereIn('fk_order',$ids)
+                    ->whereNull('Items.deleted_at')->get();
+            }
+            else
+            {
+                $itm = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
+                    ->join('Orders',"Orders.id","=","fk_order")
+                    ->join('Status',"Status.id","=","fk_status")
+                    ->whereIn('fk_order',$ids)
+                    ->where('Status.id',"=",intval($status))
+                    ->whereNull('Items.deleted_at')->get();
+            }
+        }
+
+        if($flag == "0")
+        {
+            // dd($ids);
+            $cellar = 0;
+            $prices = array();
+            $cont = 0;
 
             foreach($ids as $id)
             {
                 $cellar = 0;
+
                 if(intval($tr) != 0)
                 {
-                    $items = DB::table('Items')->select("total_price")
-                        ->join('Orders',"Orders.id","=","fk_order")
-                        ->join('Status',"Status.id","=","fk_status")
-                        ->where('fk_order',$id)
-                        ->where('Status.id',"=",8)
-                        ->where('tr',"=",$tr)
-                        ->whereNull('Items.deleted_at')->get();
+                    if(intval($status) == 0)
+                    {
+                        $items = DB::table('Items')->select("total_price")
+                            ->join('Orders',"Orders.id","=","fk_order")
+                            ->join('Status',"Status.id","=","fk_status")
+                            ->where('fk_order',$id)
+                            ->where('tr',"=",$tr)
+                            ->whereNull('Items.deleted_at')->get();
+                    }
+                    else
+                    {
+                        $items = DB::table('Items')->select("total_price")
+                            ->join('Orders',"Orders.id","=","fk_order")
+                            ->join('Status',"Status.id","=","fk_status")
+                            ->where('fk_order',$id)
+                            ->where('Status.id',"=",intval($status))
+                            ->where('tr',"=",$tr)
+                            ->whereNull('Items.deleted_at')->get();
+                    }
                 }
                 else
                 {
-                    $items = DB::table('Items')->select("total_price")
-                        ->join('Orders',"Orders.id","=","fk_order")
-                        ->join('Status',"Status.id","=","fk_status")
-                        ->where('fk_order',$id)
-                        ->whereNull('Items.deleted_at')->get();
+                    if(intval($status) == 0)
+                    {
+                        $items = DB::table('Items')->select("total_price")
+                            ->join('Orders',"Orders.id","=","fk_order")
+                            ->join('Status',"Status.id","=","fk_status")
+                            ->where('fk_order',$id)
+                            ->whereNull('Items.deleted_at')->get();
+                    }
+                    else
+                    {
+                        $items = DB::table('Items')->select("total_price")
+                            ->join('Orders',"Orders.id","=","fk_order")
+                            ->join('Status',"Status.id","=","fk_status")
+                            ->where('fk_order',$id)
+                            ->where('Status.id',"=",intval($status))
+                            ->whereNull('Items.deleted_at')->get();
+                    }
                 }
 
                 $order = DB::table('Orders')->select("exc_rate","percentage","expenses","currency","broker","roundout")
@@ -708,24 +759,6 @@ class OrdersController extends Controller
         }
         else
         {
-            if($tr != 0)
-            {
-                $itm = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
-                    ->join('Orders',"Orders.id","=","fk_order")
-                    ->join('Status',"Status.id","=","fk_status")
-                    ->whereIn('fk_order',$ids)
-                    ->where('Status.id',"=",8)
-                    ->where('tr',"=",$tr)
-                    ->whereNull('Items.deleted_at')->get();
-            }
-            else
-            {
-                $itm = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
-                    ->join('Orders',"Orders.id","=","fk_order")
-                    ->join('Status',"Status.id","=","fk_status")
-                    ->whereIn('fk_order',$ids)
-                    ->whereNull('Items.deleted_at')->get();
-            }
             $totalCellar = "1";
             $totalComition = "1";
             $ord = DB::table('Orders')->select("*","Projects.name as projectName",DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
