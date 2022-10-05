@@ -27,12 +27,15 @@ class OrdersController extends Controller
         $cmbStatus = Status::select('id','name')
             ->where("fk_section","27")
             ->pluck('name','id');
+        $title = "Órdenes";
+        $flagClosed = 0;
         // dd($profile);
         if($profile != 61)
         {
             $orders = DB::table('Orders')->select('Orders.id','order_number','Projects.name AS project', DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
             ->join('users',"fk_user","=","users.id")
             ->join('Projects',"fk_project","=","Projects.id")
+            ->where('stat_open','=',0)
             ->whereNull('Orders.deleted_at')->get();
             // dd($orders);
         }
@@ -42,6 +45,7 @@ class OrdersController extends Controller
             ->join('users',"fk_user","=","users.id")
             ->join('Projects',"fk_project","=","Projects.id")
             ->where("fk_user","=",User::user_id())
+            ->where('stat_open','=',0)
             ->whereNull('Orders.deleted_at')->get();
         }
         if($perm==0)
@@ -50,7 +54,7 @@ class OrdersController extends Controller
         }
         else
         {
-            return view('processes.order.orders', compact('orders','perm_btn','profile','projects','cmbStatus'));
+            return view('processes.order.orders', compact('orders','perm_btn','profile','projects','cmbStatus','title','flagClosed'));
         }
     }
     public function GetInfo($id)
@@ -380,8 +384,9 @@ class OrdersController extends Controller
                     ->join('Projects',"Projects.id","=","fk_project")
                     ->join('users',"users.id","=","fk_user")
                     ->where('Orders.id',"=",$order)->first();
+
         $pdf = new PDFItems();
-        $pdf->PrintPDF($items,$ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$ord->expenses,$flaginvoice);
+        $pdf->PrintPDF($items,$ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$ord->expenses,$flaginvoice,$ord->projectName." / ");
         $orderName = Order::select("order_number")->where('id',$order)->first();
         // dd($orderName);
         $pdf->Output('D',"Items_de_orden_".$orderName->order_number.".pdf");
@@ -745,6 +750,17 @@ class OrdersController extends Controller
                     ->join('users',"users.id","=","fk_user")
                     ->where('Orders.id',"=",$ids[0])->first();
 
+            $projNames = DB::table('Orders')->select("Projects.name as projectName")
+                ->join('Projects',"Projects.id","=","fk_project")
+                ->groupBy('projectName')
+                ->whereIn('Orders.id',$ids)->get();
+
+            $projName = "";
+            foreach($projNames as $name)
+            {
+                $projName = $projName.$name->projectName." / ";
+            }
+
             $pdf = new PDFItems();
             $pdf->PrintPDF($itm,$ord,
             "$".number_format(floatval($totalCellar),2,".",","),
@@ -754,7 +770,7 @@ class OrdersController extends Controller
             "$".number_format(floatval($totalMxn_invoice),2,".",","),
             "$".number_format(floatval($totalUsd_total),2,".",","),
             number_format(floatval($totalBroker),2,".",","),
-            number_format(floatval($totalExpenses),2,".",","),$flaginvoice);
+            number_format(floatval($totalExpenses),2,".",","),$flaginvoice,$projName);
 
         }
         else
@@ -765,6 +781,18 @@ class OrdersController extends Controller
                     ->join('Projects',"Projects.id","=","fk_project")
                     ->join('users',"users.id","=","fk_user")
                     ->where('Orders.id',"=",$ids[0])->first();
+
+            $projNames = DB::table('Orders')->select("Projects.name as projectName")
+                ->join('Projects',"Projects.id","=","fk_project")
+                ->groupBy('projectName')
+                ->whereIn('Orders.id',$ids)->get();
+
+            $projName = "";
+            foreach($projNames as $name)
+            {
+                $projName = $projName.$name->projectName." / ";
+            }
+
             $pdf = new PDFItems();
             $pdf->PrintPDF($itm,$ord,$totalCellar,$totalComition,
             "$".number_format(floatval($totalMxn_total),2,".",","),
@@ -772,12 +800,32 @@ class OrdersController extends Controller
             "$".number_format(floatval($totalMxn_invoice),2,".",","),
             "$".number_format(floatval($totalUsd_total),2,".",","),
             number_format(floatval($totalBroker),2,".",","),
-            number_format(floatval($totalExpenses),2,".",","),$flaginvoice);
+            number_format(floatval($totalExpenses),2,".",","),$flaginvoice,$projName);
         }
 
 
         // dd($orderName);
         $pdf->Output('D',"Hoja_de_Items.pdf");
         return;
+    }
+
+    public function CloseOrders(Request $request)
+    {
+        foreach($request->ids as $id)
+        {
+            $order = Order::where('id',$id)
+                ->update(['stat_open'=>1]);
+        }
+        return response()->json(['status'=>true, "message"=>"Ordenes actualizadas"]);
+    }
+
+    public function OpenOrders(Request $request)
+    {
+        foreach($request->ids as $id)
+        {
+            $order = Order::where('id',$id)
+                ->update(['stat_open'=>0]);
+        }
+        return response()->json(['status'=>true, "message"=>"Ordenes actualizadas"]);
     }
 }

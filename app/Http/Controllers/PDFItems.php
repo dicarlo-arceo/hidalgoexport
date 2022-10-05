@@ -7,7 +7,7 @@ use Codedge\Fpdf\Fpdf\Fpdf;
 class PDFItems extends FPDF
 {
     // Tabla coloreada
-    function FancyTable($data,$ord)
+    function FancyTable($data,$ord,$projName)
     {
         $ycurr = 0;
         $yprev = 0;
@@ -21,16 +21,19 @@ class PDFItems extends FPDF
         $this->MultiCell(30,10,"Cliente:",1,'C',true);
         $this->SetY(10);
         $this->SetX(40);
-        $this->MultiCell(240,10,utf8_decode($ord->name)." / ".utf8_decode($ord->projectName),1,'C',true);
+        $this->MultiCell(240,10,utf8_decode($ord->name)." / ".utf8_decode($projName),1,'C',true);
         // Cabecera
         $this->SetY(20);
         $this->MultiCell(30,10,"Tienda",1,'C',true);
         $this->SetY(20);
         $this->SetX(40);
-        $this->MultiCell(30,10,"# de Item",1,'C',true);
+        $this->MultiCell(30,10,"# de Orden",1,'C',true);
         $this->SetY(20);
         $this->SetX(70);
-        $this->MultiCell(100,10,utf8_decode("Descripción"),1,'C',true);
+        $this->MultiCell(30,10,"# de Item",1,'C',true);
+        $this->SetY(20);
+        $this->SetX(100);
+        $this->MultiCell(70,10,utf8_decode("Descripción"),1,'C',true);
         $yprev = $this->GetY();
         $this->SetY(20);
         $this->SetX(170);
@@ -66,11 +69,15 @@ class PDFItems extends FPDF
             $ycurr = $this->GetY();
             $this->SetY($yprev);
             $this->SetX(40);
-            $this->MultiCell(30,6,utf8_decode($row->item_number),"T",'C',false);
+            $this->MultiCell(30,6,utf8_decode($row->order_number),"T",'C',false);
             if($ycurr < $this->GetY()) $ycurr = $this->GetY();
             $this->SetY($yprev);
             $this->SetX(70);
-            $this->MultiCell(100,6,utf8_decode($row->description),"T",'L',false);
+            $this->MultiCell(30,6,utf8_decode($row->item_number),"T",'C',false);
+            if($ycurr < $this->GetY()) $ycurr = $this->GetY();
+            $this->SetY($yprev);
+            $this->SetX(100);
+            $this->MultiCell(70,6,utf8_decode($row->description),"T",'L',false);
             if($ycurr < $this->GetY()) $ycurr = $this->GetY();
             $this->SetY($yprev);
             $this->SetX(170);
@@ -170,14 +177,14 @@ class PDFItems extends FPDF
             $this->Cell(90,10,$mxn_invoice,"LRB",0,'L');
         }
     }
-    function PrintPDF($data,$ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$expenses,$flaginvoice)
+    function PrintPDF($data,$ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$expenses,$flaginvoice,$projName)
     {
         // dd($data);
 
         // $this->SetMargins(0, 0, 0);
         $this->SetAutoPageBreak(false);
         $this->AddPage('L');
-        $this->FancyTable($data,$ord);
+        $this->FancyTable($data,$ord,$projName);
         // dd($ord);
         if($cellar != "1" && $comition != "1")
             $this->AddPayment($ord,$cellar,$comition,$mxn_total,$iva,$mxn_invoice,$usd_total,$broker,$expenses,$flaginvoice);

@@ -1177,6 +1177,8 @@ function chkOrderChange(id)
         document.getElementById('btnOrderUncheckAll').disabled = true;
         document.getElementById('btnOrderChangeAll').disabled = true;
         document.getElementById('btnItemsAll').disabled = true;
+        document.getElementById('btnCloseOrd').disabled = true;
+        document.getElementById('btnOpenOrd').disabled = true;
     }
 
     else
@@ -1184,6 +1186,8 @@ function chkOrderChange(id)
         document.getElementById('btnOrderUncheckAll').disabled = false;
         document.getElementById('btnOrderChangeAll').disabled = false;
         document.getElementById('btnItemsAll').disabled = false;
+        document.getElementById('btnCloseOrd').disabled = false;
+        document.getElementById('btnOpenOrd').disabled = false;
     }
     // console.log(checkedOrderChkb);
 }
@@ -1197,6 +1201,8 @@ function UncheckTodos()
     document.getElementById('btnOrderChangeAll').disabled = true;
     document.getElementById('btnOrderUncheckAll').disabled = true;
     document.getElementById('btnItemsAll').disabled = true;
+    document.getElementById('btnCloseOrd').disabled = true;
+    document.getElementById('btnOpenOrd').disabled = true;
     // console.log(checkedOrderChkb);
 }
 function HojaCobroTodos()
@@ -1479,4 +1485,60 @@ function showInvoice()
     {
         invoiceDetails.style.display = "none";
     }
+}
+function CloseOrders()
+{
+    var route = baseUrlOrder+'/CloseOrders';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'ids':checkedOrderChkb
+    };
+    alertify.confirm("Cerrar Ordenes","¿Desea cerrar las ordenes seleccionadas?",
+        function(){
+            jQuery.ajax({
+                url:route,
+                type:'post',
+                data:data,
+                dataType:'json',
+                success:function(result)
+                {
+                    window.location.reload(true);
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
+                }
+            })
+        },
+        function(){
+            alertify.error('Cancelado');
+    });
+}
+function OpenOrders()
+{
+    var route = baseUrlOrder+'/OpenOrders';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'ids':checkedOrderChkb
+    };
+    alertify.confirm("Abrir Ordenes","¿Desea abrir las ordenes seleccionadas?",
+        function(){
+            jQuery.ajax({
+                url:route,
+                type:'post',
+                data:data,
+                dataType:'json',
+                success:function(result)
+                {
+                    window.location.reload(true);
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
+                }
+            })
+        },
+        function(){
+            alertify.error('Cancelado');
+    });
 }
