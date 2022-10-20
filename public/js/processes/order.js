@@ -1179,6 +1179,7 @@ function chkOrderChange(id)
         document.getElementById('btnItemsAll').disabled = true;
         document.getElementById('btnCloseOrd').disabled = true;
         document.getElementById('btnOpenOrd').disabled = true;
+        document.getElementById('btnAssignRecp').disabled = true;
     }
 
     else
@@ -1188,6 +1189,7 @@ function chkOrderChange(id)
         document.getElementById('btnItemsAll').disabled = false;
         document.getElementById('btnCloseOrd').disabled = false;
         document.getElementById('btnOpenOrd').disabled = false;
+        document.getElementById('btnAssignRecp').disabled = false;
     }
     // console.log(checkedOrderChkb);
 }
@@ -1203,6 +1205,7 @@ function UncheckTodos()
     document.getElementById('btnItemsAll').disabled = true;
     document.getElementById('btnCloseOrd').disabled = true;
     document.getElementById('btnOpenOrd').disabled = true;
+    document.getElementById('btnAssignRecp').disabled = true;
     // console.log(checkedOrderChkb);
 }
 function HojaCobroTodos()
@@ -1541,4 +1544,105 @@ function OpenOrders()
         function(){
             alertify.error('Cancelado');
     });
+}
+
+function AsignarRecibo()
+{
+    var selectTR = $('#selectTRRecipt');
+    var sTR = document.getElementById("sTRRecipt");
+    var lvl = document.getElementById("lvlRecipt");
+    var btnAcceptTr = document.getElementById("btnAcceptRecipt");
+    var route = baseUrlOrder + '/GetinfoTROrders/1';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'ids':checkedOrderChkb
+    };
+
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            console.log(result);
+            if(result.data.length == 0)
+            {
+                lvl.style.display = "";
+                sTR.style.display = "none";
+                btnAcceptTr.style.display = "none";
+            }
+            else
+            {
+                $("#selectTRRecipt").empty();
+                selectTR.append('<option selected hidden value="">Seleccione una opción</option>');
+                result.data.forEach( function(valor, indice, array) {
+                    if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
+                });
+                $('#receipt').val("");
+                sTR.style.display = "";
+                lvl.style.display = "none";
+                btnAcceptTr.style.display = "";
+            }
+            $("#myReciptTR").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}
+function cerrarSelectTRRecipt()
+{
+    $("#myReciptTR").modal('hide');
+}
+function SaveAssign()
+{
+    var tr = $("#selectTRRecipt").val();
+    var stringaux = "";
+    checkedOrderChkb.forEach(function(valor, indice, array) {
+        stringaux = stringaux.concat(String(valor));
+        if(checkedOrderChkb.length-1 != indice) stringaux = stringaux.concat("-");
+    });
+
+    var formData = new FormData();
+    var files = $('input[type=file]');
+    for (var i = 0; i < files.length; i++) {
+        if (files[i].value == "" || files[i].value == null)
+        {
+        }
+        else
+        {
+            formData.append(files[i].name, files[i].files[0]);
+        }
+    }
+    var formSerializeArray = $("#Form").serializeArray();
+    for (var i = 0; i < formSerializeArray.length; i++) {
+        formData.append(formSerializeArray[i].name, formSerializeArray[i].value)
+    }
+
+    formData.append('_token', $("meta[name='csrf-token']").attr("content"));
+    formData.append('tr', tr);
+    formData.append('ids', stringaux);
+
+    var route = baseUrlOrder+"/AssignReceipt";
+
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:formData,
+        contentType: false,
+        processData: false,
+        cache: false,
+        success:function(result)
+        {
+            alertify.success(result.message);
+            $("#myReciptTR").modal('hide');
+
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
 }

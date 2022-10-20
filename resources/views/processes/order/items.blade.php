@@ -762,3 +762,58 @@
     </div>
 </div>
 {{-- fin modal| --}}
+{{-- inicia modal selector de tr para guardar recibos --}}
+<div id="myReciptTR" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        {{-- <form action="orders/updateStatus" enctype="multipart/form-data" method="POST">
+            @csrf
+            <input type="text" id="id" name="id" hidden> --}}
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="gridModalLabek">Trámite</h4>
+                <button type="button" onclick="cerrarSelectTRRecipt()" class="close" aria-label="Close">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid bd-example-row">
+                    <div class="col-md-12">
+                        <div class="row" id = "sTRRecipt" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Seleccionar el número de trámite:</label>
+                                        <select name="selectTRRecipt" id="selectTRRecipt" class="form-select">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12" >
+                                    <div class="form-group">
+                                        <label for="">Recibo: </label>
+                                        <input type="file" name="receipt" id="receipt" class="form-control" accept="image/*"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" id="lvlRecipt" style="display: none;">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>No hay trámites disponibles</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="cerrarSelectTRRecipt()" class="btn btn-secundary">Cancelar</button>
+                <button type="button" id="btnAcceptRecipt" style="display: none;" onclick="SaveAssign()" class="btn btn-primary">Aceptar</button>
+            </div>
+        {{-- </form> --}}
+        </div>
+    </div>
+</div>
+{{-- fin modal --}}

@@ -31,6 +31,11 @@
                             <button type="button" id="btnOpenOrd" class="btn btn-primary" onclick="OpenOrders()" disabled @if ($flagClosed == 0) hidden @endif>Marcar como Abierta</button>
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <button type="button" id="btnAssignRecp" class="btn btn-primary" onclick="AsignarRecibo()" disabled >Asignar Recibo</button>
+                        </div>
+                    </div>
                 @endif
             </div>
         </div>

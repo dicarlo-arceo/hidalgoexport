@@ -10,6 +10,7 @@ use App\Order;
 use App\Item;
 use App\Project;
 use App\Status;
+use App\Receipt_assigns;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Codedge\Fpdf\Fpdf\Fpdf;
@@ -549,7 +550,7 @@ class OrdersController extends Controller
                     ->join('users',"users.id","=","fk_user")
                     ->where('Orders.id',"=",$address)->first();
             $pdf = new PDF();
-            $pdf->PrintChapter($order,"$".number_format(floatval($totalCellar),2,".",","),"$".number_format(floatval($totalComition),2,".",","),number_format(floatval($order->exc_rate),2,".",","),$date,$pkgs,number_format(floatval($totalmxnCellar),2,".",","),number_format(floatval($totalmxnComition),2,".",","));
+            $pdf->PrintChapter($order,"$".number_format(floatval($totalCellar),2,".",","),"$".number_format(floatval($totalComition),2,".",","),number_format(floatval($order->exc_rate),2,".",","),$date,$pkgs,number_format(floatval($totalmxnCellar),2,".",","),number_format(floatval($totalmxnComition),2,".",","),$tr);
 
         }
         else
@@ -561,7 +562,7 @@ class OrdersController extends Controller
                     ->join('users',"users.id","=","fk_user")
                     ->where('Orders.id',"=",$address)->first();
             $pdf = new PDF();
-            $pdf->PrintChapter($order,$totalCellar,$totalComition,number_format(floatval($order->exc_rate),2,".",","),$date,$pkgs,$totalmxnCellar,$totalmxnComition);
+            $pdf->PrintChapter($order,$totalCellar,$totalComition,number_format(floatval($order->exc_rate),2,".",","),$date,$pkgs,$totalmxnCellar,$totalmxnComition,$tr);
         }
         // dd($totalCellar,$totalComition);
 
@@ -827,5 +828,42 @@ class OrdersController extends Controller
                 ->update(['stat_open'=>0]);
         }
         return response()->json(['status'=>true, "message"=>"Ordenes actualizadas"]);
+    }
+    public function AssignReceipt(Request $request)
+    {
+        $ids = explode("-", $request->ids);
+        $fk_client = Order::select('fk_user')->where('id','=',$ids[0])->first();
+
+        $orders = "";
+        $aux = 0;
+        foreach($ids as $id)
+        {
+            $order = Order::select('order_number')->where('id','=',$id)->first();
+            $orders = $orders.strval($order->order_number);
+            if(count($ids)-1 != $aux) $orders = $orders."_";
+            $aux++;
+        }
+
+        $receipt = new Receipt_assigns;
+        $receipt->idsOrd = $request->ids;
+        $receipt->orders = $orders;
+        $receipt->tr = $request->tr;
+        $receipt->fk_client = $fk_client->fk_user;
+
+        if($request->hasFile("receipt")){
+
+            $imagen = $request->file("receipt");
+            $nombreimagen = "Receipt_Orders_".$orders."_TR_".Str::slug($request->tr).".".$imagen->guessExtension();
+            $ruta = public_path("img/receipts/");
+
+            copy($imagen->getRealPath(),$ruta.$nombreimagen);
+
+            $receipt->receipt = $nombreimagen;
+
+        }
+
+        $receipt->save();
+
+        return response()->json(['status'=>true, "message"=>"Recibo Registrado"]);
     }
 }

@@ -30,6 +30,34 @@ $(document).ready( function () {
         }
     });
 } );
+$(document).ready( function () {
+    $('#tbProfReceipts').DataTable({
+        language : {
+            "sProcessing":     "Procesando...",
+            "sLengthMenu":     "Mostrar _MENU_ registros",
+            "sZeroRecords":    "No se encontraron resultados",
+            "sEmptyTable":     "Ningún dato disponible en esta tabla",
+            "sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+            "sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+            "sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+            "sInfoPostFix":    "",
+            "sSearch":         "Buscar:",
+            "sUrl":            "",
+            "sInfoThousands":  ",",
+            "sLoadingRecords": "Cargando...",
+            "oPaginate": {
+              "sFirst":    "Primero",
+              "sLast":     "Último",
+              "sNext":     "Siguiente",
+              "sPrevious": "Anterior"
+            },
+            "oAria": {
+              "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+              "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+            }
+        }
+    });
+} );
 
 function guardarCliente()
 {
@@ -224,4 +252,171 @@ function guardarOrden()
         }
     })
 }
+idReceipt = 0; // id del cliente
+idRecp = 0; // id de asignacion
+imgName = "";
+function verRecibos(id)
+{
+    idReceipt = id;
+    var route = baseUrl + '/GetInfoReceipts/'+id;
+    var table = $('#tbProfReceipts').DataTable();
+    // alert(route);
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result)
+        {
+            table.clear();
+            result.data.forEach( function(valor, indice, array) {
+                btnTrash = '<button type="button" class="btn btn-primary"'+'onclick="ViewReceipt('+valor.id+')">Ver</button> <button type="button" class="btn btn-danger"'+'onclick="deleteReceipt('+valor.id+')"><i class="fa fa-trash"></i></button>';
+                table.row.add([valor.orders,valor.tr,btnTrash]).node().id = valor.id;
+            });
+            table.draw(false);
+            $("#myModalOpenReceipts").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}
+function cancelarAbrirRecibos()
+{
+    $("#myModalOpenReceipts").modal('hide');
+}
+function ViewReceipt(id)
+{
+    idRecp = id;
+    var imgShow = document.getElementById("imgShow");
+    var fileInput = document.getElementById("fileInput");
+    var route = baseUrl+'/GetImg/'+id;
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        dataType:'json',
+        success:function(result){
+            if(result.data.receipt != null)
+            {
+                fileInput.style.display = "none";
+                imgShow.style.display = "";
+                $("#statusImg").attr("src","/img/receipts/"+result.data.receipt);
+                $("#dwnldImg").attr("href","/img/receipts/"+result.data.receipt);
+                $("#dwnldImg").attr("download",result.data.receipt);
+                imgName = result.data.receipt;
+            }
+            else
+            {
+                fileInput.style.display = "";
+                imgShow.style.display = "none";
+            }
+            $("#myModalViewReceipts").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}
+function cancelarVerRecibos()
+{
+    $("#myModalViewReceipts").modal('hide');
+}
+function deleteReceipt(id)
+{
+    var route = baseUrl + '/DeleteReceipt';
+    var data = {
+        'id':id,
+        "_token": $("meta[name='csrf-token']").attr("content")
+    };
+    alertify.confirm("Eliminar Recibo","¿Desea borrar el Recibo?",
+        function(){
+            jQuery.ajax({
+                url:route,
+                data: data,
+                type:'post',
+                dataType:'json',
+                success:function(result)
+                {
+                    alertify.success(result.message);
+                    $("#myModalOpenReceipts").modal('hide');
+                },
+                error:function(result,error,errorTrown)
+                {
+                    alertify.error(errorTrown);
+                }
+            })
+        },
+        function(){
+            alertify.error('Cancelado');
+    });
+}
+function deleteFile()
+{
+    var fileInput = document.getElementById("fileInput");
+    var imgShow = document.getElementById("imgShow");
+    var route = baseUrl + '/deleteFile';
+    var data = {
+        'id':idRecp,
+        'imgName':imgName,
+        "_token": $("meta[name='csrf-token']").attr("content")
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            fileInput.style.display = "";
+            imgShow.style.display = "none";
+            alertify.success(result.message);
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}
+function saveFile()
+{
+    var formData = new FormData();
+    var files = $('input[type=file]');
+    for (var i = 0; i < files.length; i++) {
+        if (files[i].value == "" || files[i].value == null)
+        {
+        }
+        else
+        {
+            formData.append(files[i].name, files[i].files[0]);
+        }
+    }
+    var formSerializeArray = $("#Form").serializeArray();
+    for (var i = 0; i < formSerializeArray.length; i++) {
+        formData.append(formSerializeArray[i].name, formSerializeArray[i].value)
+    }
 
+    formData.append('_token', $("meta[name='csrf-token']").attr("content"));
+    formData.append('id', idRecp);
+
+    var route = baseUrl+"/saveFile";
+
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:formData,
+        contentType: false,
+        processData: false,
+        cache: false,
+        success:function(result)
+        {
+            alertify.success(result.message);
+            $("#myModalViewReceipts").modal('hide');
+
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}

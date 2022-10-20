@@ -27,7 +27,7 @@ class PDF extends FPDF
     {
     }
 
-    function Payment($order,$cellar,$comition,$dlls,$date,$pkgs,$mxnCellar,$mxnComition)
+    function Payment($order,$cellar,$comition,$dlls,$date,$pkgs,$mxnCellar,$mxnComition,$tr)
     {
         // dd("entre a pay");
         $this->SetFont('Arial','',13);
@@ -106,10 +106,13 @@ class PDF extends FPDF
         $this->Cell(40,12,'TOTAL BULTOS:',"",'C');
         $this->Cell(40,12,$pkgs,"",'C');
         $this->Ln();
+        $this->Cell(145,4,'TRAMITE:',0,0,'R');
+        $this->Cell(40,4,$tr,"",'C');
+        $this->Ln();
         $this->Cell(60,8,'EMAIL:',0,0,"C");
         $this->Cell(80,6,'',"B",'C');
     }
-    function NoPayment($order,$date,$pkgs)
+    function NoPayment($order,$date,$pkgs,$tr)
     {
         // dd("entre a no pay");
         $this->SetFont('Arial','',13);
@@ -184,11 +187,14 @@ class PDF extends FPDF
         $this->Cell(40,12,'TOTAL BULTOS:',"",'C');
         $this->Cell(40,12,$pkgs,"",'C');
         $this->Ln();
+        $this->Cell(145,4,'TRAMITE:',0,0,'R');
+        $this->Cell(40,4,$tr,"",'C');
+        $this->Ln();
         $this->Cell(60,8,'EMAIL:',0,0,"C");
         $this->Cell(80,6,'',"B",'C');
     }
 
-    function PrintChapter($order,$cellar,$comition,$dlls,$date,$pkgs,$mxnCellar,$mxnComition)
+    function PrintChapter($order,$cellar,$comition,$dlls,$date,$pkgs,$mxnCellar,$mxnComition,$tr)
     {
         // dd(intval($cellar), intval($comition));
         setlocale(LC_ALL,"es_ES");
@@ -200,9 +206,9 @@ class PDF extends FPDF
         $auxDate = $day." ".$meses[intval($month)-1]." ".$year;
         // dd($cellar,$comition);
         if(intval($cellar) == 1 && intval($comition) == 1)
-            $this->NoPayment($order,$auxDate,$pkgs);
+            $this->NoPayment($order,$auxDate,$pkgs,$tr);
         else
-            $this->Payment($order,$cellar,$comition,$dlls,$auxDate,$pkgs,$mxnCellar,$mxnComition);
+            $this->Payment($order,$cellar,$comition,$dlls,$auxDate,$pkgs,$mxnCellar,$mxnComition,$tr);
     }
 }
 

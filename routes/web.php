@@ -39,6 +39,11 @@ Route::get('admin/users/user/GetInfo/{id}','UsersController@GetInfo')->name('use
 Route::resource('admin/clients/client', 'ClientsController');
 Route::get('admin/clients/client/GetInfo/{id}','ClientsController@GetInfo')->name('client.GetInfo');
 Route::post('admin/clients/client/SaveOrder','ClientsController@SaveOrder')->name('client.SaveOrder');
+Route::get('admin/clients/client/GetInfoReceipts/{id}','ClientsController@GetInfoReceipts')->name('client.GetInfoReceipts');
+Route::get('admin/clients/client/GetImg/{id}','ClientsController@GetImg')->name('client.GetImg');
+Route::post('admin/clients/client/DeleteReceipt','ClientsController@DeleteReceipt')->name('client.DeleteReceipt');
+Route::post('admin/clients/client/deleteFile','ClientsController@deleteFile')->name('client.deleteFile');
+Route::post('admin/clients/client/saveFile','ClientsController@saveFile')->name('client.saveFile');
 
 // permisos
 Route::resource('admin/permission/permissions', 'PermissionsController');
@@ -80,6 +85,7 @@ Route::post('processes/order/orders/updateBOAll', 'OrdersController@updateBOAll'
 Route::get('processes/order/orders/GetPDFItemsTodos/{flag}/{tr}/{ids}/{flaginvoice}/{status}', 'OrdersController@GetPDFItemsTodos')->name('orders.GetPDFItemsTodos');
 Route::post('processes/order/orders/CloseOrders', 'OrdersController@CloseOrders')->name('orders.CloseOrders');
 Route::post('processes/order/orders/OpenOrders', 'OrdersController@OpenOrders')->name('orders.OpenOrders');
+Route::post('processes/order/orders/AssignReceipt', 'OrdersController@AssignReceipt')->name('orders.AssignReceipt');
 
 // closed order
 Route::resource('processes/order/closedOrders', 'ClosedOrdController');

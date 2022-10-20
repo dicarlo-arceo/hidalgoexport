@@ -144,6 +144,110 @@
             </div>
         </div>
         {{-- fin modal --}}
+        {{-- inicia modal abrir órdenes --}}
+        <div id="myModalOpenReceipts" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Recibos</h4>
+                        <button type="button" class="close" aria-label="Close" onclick="cancelarAbrirRecibos()"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-lg-12">
+                                {{-- <div class="row align-items-center"> --}}
+                                <br>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="table-responsive" style="margin-bottom: 10px; max-width: 1200px; margin: auto;">
+                                            <table class="table table-striped table-hover text-center" id="tbProfReceipts">
+                                                <thead>
+                                                    <th class="text-center">Órdenes</th>
+                                                    <th class="text-center">Trámite</th>
+                                                    <th class="text-center">Opciones</th>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cancelarAbrirRecibos()">Cancelar</button>
+                        {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- fin modal --}}
+        {{-- inicia modal abrir órdenes --}}
+        <div id="myModalViewReceipts" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="gridModalLabek">Recibo</h4>
+                        <button type="button" class="close" aria-label="Close" onclick="cancelarVerRecibos()"><span aria-hidden="true">&times;</span></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="container-fluid bd-example-row">
+                            <div class="col-lg-12">
+                                {{-- <div class="row align-items-center"> --}}
+                                <br>
+                                <div class="row" id = "fileInput" style = "display: none;">
+                                    <div class="row">
+                                        <div class="col-md-12" >
+                                            <div class="form-group">
+                                                <label for="">Imagen: </label>
+                                                <input type="file" name="receipt" id="receipt" class="form-control" accept="image/*" @if($perm_btn['modify']!=1) disabled @endif/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12" >
+                                            <div class="form-group">
+                                                @if($perm_btn['modify']==1)
+                                                    <button type="button" onclick="saveFile()" class="btn btn-primary">Guardar Imagen</button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id = "imgShow" style = "display: none;">
+                                    <div class="row">
+                                        <div class="col-md-12" >
+                                            <div class="form-group">
+                                                <a id = "dwnldImg" title="ImageName">
+                                                    <img id = "statusImg" class="img-thumbnail"/>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12" >
+                                            <div class="form-group">
+                                                @if($perm_btn['modify']==1)
+                                                    <button type="button" onclick="deleteFile()" class="btn btn-danger">Eliminar Imagen</button>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secundary" onclick="cancelarVerRecibos()">Cancelar</button>
+                        {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- fin modal --}}
         @include('admin.clients.clientsedit')
         {{-- Inicia pantalla de inicio --}}
         <div class="bd-example bd-example-padded-bottom">
@@ -170,6 +274,7 @@
                             @if ($perm_btn['erase']==1 || $perm_btn['modify']==1)
                                 <td>
                                     @if ($perm_btn['modify']==1)
+                                        <a href="#|" class="btn btn-primary" onclick="verRecibos({{$user->id}})" >Ver Recibos</a>
                                         <a href="#|" class="btn btn-primary" onclick="nuevaOrden({{$user->id}})" >Nueva Orden</a>
                                         <a href="#|" class="btn btn-warning" onclick="editarCliente({{$user->id}})" >Editar</a>
                                     @endif

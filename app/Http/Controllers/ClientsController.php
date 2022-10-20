@@ -9,6 +9,9 @@ use App\Permission;
 use App\Enterprise;
 use App\Project;
 use App\Order;
+use App\Receipt_assigns;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class ClientsController extends Controller
 {
@@ -94,5 +97,68 @@ class ClientsController extends Controller
         $order->save();
         // dd("entre");
         return response()->json(["status"=>true, "message"=>"Orden creada"]);
+    }
+    public function GetInfoReceipts($id)
+    {
+        $receipts = Receipt_assigns::where('fk_client',$id)->get();
+        // dd($user);
+        return response()->json(['status'=>true, "data"=>$receipts]);
+    }
+    public function GetImg($id)
+    {
+        $receipts = Receipt_assigns::where('id',$id)->first();
+        // dd($receipts);
+        // dd($user);
+        return response()->json(['status'=>true, "data"=>$receipts]);
+    }
+    public function DeleteReceipt(Request $request)
+    {
+        $receipts = Receipt_assigns::where('id',$request->id)->first();
+
+        if($receipts->receipt != null)
+        {
+            $image_path = public_path()."/img/receipts/".$receipts->receipt;
+            if (File::exists($image_path)) {
+                File::delete($image_path);
+            }
+        }
+
+        $receipt = Receipt_assigns::find($request->id);
+        $receipt->delete();
+
+        return response()->json(['status'=>true, "message"=>"Recibo eliminado"]);
+    }
+    public function deleteFile(Request $request)
+    {
+        $image_path = public_path()."/img/receipts/".$request->imgName;
+        if (File::exists($image_path)) {
+            File::delete($image_path);
+            // unlink($image_path);
+        }
+        $receipt = Receipt_assigns::where('id',$request->id)->first();
+        $receipt->receipt = null;
+        $receipt->save();
+
+        return response()->json(['status'=>true, 'message'=>"Imagen Eliminada"]);
+    }
+    public function saveFile(Request $request)
+    {
+        $receipt = Receipt_assigns::where('id',$request->id)->first();
+
+        if($request->hasFile("receipt")){
+
+            $imagen = $request->file("receipt");
+            $nombreimagen = "Receipt_Orders_".Str::slug($receipt->orders)."_TR_".Str::slug($receipt->tr).".".$imagen->guessExtension();
+
+            $ruta = public_path("img/receipts/");
+
+            copy($imagen->getRealPath(),$ruta.$nombreimagen);
+
+            $receipt->receipt = $nombreimagen;
+        }
+
+        $receipt->save();
+
+        return response()->json(['status'=>true, "message"=>"Recibo Registrado"]);
     }
 }
