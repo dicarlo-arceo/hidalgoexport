@@ -80,12 +80,14 @@ Route::get('processes/order/orders/GetItemsTR/{id}/{tr}', 'OrdersController@GetI
 Route::get('processes/order/orders/GetPDF/{id}/{cellar}/{comition}/{dlls}/{date}/{pkgs}', 'OrdersController@GetPDF')->name('orders.GetPDF');
 Route::get('processes/order/orders/ItemsPDF/{order}/{tr}/{cellar}/{comition}/{mxn_total}/{iva}/{mxn_invoice}/{usd_total}/{broker}/{flaginvoice}', 'OrdersController@ItemsPDF')->name('orders.ItemsPDF');
 Route::get('processes/order/orders/GetinfoTROrders/{id}', 'OrdersController@GetinfoTROrders')->name('orders.GetinfoTROrders');
+Route::get('processes/order/orders/GetinfoTRItems/{id}', 'OrdersController@GetinfoTRItems')->name('orders.GetinfoTRItems');
 Route::get('processes/order/orders/GetPDFCobroTodos/{flag}/{date}/{pkgs}/{tr}/{address}/{ids}', 'OrdersController@GetPDFCobroTodos')->name('orders.GetPDFCobroTodos');
 Route::post('processes/order/orders/updateBOAll', 'OrdersController@updateBOAll')->name('orders.updateBOAll');
 Route::get('processes/order/orders/GetPDFItemsTodos/{flag}/{tr}/{ids}/{flaginvoice}/{status}', 'OrdersController@GetPDFItemsTodos')->name('orders.GetPDFItemsTodos');
 Route::post('processes/order/orders/CloseOrders', 'OrdersController@CloseOrders')->name('orders.CloseOrders');
 Route::post('processes/order/orders/OpenOrders', 'OrdersController@OpenOrders')->name('orders.OpenOrders');
 Route::post('processes/order/orders/AssignReceipt', 'OrdersController@AssignReceipt')->name('orders.AssignReceipt');
+Route::get('processes/order/orders/GetViewItems/{tr}/{status}', 'OrdersController@GetViewItems')->name('orders.GetViewItems');
 
 // closed order
 Route::resource('processes/order/closedOrders', 'ClosedOrdController');

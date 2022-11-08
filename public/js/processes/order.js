@@ -90,7 +90,9 @@ checkedChkb = [];
 chkbIds = [];
 checkedOrderChkb = [];
 chkbOrderIds = [];
-
+flagMultipleItems = 0;
+trAll = 0;
+statAll = 0;
 
 function refreshTable(result)
 {
@@ -129,6 +131,20 @@ function refreshTable(result)
             });
         }
     }
+
+    var btnNewItem = document.getElementById("btnNewItem");
+    var btnHojaCobro = document.getElementById("btnHojaCobro");
+    var btnDescargarItem = document.getElementById("btnDescargarItem");
+    btnNewItem.style.display = "";
+    btnHojaCobro.style.display = "";
+    btnDescargarItem.style.display = "";
+    document.getElementById('dlls').disabled = false;
+    document.getElementById('percent').disabled = false;
+    document.getElementById('exp').disabled = false;
+    document.getElementById('broker').disabled = false;
+    document.getElementById('onoffCurrency').disabled = false;
+    document.getElementById('onoffRound').disabled = false;
+
     $("#dlls").val(result.data[0].exc_rate);
     $("#percent").val(result.data[0].percentage);
     $("#exp").val(result.data[0].expenses);
@@ -153,7 +169,92 @@ function refreshTable(result)
 
     table.draw(false);
 }
+function refreshTableAll(result)
+{
+    if(profileOrder != 61)
+            {
+                document.getElementById('btnChangeAll').disabled = true;
+                document.getElementById('chkAll').checked = false;
+                checkedChkb = [];
+            }
+            var table = $('#tbProf1').DataTable();
+            var onoffRound = document.getElementById("onoffRound");
 
+            table.clear();
+            cellar = 0;
+            console.log(result.payData['cellar']);
+            if(result.flag != 1)
+            {
+                pdfResult = result.data;
+                // console.log(pdfResult);
+                if(profileOrder != 61)
+                {
+                    chkbIds = [];
+                    result.data.forEach( function(valor, indice, array) {
+                        btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
+                        if(valor.tr == 0) valTR = "-"; else valTR = valor.tr;
+                        chkbox = '<input class="form-check-input" type="checkbox" onclick="chkChange('+valor.id+')" id="chk'+valor.id+'">';
+                        btnTR = '<button class="btn btn-info" style="background-color: #FFFFFF !important; border-color: #000000 !important; color: #000000 !important;" onclick="editTR('+ valor.id +','+ valor.tr +')">'+ valTR +'</button>'
+                        btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
+                        table.row.add([chkbox,valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnTR,btnStatus,
+                            formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
+                        cellar += parseFloat(valor.total_price);
+                        chkbIds.push(valor.id);
+                    });
+                }
+                else
+                {
+                    result.data.forEach( function(valor, indice, array) {
+                        btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
+                        table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,valor.tr,btnStatus,
+                            formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
+                        cellar += parseFloat(valor.total_price);
+                    });
+                }
+            }
+
+            var btnNewItem = document.getElementById("btnNewItem");
+            var btnHojaCobro = document.getElementById("btnHojaCobro");
+            var btnDescargarItem = document.getElementById("btnDescargarItem");
+            btnNewItem.style.display = "none";
+            btnHojaCobro.style.display = "none";
+            btnDescargarItem.style.display = "none";
+            document.getElementById('dlls').disabled = true;
+            document.getElementById('percent').disabled = true;
+            document.getElementById('exp').disabled = true;
+            document.getElementById('broker').disabled = true;
+            document.getElementById('onoffCurrency').disabled = true;
+            document.getElementById('onoffRound').disabled = true;
+
+            $("#dlls").val(result.data[0].exc_rate);
+            $("#percent").val(result.data[0].percentage);
+            $("#exp").val(result.data[0].expenses);
+            $("#broker").val(result.data[0].broker);
+            $("#onoffCurrency").prop('disabled', false);
+            onoffRound.style.display = "";
+            if(result.data[0].currency == 1)
+                $("#onoffCurrency").bootstrapToggle('on');
+            else
+                $("#onoffCurrency").bootstrapToggle('off');
+            if(result.data[0].roundout == 1)
+                $("#onoffRound").bootstrapToggle('on');
+            else
+                $("#onoffRound").bootstrapToggle('off');
+            if(profileOrder == 61)
+            {
+                $("#onoffCurrency").prop('disabled', true);
+                onoffRound.style.display = "none";
+            }
+
+            $("#paytotal").val(formatter.format(result.payData['usd_total']));
+            $("#cellar").val(formatter.format(result.payData['cellar']));
+            $("#comition").val(formatter.format(result.payData['comition']));
+            $("#net_mxn").val(formatter.format(result.payData['mxn_total']));
+            $("#iva").val(formatter.format(result.payData['iva']));
+            $("#total_invoice").val(formatter.format(result.payData['mxn_invoice']));
+
+            table.draw(false);
+}
 function nuevoItem(id,profile)
 {
     idOrder = id;
@@ -163,6 +264,7 @@ function nuevoItem(id,profile)
     var btnNewItem = document.getElementById("btnNewItem");
 
     flagTR = "null";
+    flagMultipleItems = 0;
 
     $("#amount").val("");
     table.clear();
@@ -228,6 +330,10 @@ function guardarTR()
         'tr':tr,
         'id':idTR,
         'fk_order':idOrder,
+        'flagMultipleItems':flagMultipleItems,
+        'trAll':trAll,
+        'statAll':statAll,
+        'ids':checkedOrderChkb,
         'flagTR':flagTR
     };
     jQuery.ajax({
@@ -237,7 +343,10 @@ function guardarTR()
         dataType: 'json',
         success:function(result)
         {
-            refreshTable(result);
+            if(flagMultipleItems == 0)
+                refreshTable(result);
+            else
+                refreshTableAll(result);
             $("#myModalTR").modal('hide');
             alertify.success(result.message);
         },
@@ -270,6 +379,10 @@ function guardarItem()
         'existence':existence,
         'net_price':net_price,
         'total_price':total_price,
+        'flagMultipleItems':flagMultipleItems,
+        'trAll':trAll,
+        'statAll':statAll,
+        'ids':checkedOrderChkb,
         'flagTR':flagTR
     };
 
@@ -280,7 +393,10 @@ function guardarItem()
         dataType:'json',
         success:function(result)
         {
-            refreshTable(result);
+            if(flagMultipleItems == 0)
+                refreshTable(result);
+            else
+                refreshTableAll(result);
             $("#myModal").modal('hide');
             alertify.success(result.message);
         },
@@ -412,6 +528,10 @@ function deleteItem(id)
     var data = {
         'id':id,
         "_token": $("meta[name='csrf-token']").attr("content"),
+        'flagMultipleItems':flagMultipleItems,
+        'trAll':trAll,
+        'statAll':statAll,
+        'ids':checkedOrderChkb,
         'flagTR':flagTR
     };
     alertify.confirm("Eliminar Item","¿Desea borrar el Item?",
@@ -423,7 +543,10 @@ function deleteItem(id)
                 dataType:'json',
                 success:function(result)
                 {
-                    refreshTable(result);
+                    if(flagMultipleItems == 0)
+                        refreshTable(result);
+                    else
+                        refreshTableAll(result);
                     alertify.success(result.message);
                     $("#myModal").modal('hide');
                 },
@@ -710,6 +833,10 @@ function actualizarEstatus()
     formData.append('delivery_date', date);
     formData.append('commentary', commentary);
     formData.append('flagTR', flagTR);
+    formData.append('trAll', trAll);
+    formData.append('statAll', statAll);
+    formData.append('ids', checkedOrderChkb);
+    formData.append('flagMultipleItems', flagMultipleItems);
 
     var route = baseUrlOrder+"/updateStatus";
 
@@ -722,7 +849,10 @@ function actualizarEstatus()
         cache: false,
         success:function(result)
         {
-            refreshTable(result);
+            if(flagMultipleItems == 0)
+                refreshTable(result);
+            else
+                refreshTableAll(result);
             alertify.success(result.message);
             $("#myEstatusModal").modal('hide');
 
@@ -792,6 +922,10 @@ function actualizarItem()
         'net_price':net_price,
         'total_price':total_price,
         'fk_order':idOrder,
+        'flagMultipleItems':flagMultipleItems,
+        'trAll':trAll,
+        'statAll':statAll,
+        'ids':checkedOrderChkb,
         'flagTR':flagTR,
     };
 
@@ -803,7 +937,10 @@ function actualizarItem()
         dataType:'json',
         success:function(result)
         {
-            refreshTable(result);
+            if(flagMultipleItems == 0)
+                refreshTable(result);
+            else
+                refreshTableAll(result);
             $("#myModalEdit").modal('hide');
             alertify.success(result.message);
         },
@@ -927,6 +1064,7 @@ function abrirSeleccionTR()
             $("#mySelectTRModal").modal('hide');
             btnNewItem.style.display = "none";
             flagTR = selectTR;
+            flagMultipleItems = 0;
             document.getElementById('btnChangeAll').disabled = true;
             document.getElementById('chkAll').checked = false;
             checkedChkb = [];
@@ -1075,8 +1213,12 @@ function actualizarEstatusTodos()
         "_token": $("meta[name='csrf-token']").attr("content"),
         'statusNew':selectStatusNew,
         'trStatusAll':trStatusAll,
-        'ids':checkedChkb,
+        'idsItms':checkedChkb,
         'idOrder':idOrder,
+        'flagMultipleItems':flagMultipleItems,
+        'trAll':trAll,
+        'statAll':statAll,
+        'ids':checkedOrderChkb,
         'flagTR':flagTR,
     };
     jQuery.ajax({
@@ -1086,7 +1228,10 @@ function actualizarEstatusTodos()
         dataType:'json',
         success:function(result)
         {
-            refreshTable(result);
+            if(flagMultipleItems == 0)
+                refreshTable(result);
+            else
+                refreshTableAll(result);
             document.getElementById('btnChangeAll').disabled = true;
             document.getElementById('btnBOAll').disabled = true;
             document.getElementById('chkAll').checked = false;
@@ -1180,6 +1325,7 @@ function chkOrderChange(id)
         document.getElementById('btnCloseOrd').disabled = true;
         document.getElementById('btnOpenOrd').disabled = true;
         document.getElementById('btnAssignRecp').disabled = true;
+        document.getElementById('btnViewItms').disabled = true;
     }
 
     else
@@ -1190,6 +1336,7 @@ function chkOrderChange(id)
         document.getElementById('btnCloseOrd').disabled = false;
         document.getElementById('btnOpenOrd').disabled = false;
         document.getElementById('btnAssignRecp').disabled = false;
+        document.getElementById('btnViewItms').disabled = false;
     }
     // console.log(checkedOrderChkb);
 }
@@ -1206,6 +1353,7 @@ function UncheckTodos()
     document.getElementById('btnCloseOrd').disabled = true;
     document.getElementById('btnOpenOrd').disabled = true;
     document.getElementById('btnAssignRecp').disabled = true;
+    document.getElementById('btnViewItms').disabled = true;
     // console.log(checkedOrderChkb);
 }
 function HojaCobroTodos()
@@ -1321,9 +1469,13 @@ function moverBO()
     var route = baseUrlOrder+'/updateBOAll';
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
-        'ids':checkedChkb,
+        'idsItems':checkedChkb,
         'idOrder':idOrder,
         'flagTR':flagTR,
+        'trAll':trAll,
+        'statAll':statAll,
+        'ids':checkedOrderChkb,
+        'flagMultipleItems':flagMultipleItems,
     };
     alertify.confirm("Back Order","¿Desea transferir la back order a existencias?",
         function(){
@@ -1334,7 +1486,10 @@ function moverBO()
                 dataType:'json',
                 success:function(result)
                 {
-                    refreshTable(result);
+                    if(flagMultipleItems == 0)
+                        refreshTable(result);
+                    else
+                        refreshTableAll(result);
                     document.getElementById('btnChangeAll').disabled = true;
                     document.getElementById('btnBOAll').disabled = true;
                     document.getElementById('chkAll').checked = false;
@@ -1358,7 +1513,7 @@ function HojaItemsTodos()
     var sTR = document.getElementById("sTRItems");
     var lvl = document.getElementById("lvlItems");
     var btnAcceptTr = document.getElementById("btnAcceptItems");
-    var route = baseUrlOrder + '/GetinfoTROrders/1';
+    var route = baseUrlOrder + '/GetinfoTRItems/1';
     var data = {
         "_token": $("meta[name='csrf-token']").attr("content"),
         'ids':checkedOrderChkb
@@ -1645,4 +1800,71 @@ function SaveAssign()
             alertify.error(errorTrown);
         }
     })
+}
+function VerItems()
+{
+    var selectTR = $('#selectTRViewItems');
+    var route = baseUrlOrder + '/GetinfoTRItems/1';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'ids':checkedOrderChkb,
+    };
+
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            console.log(result.data);
+            orderItemsAll =  result.address[0].id;
+            $("#selectTRViewItems").empty();
+            selectTR.append('<option selected hidden value="0">Seleccione una opción</option>');
+            result.data.forEach( function(valor, indice, array) {
+                if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
+            });
+            selectTR.append('<option value="0">Todos</option>');
+
+            flagMultipleItems = 1;
+            $("#myModalViewItemsAll").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+}
+function cerrarViewItemsAll()
+{
+    $("#myModalViewItemsAll").modal('hide');
+}
+function VerItemsTodos()
+{
+    var route = baseUrlOrder + '/GetViewItems/' + $('#selectTRViewItems').val() + '/' + $("#selectStatusViewItemsAll").val();
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'ids':checkedOrderChkb
+    };
+
+    jQuery.ajax({
+        url:route,
+        type:'get',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+
+            trAll = $('#selectTRViewItems').val();
+            statAll = $("#selectStatusViewItemsAll").val();
+            refreshTableAll(result);
+            $("#myModalViewItemsAll").modal('hide');
+            $("#myModal2").modal('show');
+        },
+        error:function(result,error,errorTrown)
+        {
+            alertify.error(errorTrown);
+        }
+    })
+
 }

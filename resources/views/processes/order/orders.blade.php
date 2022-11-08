@@ -10,30 +10,15 @@
         <div class="col-lg-12">
             <div class="row">
                 @if ($perm_btn['modify']==1)
-                    <div class="col-md-2">
+                    <div class="col-md-12">
                         <div class="form-group">
                             <button type="button" id="btnOrderUncheckAll" class="btn btn-primary" onclick="UncheckTodos()" disabled>Quitar Selección</button>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
                             <button type="button" id="btnOrderChangeAll" class="btn btn-primary" onclick="HojaCobroTodos()" disabled>Hoja de Cobro</button>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
                             <button type="button" id="btnItemsAll" class="btn btn-primary" onclick="HojaItemsTodos()" disabled>Items en pdf</button>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
                             <button type="button" id="btnCloseOrd" class="btn btn-primary" onclick="CloseOrders()" disabled @if ($flagClosed == 1) hidden @endif>Marcar como Cerrada</button>
                             <button type="button" id="btnOpenOrd" class="btn btn-primary" onclick="OpenOrders()" disabled @if ($flagClosed == 0) hidden @endif>Marcar como Abierta</button>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
                             <button type="button" id="btnAssignRecp" class="btn btn-primary" onclick="AsignarRecibo()" disabled >Asignar Recibo</button>
+                            <button type="button" id="btnViewItms" class="btn btn-primary" onclick="VerItems()" disabled >Ver Items</button>
                         </div>
                     </div>
                 @endif

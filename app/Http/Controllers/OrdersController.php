@@ -123,20 +123,39 @@ class OrdersController extends Controller
         $order->delete();
         return response()->json(['status'=>true, "message"=>"Orden eliminado"]);
     }
-    public function DeleteItem($id,$idOrder,$flagTR)
+    public function DeleteItem($id,$idOrder,$flagTR, Request $request)
     {
         $flag = 0;
         $item = Item::find($id);
         $item->delete();
 
-        $items = $this->GetItemsBack($idOrder,$flagTR);
-        if(count($items) == 0)
+        if(intval($request->flagMultipleItems) == 0)
         {
-            // dd("entre");
-            $flag = 1;
-            $items = DB::table('Orders')->select("*")
-                ->where('id',$idOrder)
-                ->whereNull('deleted_at')->get();
+            $items = $this->GetItemsBack($idOrder,$flagTR);
+            if(count($items) == 0)
+            {
+                // dd("entre");
+                $flag = 1;
+                $items = DB::table('Orders')->select("*")
+                    ->where('id',$idOrder)
+                    ->whereNull('deleted_at')->get();
+            }
+        }
+        else
+        {
+            $arrayret = $this->GetItemsBackAll($request->trAll, $request->statAll, $request);
+            $itm = $arrayret['items'];
+            $paymntarray = $arrayret['paymntarray'];
+
+            if(count($itm) == 0)
+            {
+                // dd("entre");
+                $flag = 1;
+                $itm = DB::table('Orders')->select("*")
+                    ->where('id',$request->ids[0])
+                    ->whereNull('deleted_at')->get();
+            }
+            return response()->json(['status'=>true, "message"=>"Item eliminado", "data"=>$itm,"flag"=>$flag, "payData"=>$paymntarray]);
         }
         // dd($items);
 
@@ -166,7 +185,6 @@ class OrdersController extends Controller
         $status->fk_status = $request->status;
         $status->commentary=$request->commentary;
         $status->delivery_date=$request->delivery_date;
-        // dd($request);
 
         if($request->hasFile("imagen")){
 
@@ -184,14 +202,35 @@ class OrdersController extends Controller
 
         $status->save();
 
-        $items = $this->GetItemsBack($request->idOrder,$request->flagTR);
-        if(count($items) == 0)
+        if(intval($request->flagMultipleItems) == 0)
         {
-            // dd("entre");
-            $flag = 1;
-            $items = DB::table('Orders')->select("*")
+            $items = $this->GetItemsBack($request->idOrder,$request->flagTR);
+            if(count($items) == 0)
+            {
+                // dd("entre");
+                $flag = 1;
+                $items = DB::table('Orders')->select("*")
                 ->where('id',$request->idOrder)
                 ->whereNull('deleted_at')->get();
+            }
+        }
+        else
+        {
+            $request->ids = explode(",", $request->ids);
+            // dd($request);
+            $arrayret = $this->GetItemsBackAll($request->trAll, $request->statAll, $request);
+            $itm = $arrayret['items'];
+            $paymntarray = $arrayret['paymntarray'];
+
+            if(count($itm) == 0)
+            {
+                // dd("entre");
+                $flag = 1;
+                $itm = DB::table('Orders')->select("*")
+                    ->where('id',$request->ids[0])
+                    ->whereNull('deleted_at')->get();
+            }
+            return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$itm,"flag"=>$flag, "payData"=>$paymntarray]);
         }
         // dd($request->flagTR);
         // return;
@@ -221,8 +260,19 @@ class OrdersController extends Controller
         'back_order'=>$request->back_order,'existence'=>$request->existence,'net_price'=>$request->net_price,
         'total_price'=>$request->total_price]);
 
-        $items = $this->GetItemsBack($request->fk_order,$request->flagTR);
+        if(intval($request->flagMultipleItems) == 0)
+        {
+            $items = $this->GetItemsBack($request->fk_order,$request->flagTR);
+        }
+        else
+        {
+            // dd($request);
+            $arrayret = $this->GetItemsBackAll($request->trAll, $request->statAll, $request);
+            $itm = $arrayret['items'];
+            $paymntarray = $arrayret['paymntarray'];
 
+            return response()->json(['status'=>true, "message"=>"Orden Actualizada", "data"=>$itm,"payData"=>$paymntarray]);
+        }
         // dd($items);
         return response()->json(['status'=>true, 'message'=>"Orden Actualizada", "data"=>$items]);
     }
@@ -233,14 +283,33 @@ class OrdersController extends Controller
         $item = Item::where('id',$request->id)
         ->update(['tr'=>$request->tr]);
 
-        $items = $this->GetItemsBack($request->fk_order,$request->flagTR);
-        if(count($items) == 0)
+        if(intval($request->flagMultipleItems) == 0)
         {
-            // dd("entre");
-            $flag = 1;
-            $items = DB::table('Orders')->select("*")
-                ->where('id',$request->fk_order)
-                ->whereNull('deleted_at')->get();
+            $items = $this->GetItemsBack($request->fk_order,$request->flagTR);
+            if(count($items) == 0)
+            {
+                // dd("entre");
+                $flag = 1;
+                $items = DB::table('Orders')->select("*")
+                    ->where('id',$request->fk_order)
+                    ->whereNull('deleted_at')->get();
+            }
+        }
+        else
+        {
+            $arrayret = $this->GetItemsBackAll($request->trAll, $request->statAll, $request);
+            $itm = $arrayret['items'];
+            $paymntarray = $arrayret['paymntarray'];
+
+            if(count($itm) == 0)
+            {
+                // dd("entre");
+                $flag = 1;
+                $itm = DB::table('Orders')->select("*")
+                    ->where('id',$request->ids[0])
+                    ->whereNull('deleted_at')->get();
+            }
+            return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$itm,"flag"=>$flag, "payData"=>$paymntarray]);
         }
         // dd($items);
         return response()->json(['status'=>true, 'message'=>"Orden Actualizada", "data"=>$items,"flag"=>$flag]);
@@ -406,7 +475,7 @@ class OrdersController extends Controller
     public function updateStatusOrder(Request $request)
     {
         $flag = 0;
-        foreach ($request->ids as $item)
+        foreach ($request->idsItms as $item)
         {
             $itm = Item::where('id',$item)->first();
             // dd($request->statusNew,$itm->back_order,$itm->fk_status);
@@ -430,14 +499,34 @@ class OrdersController extends Controller
             else $itm = Item::where('id',$item)->update(['fk_status'=>$request->statusNew,'tr'=>$request->trStatusAll]);
         }
 
-        $items = $this->GetItemsBack($request->idOrder,$request->flagTR);
-        if(count($items) == 0)
+        if(intval($request->flagMultipleItems) == 0)
         {
-            // dd("entre");
-            $flag = 1;
-            $items = DB::table('Orders')->select("*")
-                ->where('id',$request->idOrder)
-                ->whereNull('deleted_at')->get();
+            $items = $this->GetItemsBack($request->idOrder,$request->flagTR);
+            if(count($items) == 0)
+            {
+                // dd("entre");
+                $flag = 1;
+                $items = DB::table('Orders')->select("*")
+                    ->where('id',$request->idOrder)
+                    ->whereNull('deleted_at')->get();
+            }
+        }
+        else
+        {
+            // dd($request);
+            $arrayret = $this->GetItemsBackAll($request->trAll, $request->statAll, $request);
+            $itm = $arrayret['items'];
+            $paymntarray = $arrayret['paymntarray'];
+
+            if(count($itm) == 0)
+            {
+                // dd("entre");
+                $flag = 1;
+                $itm = DB::table('Orders')->select("*")
+                    ->where('id',$request->ids[0])
+                    ->whereNull('deleted_at')->get();
+            }
+            return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$itm,"flag"=>$flag, "payData"=>$paymntarray]);
         }
         // dd($request->flagTR);
         // return;
@@ -468,6 +557,35 @@ class OrdersController extends Controller
             }
         }
         $trs = array_unique($trs);
+        $adrss = $this->unique_multidim_array($adrss,'address');
+        sort($trs);
+        return response()->json(['status'=>true, "data"=>$trs, "address"=>$adrss]);
+    }
+    public function GetinfoTRItems($id, Request $request)
+    {
+        $trs = array();
+        $adrss = array();
+        foreach ($request->ids as $id)
+        {
+            $items = DB::table('Items')->select("tr")
+            ->where('fk_order',$id)
+            ->whereNull('Items.deleted_at')
+            ->groupBy('tr')->get();
+
+            $address = DB::table('Orders')->select("id","address")
+            ->where('id',$id)->first();
+            $auxaddr = array('id' => $address->id, 'address' => $address->address);
+            array_push($adrss, $auxaddr);
+            // array_splice($adrss,$address->id,0,$address->address);
+            // $adrss += $auxaddr;
+
+            foreach($items as $item)
+            {
+                array_push($trs,$item->tr);
+            }
+        }
+        $trs = array_unique($trs);
+        // dd($trs);
         $adrss = $this->unique_multidim_array($adrss,'address');
         sort($trs);
         return response()->json(['status'=>true, "data"=>$trs, "address"=>$adrss]);
@@ -571,7 +689,7 @@ class OrdersController extends Controller
     public function updateBOAll(Request $request)
     {
         $flag = 0;
-        foreach ($request->ids as $item)
+        foreach ($request->idsItems as $item)
         {
             $itm = Item::where('id',$item)->first();
             if($itm->back_order != 0)
@@ -580,14 +698,34 @@ class OrdersController extends Controller
             }
         }
 
-        $items = $this->GetItemsBack($request->idOrder,$request->flagTR);
-        if(count($items) == 0)
+        if(intval($request->flagMultipleItems) == 0)
         {
-            // dd("entre");
-            $flag = 1;
-            $items = DB::table('Orders')->select("*")
-                ->where('id',$request->idOrder)
-                ->whereNull('deleted_at')->get();
+            $items = $this->GetItemsBack($request->idOrder,$request->flagTR);
+            if(count($items) == 0)
+            {
+                // dd("entre");
+                $flag = 1;
+                $items = DB::table('Orders')->select("*")
+                    ->where('id',$request->idOrder)
+                    ->whereNull('deleted_at')->get();
+            }
+        }
+        else
+        {
+            // dd($request);
+            $arrayret = $this->GetItemsBackAll($request->trAll, $request->statAll, $request);
+            $itm = $arrayret['items'];
+            $paymntarray = $arrayret['paymntarray'];
+
+            if(count($itm) == 0)
+            {
+                // dd("entre");
+                $flag = 1;
+                $itm = DB::table('Orders')->select("*")
+                    ->where('id',$request->ids[0])
+                    ->whereNull('deleted_at')->get();
+            }
+            return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$itm,"flag"=>$flag, "payData"=>$paymntarray]);
         }
         // dd($request->flagTR);
         // return;
@@ -865,5 +1003,179 @@ class OrdersController extends Controller
         $receipt->save();
 
         return response()->json(['status'=>true, "message"=>"Recibo Registrado"]);
+    }
+    public function GetViewItems($tr, $status, Request $request)
+    {
+        $flag = 0;
+
+        $arrayret = $this->GetItemsBackAll($tr, $status, $request);
+        $itm = $arrayret['items'];
+        $paymntarray = $arrayret['paymntarray'];
+
+        if(count($itm) == 0)
+        {
+            // dd("entre");
+            $flag = 1;
+            $itm = DB::table('Orders')->select("*")
+                ->where('id',$request->ids[0])
+                ->whereNull('deleted_at')->get();
+        }
+        // dd($items);
+        return response()->json(['status'=>true, "data"=>$itm,"flag"=>$flag, "payData"=>$paymntarray]);
+    }
+
+    public function GetItemsBackAll($tr,$status,$request)
+    {
+        if(intval($tr) != 0)
+        {
+            if(intval($status) == 0)
+            {
+                $itm = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
+                    ->join('Orders',"Orders.id","=","fk_order")
+                    ->join('Status',"Status.id","=","fk_status")
+                    ->whereIn('fk_order',$request->ids)
+                    ->where('tr',"=",$tr)
+                    ->whereNull('Items.deleted_at')->get();
+            }
+            else
+            {
+                $itm = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
+                    ->join('Orders',"Orders.id","=","fk_order")
+                    ->join('Status',"Status.id","=","fk_status")
+                    ->whereIn('fk_order',$request->ids)
+                    ->where('Status.id',"=",intval($status))
+                    ->where('tr',"=",$tr)
+                    ->whereNull('Items.deleted_at')->get();
+            }
+        }
+        else
+        {
+            if(intval($status) == 0)
+            {
+                $itm = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
+                    ->join('Orders',"Orders.id","=","fk_order")
+                    ->join('Status',"Status.id","=","fk_status")
+                    ->whereIn('fk_order',$request->ids)
+                    ->whereNull('Items.deleted_at')->get();
+            }
+            else
+            {
+                $itm = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
+                    ->join('Orders',"Orders.id","=","fk_order")
+                    ->join('Status',"Status.id","=","fk_status")
+                    ->whereIn('fk_order',$request->ids)
+                    ->where('Status.id',"=",intval($status))
+                    ->whereNull('Items.deleted_at')->get();
+            }
+        }
+
+        $cellar = 0;
+        $prices = array();
+        $cont = 0;
+        // dd(intval($status));
+        foreach($request->ids as $id)
+        {
+            $cellar = 0;
+
+            if(intval($tr) != 0)
+            {
+                if(intval($status) == 0)
+                {
+                    $items = DB::table('Items')->select("total_price")
+                        ->join('Orders',"Orders.id","=","fk_order")
+                        ->join('Status',"Status.id","=","fk_status")
+                        ->where('fk_order',$id)
+                        ->where('tr',"=",$tr)
+                        ->whereNull('Items.deleted_at')->get();
+                }
+                else
+                {
+                    $items = DB::table('Items')->select("total_price")
+                        ->join('Orders',"Orders.id","=","fk_order")
+                        ->join('Status',"Status.id","=","fk_status")
+                        ->where('fk_order',$id)
+                        ->where('Status.id',"=",intval($status))
+                        ->where('tr',"=",$tr)
+                        ->whereNull('Items.deleted_at')->get();
+                }
+            }
+            else
+            {
+                if(intval($status) == 0)
+                {
+                    $items = DB::table('Items')->select("total_price")
+                        ->join('Orders',"Orders.id","=","fk_order")
+                        ->join('Status',"Status.id","=","fk_status")
+                        ->where('fk_order',$id)
+                        ->whereNull('Items.deleted_at')->get();
+                }
+                else
+                {
+                    $items = DB::table('Items')->select("total_price")
+                        ->join('Orders',"Orders.id","=","fk_order")
+                        ->join('Status',"Status.id","=","fk_status")
+                        ->where('fk_order',$id)
+                        ->where('Status.id',"=",intval($status))
+                        ->whereNull('Items.deleted_at')->get();
+                }
+            }
+
+            $order = DB::table('Orders')->select("exc_rate","percentage","expenses","currency","broker","roundout")
+            ->where('Orders.id',"=",$id)->first();
+            if($items->count() != 0)
+            {
+                foreach($items as $item)
+                {
+                    $cellar += floatval($item->total_price);
+                }
+
+                $usd_total = 0;
+                $mxn_total = 0;
+
+                $comition = $cellar * floatval($order->percentage)/100;
+
+                if($comition > 0 && $comition < 100 && $order->roundout == 1) $comition = 100;
+
+                if(intval($order->currency) == 1) $usd_total += floatval($order->expenses);
+                else $mxn_total += floatval($order->expenses);
+
+                $usd_total += $comition + floatval($order->broker);
+                $mxn_total += $usd_total * floatval($order->exc_rate);
+                $iva = $mxn_total * 0.16;
+                $mxn_invoice = $mxn_total + $iva;
+
+                $auxarray = array('cellar' => $cellar, 'comition' => $comition, 'broker' => $order->broker, 'expenses' => $order->expenses, 'usd_total' => $usd_total, 'mxn_total' => $mxn_total, 'iva' => $iva, 'mxn_invoice' => $mxn_invoice);
+                array_push($prices,$auxarray);
+                $cont ++;
+            }
+        }
+
+        $totalCellar = 0;
+        $totalComition = 0;
+        $totalBroker = 0;
+        $totalExpenses = 0;
+        $totalUsd_total = 0;
+        $totalMxn_total = 0;
+        $totalIva = 0;
+        $totalMxn_invoice = 0;
+
+        foreach($prices as $price)
+        {
+            // dd($price);
+            $totalCellar += $price['cellar'];
+            $totalComition += $price['comition'];
+            $totalBroker += $price['broker'];
+            $totalExpenses += $price['expenses'];
+            $totalUsd_total += $price['usd_total'];
+            $totalMxn_total += $price['mxn_total'];
+            $totalIva += $price['iva'];
+            $totalMxn_invoice += $price['mxn_invoice'];
+        }
+
+        $paymntarray = array('cellar' => $totalCellar, 'comition' => $totalComition, 'broker' => $totalBroker, 'expenses' => $totalExpenses, 'usd_total' => $totalUsd_total, 'mxn_total' => $totalMxn_total, 'iva' => $totalIva, 'mxn_invoice' => $totalMxn_invoice);
+
+        $returnArray = array('items' => $itm, 'paymntarray' => $paymntarray);
+
+        return($returnArray);
     }
 }

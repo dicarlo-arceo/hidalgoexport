@@ -4,7 +4,7 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <h4 class="modal-title" id="gridModalLabek">Movimientos</h4>
+                <h4 class="modal-title" id="gridModalLabek">Items</h4>
                 <button type="button" class="close" aria-label="Close" onclick="cancelarItem()"><span aria-hidden="true">&times;</span></button>
             </div>
 
@@ -197,9 +197,9 @@
                 <button type="button" class="btn btn-secundary" onclick="cancelarItem()">Cancelar</button>
                 @if ($perm_btn['addition']==1)
                     <button type="button" id="btnNewItem" style="display: none;" onclick="newItem()" class="btn btn-primary">Agregar Item</button>
-                    <button type="button" id="btnNewItem" onclick="abrirPDF()" class="btn btn-primary">Hoja de Cobro</button>
+                    <button type="button" id="btnHojaCobro" onclick="abrirPDF()" class="btn btn-primary">Hoja de Cobro</button>
                 @endif
-                <button type="button" id="btnNewItem" onclick="abrirPDFItems()" class="btn btn-primary">Descargar Items en PDF</button>
+                <button type="button" id="btnDescargarItem" onclick="abrirPDFItems()" class="btn btn-primary">Descargar Items en PDF</button>
                 {{-- <button type="button" onclick="guardarperfil()" class="btn btn-primary">Exportar PDF</button> --}}
             </div>
         </div>
@@ -817,3 +817,52 @@
     </div>
 </div>
 {{-- fin modal --}}
+{{-- modal ver items varias ordenes --}}
+<div id="myModalViewItemsAll" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="gridModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="gridModalLabek">Items</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid bd-example-row">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Seleccionar el número de trámite:</label>
+                                        <select name="selectTRViewItems" id="selectTRViewItems" class="form-select">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="">Estatus:</label>
+                                        <select name="selectStatusViewItemsAll" id="selectStatusViewItemsAll" class="form-select" @if($perm_btn['modify']!=1) disabled @endif>
+                                            <option hidden selected value="0">Selecciona una opción</option>
+                                            @foreach ($cmbStatus as $id => $status)
+                                                <option value='{{ $id }}'>{{ $status }}</option>
+                                            @endforeach
+                                            <option value="0">Todos</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" onclick="cerrarViewItemsAll()" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
+                <button type="button" onclick="VerItemsTodos()" class="btn btn-primary">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{-- fin modal| --}}
