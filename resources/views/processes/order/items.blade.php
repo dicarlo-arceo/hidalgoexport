@@ -106,7 +106,18 @@
                             </div>
                         </div>
                         <div class = "row">
-                            <div class = "col-lg-3">
+                            <div class = "col-lg-4">
+                                <div class="form-group">
+                                    <label for="">Subtotal</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" id="subtotal" name="subtotal" class="form-control" disabled>
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">USD</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class = "col-lg-4">
                                 <div class="form-group">
                                     <label for="">Bodega</label>
                                     <div class="input-group mb-3">
@@ -117,7 +128,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class = "col-lg-3">
+                            <div class = "col-lg-4">
+                                <div class="form-group">
+                                    <label for="">Restante en BO</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" id="bototal" name="bototal" class="form-control" disabled>
+                                        <div class="input-group-append">
+                                          <span class="input-group-text">USD</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class = "row">
+                            <div class = "col-lg-4">
                                 <div class="form-group">
                                     <label for="">Importación</label>
                                     <div class="input-group mb-3">
@@ -128,7 +152,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class = "col-lg-3">
+                            <div class = "col-lg-4">
                                 <div class="form-group">
                                     <label for="">Broker</label>
                                     <div class="input-group mb-3">
@@ -142,7 +166,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class = "col-lg-3">
+                            <div class = "col-lg-4">
                                 <div class="form-group">
                                     <label for="">Total a pagar</label>
                                     <div class="input-group mb-3">
@@ -154,7 +178,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class = "row">
+                        <div class="row">
                             <div class = "col-lg-4">
                                 <div class="form-group">
                                     <label for="">Total en pesos</label>

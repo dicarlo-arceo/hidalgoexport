@@ -93,6 +93,8 @@ chkbOrderIds = [];
 flagMultipleItems = 0;
 trAll = 0;
 statAll = 0;
+bototal = 0;
+subtotal = 0;
 
 function refreshTable(result)
 {
@@ -101,7 +103,9 @@ function refreshTable(result)
 
     table.clear();
     cellar = 0;
-    // console.log(result);
+    bototal = 0;
+    subtotal = 0;
+    // console.log(result.data);
     if(result.flag != 1)
     {
         pdfResult = result.data;
@@ -118,6 +122,7 @@ function refreshTable(result)
                 table.row.add([chkbox,valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnTR,btnStatus,
                     formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
                 cellar += parseFloat(valor.total_price);
+                bototal += parseFloat(valor.back_order) * parseFloat(valor.net_price);
                 chkbIds.push(valor.id);
             });
         }
@@ -128,9 +133,12 @@ function refreshTable(result)
                 table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,valor.tr,btnStatus,
                     formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
                 cellar += parseFloat(valor.total_price);
+                bototal += parseFloat(valor.back_order) * parseFloat(valor.net_price);
             });
         }
     }
+
+    subtotal = cellar + bototal;
 
     var btnNewItem = document.getElementById("btnNewItem");
     var btnHojaCobro = document.getElementById("btnHojaCobro");
@@ -172,88 +180,96 @@ function refreshTable(result)
 function refreshTableAll(result)
 {
     if(profileOrder != 61)
-            {
-                document.getElementById('btnChangeAll').disabled = true;
-                document.getElementById('chkAll').checked = false;
-                checkedChkb = [];
-            }
-            var table = $('#tbProf1').DataTable();
-            var onoffRound = document.getElementById("onoffRound");
+    {
+        document.getElementById('btnChangeAll').disabled = true;
+        document.getElementById('chkAll').checked = false;
+        checkedChkb = [];
+    }
+    var table = $('#tbProf1').DataTable();
+    var onoffRound = document.getElementById("onoffRound");
 
-            table.clear();
-            cellar = 0;
-            console.log(result.payData['cellar']);
-            if(result.flag != 1)
-            {
-                pdfResult = result.data;
-                // console.log(pdfResult);
-                if(profileOrder != 61)
-                {
-                    chkbIds = [];
-                    result.data.forEach( function(valor, indice, array) {
-                        btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
-                        if(valor.tr == 0) valTR = "-"; else valTR = valor.tr;
-                        chkbox = '<input class="form-check-input" type="checkbox" onclick="chkChange('+valor.id+')" id="chk'+valor.id+'">';
-                        btnTR = '<button class="btn btn-info" style="background-color: #FFFFFF !important; border-color: #000000 !important; color: #000000 !important;" onclick="editTR('+ valor.id +','+ valor.tr +')">'+ valTR +'</button>'
-                        btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                        table.row.add([chkbox,valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnTR,btnStatus,
-                            formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
-                        cellar += parseFloat(valor.total_price);
-                        chkbIds.push(valor.id);
-                    });
-                }
-                else
-                {
-                    result.data.forEach( function(valor, indice, array) {
-                        btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
-                        table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,valor.tr,btnStatus,
-                            formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
-                        cellar += parseFloat(valor.total_price);
-                    });
-                }
-            }
+    table.clear();
+    cellar = 0;
+    bototal = 0;
+    subtotal = 0;
+    console.log(result.payData['cellar']);
+    if(result.flag != 1)
+    {
+        pdfResult = result.data;
+        // console.log(pdfResult);
+        if(profileOrder != 61)
+        {
+            chkbIds = [];
+            result.data.forEach( function(valor, indice, array) {
+                btnTrash = '<button type="button" class="btn btn-warning"'+'onclick="editItem('+valor.id+')"><i class="fa fa-edit"></i></button> <button type="button" class="btn btn-danger"'+'onclick="deleteItem('+valor.id+')"><i class="fa fa-trash"></i></button>';
+                if(valor.tr == 0) valTR = "-"; else valTR = valor.tr;
+                chkbox = '<input class="form-check-input" type="checkbox" onclick="chkChange('+valor.id+')" id="chk'+valor.id+'">';
+                btnTR = '<button class="btn btn-info" style="background-color: #FFFFFF !important; border-color: #000000 !important; color: #000000 !important;" onclick="editTR('+ valor.id +','+ valor.tr +')">'+ valTR +'</button>'
+                btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
+                table.row.add([chkbox,valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,btnTR,btnStatus,
+                    formatter.format(valor.net_price),formatter.format(valor.total_price),btnTrash]).node().id = valor.id;
+                cellar += parseFloat(valor.total_price);
+                bototal += parseFloat(valor.back_order) * parseFloat(valor.net_price);
+                chkbIds.push(valor.id);
+            });
+        }
+        else
+        {
+            result.data.forEach( function(valor, indice, array) {
+                btnStatus = '<button class="btn btn-info" style="background-color: #'+ valor.color +' !important; border-color: #'+ valor.border_color +' !important; color: #'+ valor.font_color +' !important;" onclick="opcionesEstatus('+ valor.id +','+ valor.statId +')">'+ valor.name +'</button>'
+                table.row.add([valor.store,valor.item_number,valor.description,valor.back_order,valor.existence,valor.tr,btnStatus,
+                    formatter.format(valor.net_price),formatter.format(valor.total_price)]).node().id = valor.id;
+                cellar += parseFloat(valor.total_price);
+                bototal += parseFloat(valor.back_order) * parseFloat(valor.net_price);
+            });
+        }
+    }
 
-            var btnNewItem = document.getElementById("btnNewItem");
-            var btnHojaCobro = document.getElementById("btnHojaCobro");
-            var btnDescargarItem = document.getElementById("btnDescargarItem");
-            btnNewItem.style.display = "none";
-            btnHojaCobro.style.display = "none";
-            btnDescargarItem.style.display = "none";
-            document.getElementById('dlls').disabled = true;
-            document.getElementById('percent').disabled = true;
-            document.getElementById('exp').disabled = true;
-            document.getElementById('broker').disabled = true;
-            document.getElementById('onoffCurrency').disabled = true;
-            document.getElementById('onoffRound').disabled = true;
+    subtotal = cellar + bototal;
 
-            $("#dlls").val(result.data[0].exc_rate);
-            $("#percent").val(result.data[0].percentage);
-            $("#exp").val(result.data[0].expenses);
-            $("#broker").val(result.data[0].broker);
-            $("#onoffCurrency").prop('disabled', false);
-            onoffRound.style.display = "";
-            if(result.data[0].currency == 1)
-                $("#onoffCurrency").bootstrapToggle('on');
-            else
-                $("#onoffCurrency").bootstrapToggle('off');
-            if(result.data[0].roundout == 1)
-                $("#onoffRound").bootstrapToggle('on');
-            else
-                $("#onoffRound").bootstrapToggle('off');
-            if(profileOrder == 61)
-            {
-                $("#onoffCurrency").prop('disabled', true);
-                onoffRound.style.display = "none";
-            }
+    var btnNewItem = document.getElementById("btnNewItem");
+    var btnHojaCobro = document.getElementById("btnHojaCobro");
+    var btnDescargarItem = document.getElementById("btnDescargarItem");
+    btnNewItem.style.display = "none";
+    btnHojaCobro.style.display = "none";
+    btnDescargarItem.style.display = "none";
+    document.getElementById('dlls').disabled = true;
+    document.getElementById('percent').disabled = true;
+    document.getElementById('exp').disabled = true;
+    document.getElementById('broker').disabled = true;
+    document.getElementById('onoffCurrency').disabled = true;
+    document.getElementById('onoffRound').disabled = true;
 
-            $("#paytotal").val(formatter.format(result.payData['usd_total']));
-            $("#cellar").val(formatter.format(result.payData['cellar']));
-            $("#comition").val(formatter.format(result.payData['comition']));
-            $("#net_mxn").val(formatter.format(result.payData['mxn_total']));
-            $("#iva").val(formatter.format(result.payData['iva']));
-            $("#total_invoice").val(formatter.format(result.payData['mxn_invoice']));
+    $("#dlls").val(result.data[0].exc_rate);
+    $("#percent").val(result.data[0].percentage);
+    $("#exp").val(result.data[0].expenses);
+    $("#broker").val(result.data[0].broker);
+    $("#onoffCurrency").prop('disabled', false);
+    onoffRound.style.display = "";
+    if(result.data[0].currency == 1)
+        $("#onoffCurrency").bootstrapToggle('on');
+    else
+        $("#onoffCurrency").bootstrapToggle('off');
+    if(result.data[0].roundout == 1)
+        $("#onoffRound").bootstrapToggle('on');
+    else
+        $("#onoffRound").bootstrapToggle('off');
+    if(profileOrder == 61)
+    {
+        $("#onoffCurrency").prop('disabled', true);
+        onoffRound.style.display = "none";
+    }
 
-            table.draw(false);
+    $("#paytotal").val(formatter.format(result.payData['usd_total']));
+    $("#cellar").val(formatter.format(result.payData['cellar']));
+    $("#bototal").val(formatter.format(bototal));
+    $("#subtotal").val(formatter.format(subtotal));
+    $("#comition").val(formatter.format(result.payData['comition']));
+    $("#net_mxn").val(formatter.format(result.payData['mxn_total']));
+    $("#iva").val(formatter.format(result.payData['iva']));
+    $("#total_invoice").val(formatter.format(result.payData['mxn_invoice']));
+
+    table.draw(false);
 }
 function nuevoItem(id,profile)
 {
@@ -744,6 +760,8 @@ function calculoTotales()
 
     $("#paytotal").val(formatter.format(usd_total));
     $("#cellar").val(formatter.format(cellar));
+    $("#bototal").val(formatter.format(bototal));
+    $("#subtotal").val(formatter.format(subtotal));
     $("#comition").val(formatter.format(comition));
     $("#net_mxn").val(formatter.format(mxn_total));
     $("#iva").val(formatter.format(iva));
