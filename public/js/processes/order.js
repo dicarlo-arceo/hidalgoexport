@@ -99,7 +99,7 @@ subtotal = 0;
 function refreshTable(result)
 {
     var table = $('#tbProf1').DataTable();
-    var onoffRound = document.getElementById("onoffRound");
+    var onoffRound = document.getElementById("round");
 
     table.clear();
     cellar = 0;
@@ -140,18 +140,24 @@ function refreshTable(result)
 
     subtotal = cellar + bototal;
 
-    var btnNewItem = document.getElementById("btnNewItem");
-    var btnHojaCobro = document.getElementById("btnHojaCobro");
+    if(profileOrder != 61)
+    {
+        var btnNewItem = document.getElementById("btnNewItem");
+        var btnHojaCobro = document.getElementById("btnHojaCobro");
+        btnNewItem.style.display = "";
+        btnHojaCobro.style.display = "";
+        document.getElementById('dlls').disabled = false;
+        document.getElementById('percent').disabled = false;
+        document.getElementById('exp').disabled = false;
+        document.getElementById('broker').disabled = false;
+        document.getElementById('onoffCurrency').disabled = false;
+        document.getElementById('onoffRound').disabled = false;
+        document.getElementById('broker').disabled = false;
+    }
+
     var btnDescargarItem = document.getElementById("btnDescargarItem");
-    btnNewItem.style.display = "";
-    btnHojaCobro.style.display = "";
     btnDescargarItem.style.display = "";
-    document.getElementById('dlls').disabled = false;
-    document.getElementById('percent').disabled = false;
-    document.getElementById('exp').disabled = false;
-    document.getElementById('broker').disabled = false;
-    document.getElementById('onoffCurrency').disabled = false;
-    document.getElementById('onoffRound').disabled = false;
+
 
     $("#dlls").val(result.data[0].exc_rate);
     $("#percent").val(result.data[0].percentage);
@@ -295,10 +301,10 @@ function nuevoItem(id,profile)
             {
                 document.getElementById('btnChangeAll').disabled = true;
                 document.getElementById('chkAll').checked = false;
+                btnNewItem.style.display = "";
                 checkedChkb = [];
             }
             refreshTable(result);
-            btnNewItem.style.display = "";
         },
         error:function(result,error,errorTrown)
         {
@@ -1022,6 +1028,7 @@ function deleteFile()
 }
 function verEntregados(id,profile)
 {
+    profileOrder = profile;
     idOrder = id;
     var selectTR = $('#selectTR');
     var sTR = document.getElementById("sTR");
@@ -1080,11 +1087,14 @@ function abrirSeleccionTR()
         success:function(result)
         {
             $("#mySelectTRModal").modal('hide');
-            btnNewItem.style.display = "none";
+            if(profileOrder != 61)
+            {
+                btnNewItem.style.display = "none";
+                document.getElementById('btnChangeAll').disabled = true;
+                document.getElementById('chkAll').checked = false;
+            }
             flagTR = selectTR;
             flagMultipleItems = 0;
-            document.getElementById('btnChangeAll').disabled = true;
-            document.getElementById('chkAll').checked = false;
             checkedChkb = [];
 
             refreshTable(result);

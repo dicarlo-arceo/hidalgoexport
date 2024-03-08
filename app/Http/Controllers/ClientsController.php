@@ -94,6 +94,7 @@ class ClientsController extends Controller
         $order->fk_user = $request->fk_user;
         $order->address = $request->address;
         $order->designer = $request->designer;
+        $order->quote = 1;
         $order->save();
         // dd("entre");
         return response()->json(["status"=>true, "message"=>"Orden creada"]);

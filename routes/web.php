@@ -92,4 +92,7 @@ Route::get('processes/order/orders/GetViewItems/{tr}/{status}', 'OrdersControlle
 // closed order
 Route::resource('processes/order/closedOrders', 'ClosedOrdController');
 
+//cotizador
+Route::resource('processes/quoter/quoter', 'QuoterController');
+
 

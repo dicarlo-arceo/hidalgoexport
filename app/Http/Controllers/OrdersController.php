@@ -37,6 +37,7 @@ class OrdersController extends Controller
             ->join('users',"fk_user","=","users.id")
             ->join('Projects',"fk_project","=","Projects.id")
             ->where('stat_open','=',0)
+            ->where('quote','=',1)
             ->whereNull('Orders.deleted_at')->get();
             // dd($orders);
         }
@@ -47,6 +48,7 @@ class OrdersController extends Controller
             ->join('Projects',"fk_project","=","Projects.id")
             ->where("fk_user","=",User::user_id())
             ->where('stat_open','=',0)
+            ->where('quote','=',1)
             ->whereNull('Orders.deleted_at')->get();
         }
         if($perm==0)

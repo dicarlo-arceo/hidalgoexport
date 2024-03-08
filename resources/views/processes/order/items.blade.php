@@ -98,7 +98,7 @@
                                     <input id = "onoffCurrency" type="checkbox" data-toggle="toggle" data-on = "USD" data-off="MXN" data-width="80" onchange=calculoCurrency({{$profile}})>
                                 </div>
                             </div>
-                            <div class="col-lg-2">
+                            <div class="col-lg-2" id="round">
                                 <div class="form-group">
                                     <label for="">Redondeo a 100</label> <br>
                                     <input id = "onoffRound" type="checkbox" data-toggle="toggle" data-on = "SI" data-off="NO" data-width="80" onchange=calculoRound({{$profile}})>
@@ -159,7 +159,7 @@
                                         <div class="input-group-prepend">
                                             <div class="input-group-text">$</div>
                                         </div>
-                                        <input type="text" id="broker" name="broker" class="form-control" onchange=calculoBroker()>
+                                        <input type="text" id="broker" name="broker" class="form-control" onchange=calculoBroker() @if($perm_btn['modify']!=1) disabled @endif>
                                         <div class="input-group-append">
                                           <span class="input-group-text">USD</span>
                                         </div>

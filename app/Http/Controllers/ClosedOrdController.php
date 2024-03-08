@@ -36,6 +36,7 @@ class ClosedOrdController extends Controller
             ->join('users',"fk_user","=","users.id")
             ->join('Projects',"fk_project","=","Projects.id")
             ->where('stat_open','=',1)
+            ->where('quote','=',1)
             ->whereNull('Orders.deleted_at')->get();
             // dd($orders);
         }
@@ -46,6 +47,7 @@ class ClosedOrdController extends Controller
             ->join('Projects',"fk_project","=","Projects.id")
             ->where("fk_user","=",User::user_id())
             ->where('stat_open','=',1)
+            ->where('quote','=',1)
             ->whereNull('Orders.deleted_at')->get();
         }
         if($perm==0)
