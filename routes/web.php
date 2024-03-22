@@ -94,5 +94,14 @@ Route::resource('processes/order/closedOrders', 'ClosedOrdController');
 
 //cotizador
 Route::resource('processes/quoter/quoter', 'QuoterController');
-
+Route::post('processes/quoter/quoter/SaveOrder','QuoterController@SaveOrder')->name('quoter.SaveOrder');
+Route::post('processes/quoter/quoter/CreateOrder','QuoterController@CreateOrder')->name('quoter.CreateOrder');
+Route::get('processes/quoter/quoter/GetInfo/{id}','QuoterController@GetInfo')->name('quoter.GetInfo');
+Route::post('processes/quoter/quoter/updateOrder', 'QuoterController@updateOrder')->name('quoter.updateOrder');
+Route::post('processes/quoter/quoter/storeItem', 'QuoterController@storeItem')->name('quoter.storeItem');
+Route::delete('processes/quoter/quoter/DeleteItem/{id}/{idOrder}', 'QuoterController@DeleteItem')->name('quoter.DeleteItem');
+Route::get('processes/quoter/quoter/GetInfoItem/{id}','QuoterController@GetInfoItem')->name('quoter.GetInfoItem');
+Route::post('processes/quoter/quoter/updateItem', 'QuoterController@updateItem')->name('quoter.updateItem');
+Route::get('processes/quoter/quoter/GetPDF/{total}/{broker}/{pay}/{iva}/{payt}/{idOrder}', 'QuoterController@GetPDF')->name('quoter.GetPDF');
+Route::get('processes/quoter/quoter/GetInfoOrder/{id}','QuoterController@GetInfoOrder')->name('quoter.GetInfoOrder');
 

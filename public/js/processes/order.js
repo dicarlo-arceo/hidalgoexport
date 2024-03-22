@@ -31,7 +31,18 @@ $(document).ready( function () {
             orderable: false,
             targets:   0
         } ],
-        order: [[ 1, 'asc' ]]
+        order: [[ 1, 'asc' ]],
+        'columnDefs': [
+            {
+               'targets': 0,
+               'checkboxes': {
+                  'selectRow': true
+               }
+            }
+         ],
+         'select': {
+            'style': 'multi'
+         }
     });
 } );
 $(document).ready( function () {
@@ -1366,7 +1377,6 @@ function chkOrderChange(id)
         document.getElementById('btnAssignRecp').disabled = false;
         document.getElementById('btnViewItms').disabled = false;
     }
-    // console.log(checkedOrderChkb);
 }
 function UncheckTodos()
 {
@@ -1382,66 +1392,78 @@ function UncheckTodos()
     document.getElementById('btnOpenOrd').disabled = true;
     document.getElementById('btnAssignRecp').disabled = true;
     document.getElementById('btnViewItms').disabled = true;
-    // console.log(checkedOrderChkb);
 }
 function HojaCobroTodos()
 {
-    var selectTR = $('#selectTROrder');
-    var selectAddress = $('#selectAddressOrder');
-    var sTR = document.getElementById("sTROrder");
-    var lvl = document.getElementById("lvlOrder");
-    var btnAcceptTr = document.getElementById("btnAcceptOrder");
-    var route = baseUrlOrder + '/GetinfoTROrders/1';
-    var data = {
-        "_token": $("meta[name='csrf-token']").attr("content"),
-        'ids':checkedOrderChkb
-    };
+    var table = $('#tbProf').DataTable();
+    var rows_selected = table.column(0).checkboxes.selected();
+    checkedOrderChkb = [];
+    if(rows_selected.length == 0)
+    {
+        alert("¡Seleccione al menos un registro!");
+    }
+    else
+    {
+        $.each(rows_selected, function(index, rowId){
+            checkedOrderChkb.push(rowId);
+        });
+        var selectTR = $('#selectTROrder');
+        var selectAddress = $('#selectAddressOrder');
+        var sTR = document.getElementById("sTROrder");
+        var lvl = document.getElementById("lvlOrder");
+        var btnAcceptTr = document.getElementById("btnAcceptOrder");
+        var route = baseUrlOrder + '/GetinfoTROrders/1';
+        var data = {
+            "_token": $("meta[name='csrf-token']").attr("content"),
+            'ids':checkedOrderChkb
+        };
 
-    jQuery.ajax({
-        url:route,
-        type:'get',
-        data:data,
-        dataType:'json',
-        success:function(result)
-        {
-            console.log(result);
-            if(result.data.length == 0)
+        jQuery.ajax({
+            url:route,
+            type:'get',
+            data:data,
+            dataType:'json',
+            success:function(result)
             {
-                lvl.style.display = "";
-                sTR.style.display = "none";
-                btnAcceptTr.style.display = "none";
-            }
-            else
+                console.log(result);
+                if(result.data.length == 0)
+                {
+                    lvl.style.display = "";
+                    sTR.style.display = "none";
+                    btnAcceptTr.style.display = "none";
+                }
+                else
+                {
+                    $("#datePDFOrder").val("");
+                    $("#pkgsOrder").val("");
+
+                    $("#selectTROrder").empty();
+                    selectTR.append('<option selected hidden value="">Seleccione una opción</option>');
+                    result.data.forEach( function(valor, indice, array) {
+                        if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
+                    });
+
+                    $("#selectAddressOrder").empty();
+                    selectAddress.append('<option selected hidden value="">Seleccione una opción</option>');
+                    // result.address.forEach( function(valor, indice, array) {
+                    //     selectAddress.append("<option value='" + valor.id + "'>" + valor.address + "</option>");
+                    // });
+                    Object.values(result.address).forEach(val => {
+                        selectAddress.append("<option value='" + val['id'] + "'>" + val['address'] + "</option>");
+                    });
+
+                    sTR.style.display = "";
+                    lvl.style.display = "none";
+                    btnAcceptTr.style.display = "";
+                }
+                $("#mySelectHojaC").modal('show');
+            },
+            error:function(result,error,errorTrown)
             {
-                $("#datePDFOrder").val("");
-                $("#pkgsOrder").val("");
-
-                $("#selectTROrder").empty();
-                selectTR.append('<option selected hidden value="">Seleccione una opción</option>');
-                result.data.forEach( function(valor, indice, array) {
-                    if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
-                });
-
-                $("#selectAddressOrder").empty();
-                selectAddress.append('<option selected hidden value="">Seleccione una opción</option>');
-                // result.address.forEach( function(valor, indice, array) {
-                //     selectAddress.append("<option value='" + valor.id + "'>" + valor.address + "</option>");
-                // });
-                Object.values(result.address).forEach(val => {
-                    selectAddress.append("<option value='" + val['id'] + "'>" + val['address'] + "</option>");
-                  });
-
-                sTR.style.display = "";
-                lvl.style.display = "none";
-                btnAcceptTr.style.display = "";
+                alertify.error(errorTrown);
             }
-            $("#mySelectHojaC").modal('show');
-        },
-        error:function(result,error,errorTrown)
-        {
-            alertify.error(errorTrown);
-        }
-    })
+        })
+    }
 }
 function cerrarSelectTROrder()
 {
@@ -1537,55 +1559,68 @@ function moverBO()
 orderItemsAll = 0;
 function HojaItemsTodos()
 {
-    var selectTR = $('#selectTRItems');
-    var sTR = document.getElementById("sTRItems");
-    var lvl = document.getElementById("lvlItems");
-    var btnAcceptTr = document.getElementById("btnAcceptItems");
-    var route = baseUrlOrder + '/GetinfoTRItems/1';
-    var data = {
-        "_token": $("meta[name='csrf-token']").attr("content"),
-        'ids':checkedOrderChkb
-    };
+    var table = $('#tbProf').DataTable();
+    var rows_selected = table.column(0).checkboxes.selected();
+    checkedOrderChkb = [];
+    if(rows_selected.length == 0)
+    {
+        alert("¡Seleccione al menos un registro!");
+    }
+    else
+    {
+        $.each(rows_selected, function(index, rowId){
+            checkedOrderChkb.push(rowId);
+        });
+        var selectTR = $('#selectTRItems');
+        var sTR = document.getElementById("sTRItems");
+        var lvl = document.getElementById("lvlItems");
+        var btnAcceptTr = document.getElementById("btnAcceptItems");
+        var route = baseUrlOrder + '/GetinfoTRItems/1';
+        var data = {
+            "_token": $("meta[name='csrf-token']").attr("content"),
+            'ids':checkedOrderChkb
+        };
 
-    jQuery.ajax({
-        url:route,
-        type:'get',
-        data:data,
-        dataType:'json',
-        success:function(result)
-        {
-            console.log(result);
-            orderItemsAll =  result.address[0].id;
-            // if(result.data.length == 0)
-            // {
-            //     lvl.style.display = "";
-            //     sTR.style.display = "none";
-            //     btnAcceptTr.style.display = "none";
-            // }
-            // else
-            // {
-                $("#selectTRItems").empty();
-                selectTR.append('<option selected hidden value="0">Seleccione una opción</option>');
-                result.data.forEach( function(valor, indice, array) {
-                    if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
-                });
-                selectTR.append('<option value="0">Todos</option>');
-                // result.address.forEach( function(valor, indice, array) {
-                //     selectAddress.append("<option value='" + valor.id + "'>" + valor.address + "</option>");
-                // });
+        jQuery.ajax({
+            url:route,
+            type:'get',
+            data:data,
+            dataType:'json',
+            success:function(result)
+            {
+                console.log(result);
+                orderItemsAll =  result.address[0].id;
+                // if(result.data.length == 0)
+                // {
+                //     lvl.style.display = "";
+                //     sTR.style.display = "none";
+                //     btnAcceptTr.style.display = "none";
+                // }
+                // else
+                // {
+                    $("#selectTRItems").empty();
+                    selectTR.append('<option selected hidden value="0">Seleccione una opción</option>');
+                    result.data.forEach( function(valor, indice, array) {
+                        if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
+                    });
+                    selectTR.append('<option value="0">Todos</option>');
+                    // result.address.forEach( function(valor, indice, array) {
+                    //     selectAddress.append("<option value='" + valor.id + "'>" + valor.address + "</option>");
+                    // });
 
-                sTR.style.display = "";
-                lvl.style.display = "none";
-                btnAcceptTr.style.display = "";
-                $("#invoiceDetailsItemsAll").bootstrapToggle('off');
-            // }
-            $("#myModalPDFItemsAll").modal('show');
-        },
-        error:function(result,error,errorTrown)
-        {
-            alertify.error(errorTrown);
-        }
-    })
+                    sTR.style.display = "";
+                    lvl.style.display = "none";
+                    btnAcceptTr.style.display = "";
+                    $("#invoiceDetailsItemsAll").bootstrapToggle('off');
+                // }
+                $("#myModalPDFItemsAll").modal('show');
+            },
+            error:function(result,error,errorTrown)
+            {
+                alertify.error(errorTrown);
+            }
+        })
+    }
 }
 function cerrarPDFItemsAll()
 {
@@ -1674,106 +1709,145 @@ function showInvoice()
 }
 function CloseOrders()
 {
-    var route = baseUrlOrder+'/CloseOrders';
-    var data = {
-        "_token": $("meta[name='csrf-token']").attr("content"),
-        'ids':checkedOrderChkb
-    };
-    alertify.confirm("Cerrar Ordenes","¿Desea cerrar las ordenes seleccionadas?",
-        function(){
-            jQuery.ajax({
-                url:route,
-                type:'post',
-                data:data,
-                dataType:'json',
-                success:function(result)
-                {
-                    window.location.reload(true);
-                },
-                error:function(result,error,errorTrown)
-                {
-                    alertify.error(errorTrown);
-                }
-            })
-        },
-        function(){
-            alertify.error('Cancelado');
-    });
+    var table = $('#tbProf').DataTable();
+    var rows_selected = table.column(0).checkboxes.selected();
+    checkedOrderChkb = [];
+    if(rows_selected.length == 0)
+    {
+        alert("¡Seleccione al menos un registro!");
+    }
+    else
+    {
+        $.each(rows_selected, function(index, rowId){
+            checkedOrderChkb.push(rowId);
+        });
+        var route = baseUrlOrder+'/CloseOrders';
+        var data = {
+            "_token": $("meta[name='csrf-token']").attr("content"),
+            'ids':checkedOrderChkb
+        };
+        alertify.confirm("Cerrar Ordenes","¿Desea cerrar las ordenes seleccionadas?",
+            function(){
+                jQuery.ajax({
+                    url:route,
+                    type:'post',
+                    data:data,
+                    dataType:'json',
+                    success:function(result)
+                    {
+                        window.location.reload(true);
+                    },
+                    error:function(result,error,errorTrown)
+                    {
+                        alertify.error(errorTrown);
+                    }
+                })
+            },
+            function(){
+                alertify.error('Cancelado');
+        });
+    }
 }
 function OpenOrders()
 {
-    var route = baseUrlOrder+'/OpenOrders';
-    var data = {
-        "_token": $("meta[name='csrf-token']").attr("content"),
-        'ids':checkedOrderChkb
-    };
-    alertify.confirm("Abrir Ordenes","¿Desea abrir las ordenes seleccionadas?",
-        function(){
-            jQuery.ajax({
-                url:route,
-                type:'post',
-                data:data,
-                dataType:'json',
-                success:function(result)
-                {
-                    window.location.reload(true);
-                },
-                error:function(result,error,errorTrown)
-                {
-                    alertify.error(errorTrown);
-                }
-            })
-        },
-        function(){
-            alertify.error('Cancelado');
-    });
+    var table = $('#tbProf').DataTable();
+    var rows_selected = table.column(0).checkboxes.selected();
+    checkedOrderChkb = [];
+    if(rows_selected.length == 0)
+    {
+        alert("¡Seleccione al menos un registro!");
+    }
+    else
+    {
+        $.each(rows_selected, function(index, rowId){
+            checkedOrderChkb.push(rowId);
+        });
+        var route = baseUrlOrder+'/OpenOrders';
+        var data = {
+            "_token": $("meta[name='csrf-token']").attr("content"),
+            'ids':checkedOrderChkb
+        };
+        alertify.confirm("Abrir Ordenes","¿Desea abrir las ordenes seleccionadas?",
+            function(){
+                jQuery.ajax({
+                    url:route,
+                    type:'post',
+                    data:data,
+                    dataType:'json',
+                    success:function(result)
+                    {
+                        window.location.reload(true);
+                    },
+                    error:function(result,error,errorTrown)
+                    {
+                        alertify.error(errorTrown);
+                    }
+                })
+            },
+            function(){
+                alertify.error('Cancelado');
+        });
+    }
 }
 
 function AsignarRecibo()
 {
-    var selectTR = $('#selectTRRecipt');
-    var sTR = document.getElementById("sTRRecipt");
-    var lvl = document.getElementById("lvlRecipt");
-    var btnAcceptTr = document.getElementById("btnAcceptRecipt");
-    var route = baseUrlOrder + '/GetinfoTROrders/1';
-    var data = {
-        "_token": $("meta[name='csrf-token']").attr("content"),
-        'ids':checkedOrderChkb
-    };
+    var table = $('#tbProf').DataTable();
+    var rows_selected = table.column(0).checkboxes.selected();
+    checkedOrderChkb = [];
+    if(rows_selected.length == 0)
+    {
+        alert("¡Seleccione al menos un registro!");
+    }
+    else
+    {
+        $.each(rows_selected, function(index, rowId){
+            checkedOrderChkb.push(rowId);
+        });
+        var selectTR = $('#selectTRRecipt');
+        var sTR = document.getElementById("sTRRecipt");
+        var lvl = document.getElementById("lvlRecipt");
+        var btnAcceptTr = document.getElementById("btnAcceptRecipt");
+        var route = baseUrlOrder + '/GetinfoTROrders/1';
+        var data = {
+            "_token": $("meta[name='csrf-token']").attr("content"),
+            'ids':checkedOrderChkb
+        };
 
-    jQuery.ajax({
-        url:route,
-        type:'get',
-        data:data,
-        dataType:'json',
-        success:function(result)
-        {
-            console.log(result);
-            if(result.data.length == 0)
+        jQuery.ajax({
+            url:route,
+            type:'get',
+            data:data,
+            dataType:'json',
+            success:function(result)
             {
-                lvl.style.display = "";
-                sTR.style.display = "none";
-                btnAcceptTr.style.display = "none";
-            }
-            else
+                console.log(result);
+                if(result.data.length == 0)
+                {
+                    lvl.style.display = "";
+                    sTR.style.display = "none";
+                    btnAcceptTr.style.display = "none";
+                }
+                else
+                {
+                    $("#selectTRRecipt").empty();
+                    selectTR.append('<option selected hidden value="">Seleccione una opción</option>');
+                    result.data.forEach( function(valor, indice, array) {
+                        if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
+                    });
+                    $('#receipt').val("");
+                    sTR.style.display = "";
+                    lvl.style.display = "none";
+                    btnAcceptTr.style.display = "";
+                }
+                $("#myReciptTR").modal('show');
+            },
+            error:function(result,error,errorTrown)
             {
-                $("#selectTRRecipt").empty();
-                selectTR.append('<option selected hidden value="">Seleccione una opción</option>');
-                result.data.forEach( function(valor, indice, array) {
-                    if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
-                });
-                $('#receipt').val("");
-                sTR.style.display = "";
-                lvl.style.display = "none";
-                btnAcceptTr.style.display = "";
+                alertify.error(errorTrown);
             }
-            $("#myReciptTR").modal('show');
-        },
-        error:function(result,error,errorTrown)
-        {
-            alertify.error(errorTrown);
-        }
-    })
+        })
+    }
 }
 function cerrarSelectTRRecipt()
 {
@@ -1831,37 +1905,50 @@ function SaveAssign()
 }
 function VerItems()
 {
-    var selectTR = $('#selectTRViewItems');
-    var route = baseUrlOrder + '/GetinfoTRItems/1';
-    var data = {
-        "_token": $("meta[name='csrf-token']").attr("content"),
-        'ids':checkedOrderChkb,
-    };
+    var table = $('#tbProf').DataTable();
+    var rows_selected = table.column(0).checkboxes.selected();
+    checkedOrderChkb = [];
+    if(rows_selected.length == 0)
+    {
+        alert("¡Seleccione al menos un registro!");
+    }
+    else
+    {
+        $.each(rows_selected, function(index, rowId){
+            checkedOrderChkb.push(rowId);
+        });
+        var selectTR = $('#selectTRViewItems');
+        var route = baseUrlOrder + '/GetinfoTRItems/1';
+        var data = {
+            "_token": $("meta[name='csrf-token']").attr("content"),
+            'ids':checkedOrderChkb,
+        };
 
-    jQuery.ajax({
-        url:route,
-        type:'get',
-        data:data,
-        dataType:'json',
-        success:function(result)
-        {
-            console.log(result.data);
-            orderItemsAll =  result.address[0].id;
-            $("#selectTRViewItems").empty();
-            selectTR.append('<option selected hidden value="0">Seleccione una opción</option>');
-            result.data.forEach( function(valor, indice, array) {
-                if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
-            });
-            selectTR.append('<option value="0">Todos</option>');
+        jQuery.ajax({
+            url:route,
+            type:'get',
+            data:data,
+            dataType:'json',
+            success:function(result)
+            {
+                console.log(result.data);
+                orderItemsAll =  result.address[0].id;
+                $("#selectTRViewItems").empty();
+                selectTR.append('<option selected hidden value="0">Seleccione una opción</option>');
+                result.data.forEach( function(valor, indice, array) {
+                    if(valor != 0) selectTR.append("<option value='" + valor + "'>" + valor + "</option>");
+                });
+                selectTR.append('<option value="0">Todos</option>');
 
-            flagMultipleItems = 1;
-            $("#myModalViewItemsAll").modal('show');
-        },
-        error:function(result,error,errorTrown)
-        {
-            alertify.error(errorTrown);
-        }
-    })
+                flagMultipleItems = 1;
+                $("#myModalViewItemsAll").modal('show');
+            },
+            error:function(result,error,errorTrown)
+            {
+                alertify.error(errorTrown);
+            }
+        })
+    }
 }
 function cerrarViewItemsAll()
 {
