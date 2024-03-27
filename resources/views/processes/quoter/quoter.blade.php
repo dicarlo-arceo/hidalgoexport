@@ -9,7 +9,7 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h4 class="modal-title" id="gridModalLabek">Nuevo orden</h4>
+                    <h4 class="modal-title" id="gridModalLabek">Nueva Cotización</h4>
                     <button type="button" class="close" onclick="closeModal('#orderModal')" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
 
@@ -137,7 +137,42 @@
                                 </div>
                                 <div class = "col-lg-3">
                                     <div class="form-group">
-                                        <label for="">Porcentaje</label>
+                                        <label for="">Descuento tienda</label>
+                                        <div class="input-group mb-3">
+                                            <input type="text" id="discount" name="discount" class="form-control" onchange = "calculoPercTienda()" @if($perm_btn['modify']!=1) disabled @endif>
+                                            <div class="input-group-append">
+                                            <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label for="">Tax</label>
+                                        <div class="input-group mb-2 mr-sm-2">
+                                            <div class="input-group-prepend">
+                                            <div class="input-group-text">$</div>
+                                            </div>
+                                            <input type="text" id="tax" name="tax" class="form-control" onchange = "calculoTax()" @if($perm_btn['modify']!=1) disabled @endif>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        <label for="">Shipping</label>
+                                        <div class="input-group mb-2 mr-sm-2">
+                                            <div class="input-group-prepend">
+                                            <div class="input-group-text">$</div>
+                                            </div>
+                                            <input type="text" id="broker" name="broker" class="form-control" onchange = "calculoBroker()" @if($perm_btn['modify']!=1) disabled @endif>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class = "row">
+                                <div class = "col-lg-3">
+                                    <div class="form-group">
+                                        <label for="">Porcentaje honorarios</label>
                                         <div class="input-group mb-3">
                                             <input type="text" id="percent" name="percent" class="form-control" onchange = "calculoPerc()" @if($perm_btn['modify']!=1) disabled @endif>
                                             <div class="input-group-append">
@@ -157,20 +192,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-3">
-                                    <div class="form-group">
-                                        <label for="">Paquetería</label>
-                                        <div class="input-group mb-2 mr-sm-2">
-                                            <div class="input-group-prepend">
-                                            <div class="input-group-text">$</div>
-                                            </div>
-                                            <input type="text" id="broker" name="broker" class="form-control" onchange = "calculoBroker()" @if($perm_btn['modify']!=1) disabled @endif>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class = "row">
-                                <div class = "col-lg-4">
+                                <div class = "col-lg-3">
                                     <div class="form-group">
                                         <label for="">IVA</label>
                                         <div class="input-group mb-2 mr-sm-2">
@@ -181,14 +203,40 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-lg-2" id="round">
+                                    <div class="form-group">
+                                        <label for="">Aplicar IVA</label> <br>
+                                        <input id = "onoffIva" type="checkbox" data-toggle="toggle" data-on = "SI" data-off="NO" data-width="80" onchange=calculoIva({{$profile}})>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class = "col-lg-4">
                                     <div class="form-group">
-                                        <label for="">Total</label>
+                                        <label for="">Total USD</label>
                                         <div class="input-group mb-2 mr-sm-2">
                                             <div class="input-group-prepend">
                                                 <div class="input-group-text">$</div>
                                             </div>
                                             <input type="text" id="paytotal" name="paytotal" class="form-control" disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class = "col-lg-4">
+                                    <div class="form-group">
+                                        <label for="">Tipo de Cambio</label>
+                                        <input type="text" id="dlls" name="dlls" class="form-control" onchange = "calculoDlls()" @if($perm_btn['modify']!=1) disabled @endif>
+                                        {{-- <input type="text" id="dlls" name="dlls" class="form-control"> --}}
+                                    </div>
+                                </div>
+                                <div class = "col-lg-4">
+                                    <div class="form-group">
+                                        <label for="">Total MXN</label>
+                                        <div class="input-group mb-2 mr-sm-2">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">$</div>
+                                            </div>
+                                            <input type="text" id="paytotalMxn" name="paytotalMxn" class="form-control" disabled>
                                         </div>
                                     </div>
                                 </div>

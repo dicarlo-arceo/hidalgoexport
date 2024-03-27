@@ -107,6 +107,21 @@ class QuoterController extends Controller
             $order = Order::where('id',$request->id)
             ->update(['roundout'=>$request->roundout]);
         }
+        else if ($request->flag == 7)
+        {
+            $order = Order::where('id',$request->id)
+            ->update(['discount'=>$request->discount]);
+        }
+        else if ($request->flag == 8)
+        {
+            $order = Order::where('id',$request->id)
+            ->update(['tax'=>$request->tax]);
+        }
+        else if ($request->flag == 9)
+        {
+            $order = Order::where('id',$request->id)
+            ->update(['iva_flag'=>$request->iva_flag]);
+        }
 
         // dd($items);
         return response()->json(['status'=>true, 'message'=>"Orden Actualizada"]);
@@ -191,15 +206,15 @@ class QuoterController extends Controller
         return response()->json(['status'=>true, 'message'=>"Orden Actualizada", "data"=>$data["items"], "order"=>$data["order"]]);
     }
 
-    public function GetPDF($total, $broker, $pay, $iva, $payt, $idOrder)
+    public function GetPDF($total, $broker, $pay, $iva, $payt, $idOrder, $tax, $discount, $percent, $paytotalMxn)
     {
         $client = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")," ",IFNULL(users.lastname, "")) AS cname'),'destiny','quote_date')
             ->join('Orders',"users.id","=","fk_user")
             ->where('Orders.id',$idOrder)
             ->whereNull('Orders.deleted_at')->first();
         $pdf = new PDFQuote();
-        $pdf->PrintPDF($client->cname,$client->destiny,$client->quote_date,$total, $broker, $pay, $iva, $payt);
-        $pdf->Output('D',"Cotización.pdf");
+        $pdf->PrintPDF($client->cname,$client->destiny,$client->quote_date,$total, $broker, $pay, $iva, $payt, $tax, $discount, $percent, $paytotalMxn);
+        $pdf->Output('D',"Cotizacion.pdf");
         // $pdf->Output('F',public_path("img/")."Cotizacion.pdf");
         return;
     }

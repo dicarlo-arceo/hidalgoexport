@@ -133,6 +133,7 @@ function newItem()
 }
 
 bototal = 0;
+total_merch = 0;
 
 function refreshTable(result)
 {
@@ -158,6 +159,14 @@ function refreshTable(result)
 
     $("#percent").val(result.order.percentage);
     $("#broker").val(result.order.broker);
+    $("#tax").val(result.order.tax);
+    $("#dlls").val(result.order.exc_rate);
+    $("#discount").val(result.order.discount);
+
+    if(result.order.iva_flag == 1)
+        $("#onoffIva").bootstrapToggle('on');
+    else
+        $("#onoffIva").bootstrapToggle('off');
 
     table.draw(false);
     calculoTotales();
@@ -165,21 +174,37 @@ function refreshTable(result)
 
 function calculoTotales()
 {
+    var onoffIva = $("#onoffIva").prop('checked');
+    var roundout = 0;
+    if(onoffIva)
+        roundout = 1;
+    else
+        roundout = 2;
+
+    total_merch = 0;
     sub_total = 0;
     iva = 0;
     comition = 0;
     total = 0;
 
-    comition = bototal * parseFloat($("#percent").val())/100;
+    if(parseFloat($("#discount").val()) != 0) total_merch = bototal - bototal * parseFloat($("#discount").val())/100;
+    else total_merch = bototal;
 
-    sub_total += comition + parseFloat($("#broker").val()) + bototal;
-    iva = sub_total * 0.16;
+    comition = total_merch * parseFloat($("#percent").val())/100;
+
+    sub_total += comition + parseFloat($("#broker").val()) + parseFloat($("#tax").val()) + total_merch;
+
+    if(roundout == 1) iva = sub_total * 0.16;
+    else iva = 0;
+
     total = sub_total + iva;
+    totalMxn = total * parseFloat($("#dlls").val());
 
     $("#totalmerch").val(formatter.format(bototal));
     $("#pay").val(formatter.format(comition));
     $("#iva").val(formatter.format(iva));
     $("#paytotal").val(formatter.format(total));
+    $("#paytotalMxn").val(formatter.format(totalMxn));
 }
 
 function calculo(){
@@ -266,6 +291,116 @@ function calculoBroker()
         "_token": $("meta[name='csrf-token']").attr("content"),
         'broker':broker,
         'flag':5,
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+        }
+    })
+
+    calculoTotales();
+}
+
+function calculoPercTienda()
+{
+    if($("#discount").val() == "")
+        $("#discount").val(0);
+
+    var discount = parseFloat($("#discount").val());
+
+    var route = baseUrl+'/updateOrder';
+    var data = {
+        'id':idOrder,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'discount':discount,
+        'flag':7,
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+        }
+    })
+
+    calculoTotales();
+}
+
+function calculoTax()
+{
+    if($("#tax").val() == "")
+        $("#tax").val(0);
+
+    var tax = parseFloat($("#tax").val());
+
+    var route = baseUrl+'/updateOrder';
+    var data = {
+        'id':idOrder,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'tax':tax,
+        'flag':8,
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+        }
+    })
+
+    calculoTotales();
+}
+
+function calculoIva()
+{
+    var onoffIva = $("#onoffIva").prop('checked');
+    var iva_flag = 0;
+    if(onoffIva)
+        iva_flag = 1;
+    else
+        iva_flag = 2;
+
+    var route = baseUrl+'/updateOrder';
+    var data = {
+        'id':idOrder,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'iva_flag':iva_flag,
+        'flag':9,
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+        }
+    })
+
+    calculoTotales();
+}
+
+function calculoDlls()
+{
+    if($("#dlls").val() == "")
+        $("#dlls").val(0);
+
+    var exc_rate = parseFloat($("#dlls").val());
+
+    var route = baseUrlOrder+'/updateOrder';
+    var data = {
+        'id':idOrder,
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'exc_rate':exc_rate,
+        'flag':1,
     };
     jQuery.ajax({
         url:route,
@@ -432,8 +567,12 @@ function GetPDFQuote()
     pay = Number($("#pay").val().replace(/[^0-9.-]+/g,""));
     iva = Number($("#iva").val().replace(/[^0-9.-]+/g,""));
     payt = Number($("#paytotal").val().replace(/[^0-9.-]+/g,""));
+    tax = Number($("#tax").val().replace(/[^0-9.-]+/g,""));
+    discount = Number($("#discount").val().replace(/[^0-9.-]+/g,""));
+    percent = Number($("#percent").val().replace(/[^0-9.-]+/g,""));
+    paytotalMxn = Number($("#paytotalMxn").val().replace(/[^0-9.-]+/g,""));
 
-    var route = baseUrl + '/GetPDF/' + total + '/' + broker + '/' + pay + '/' + iva + '/' + payt + '/' + idOrder;
+    var route = baseUrl + '/GetPDF/' + total + '/' + broker + '/' + pay + '/' + iva + '/' + payt + '/' + idOrder + '/' + tax + '/' + discount + '/' + percent + '/' + paytotalMxn;
 
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }

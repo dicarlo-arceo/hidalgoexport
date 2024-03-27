@@ -190,7 +190,7 @@ Con esta opción la orden puede salir a tu nombre o a nombre de Hidalgo Export, 
         $this->MultiCell(177,6,utf8_decode("Realiza el pago de honorarios de Hidalgo Export por medio de transferencia 3 días antes de la entrega en México (puedes hacerlo a nuestra cuenta de México o de EUA)."),false);
     }
 
-    function Charge($total, $broker, $pay, $iva, $payt, $destiny)
+    function Charge($total, $broker, $pay, $iva, $payt, $destiny, $tax, $discount, $percent, $paytotalMxn)
     {
         $this->AddPage('P','Letter');
         $this->SetY(45);
@@ -270,49 +270,88 @@ Con esta opción la orden puede salir a tu nombre o a nombre de Hidalgo Export, 
 
         $yprev = $this->GetY() + 6;
         $this->SetY($yprev);
-        $this->SetX(10);
+        $this->SetX(45);
         $this->SetFont('Arial','B',10);
-        $this->MultiCell(70,6,utf8_decode("Costo de la mercancía"),1,'L',false);
+        $this->MultiCell(90,6,utf8_decode("COSTO DE LA MERCANCIA"),1,'L',false);
         $this->SetY($yprev);
-        $this->SetX(80);
+        $this->SetX(135);
         $this->SetFont('Arial','',10);
         $this->MultiCell(30,6,"$".number_format(floatval(preg_replace('/[^\d\.]+/', '', $total)), 2, ".", ","),1,'R',false);
+        if($discount != 0)
+        {
+            $yprev = $this->GetY();
+            $this->SetY($yprev);
+            $this->SetX(45);
+            $this->SetFont('Arial','B',10);
+            $this->MultiCell(90,6,utf8_decode("DESCUENTO DE TIENDA"),1,'L',false);
+            $this->SetY($yprev);
+            $this->SetX(135);
+            $this->SetFont('Arial','',10);
+            $this->MultiCell(30,6,"$".number_format(floatval(preg_replace('/[^\d\.]+/', '', $discount)), 2, ".", ","),1,'R',false);
+        }
+        if($broker != 0)
+        {
+            $yprev = $this->GetY();
+            $this->SetY($yprev);
+            $this->SetX(45);
+            $this->SetFont('Arial','B',10);
+            $this->MultiCell(90,6,utf8_decode("SHIPPING"),1,'L',false);
+            $this->SetY($yprev);
+            $this->SetX(135);
+            $this->SetFont('Arial','',10);
+            $this->MultiCell(30,6,"$".number_format(floatval(preg_replace('/[^\d\.]+/', '', $broker)), 2, ".", ","),1,'R',false);
+        }
+        if($tax != 0)
+        {
+            $yprev = $this->GetY();
+            $this->SetY($yprev);
+            $this->SetX(45);
+            $this->SetFont('Arial','B',10);
+            $this->MultiCell(90,6,utf8_decode("TAX"),1,'L',false);
+            $this->SetY($yprev);
+            $this->SetX(135);
+            $this->SetFont('Arial','',10);
+            $this->MultiCell(30,6,"$".number_format(floatval(preg_replace('/[^\d\.]+/', '', $tax)), 2, ".", ","),1,'R',false);
+        }
         $yprev = $this->GetY();
         $this->SetY($yprev);
-        $this->SetX(10);
+        $this->SetX(45);
         $this->SetFont('Arial','B',10);
-        $this->MultiCell(70,6,utf8_decode("Shipping"),1,'L',false);
+        $this->MultiCell(90,6,$percent.utf8_decode("% DE HONORARIOS HIDALGO EXPORT"),1,'L',false);
         $this->SetY($yprev);
-        $this->SetX(80);
-        $this->SetFont('Arial','',10);
-        $this->MultiCell(30,6,"$".number_format(floatval(preg_replace('/[^\d\.]+/', '', $broker)), 2, ".", ","),1,'R',false);
-        $yprev = $this->GetY();
-        $this->SetY($yprev);
-        $this->SetX(10);
-        $this->SetFont('Arial','B',10);
-        $this->MultiCell(70,6,utf8_decode("20% de honorarios Hidalgo Export"),1,'L',false);
-        $this->SetY($yprev);
-        $this->SetX(80);
+        $this->SetX(135);
         $this->SetFont('Arial','',10);
         $this->MultiCell(30,6,"$".number_format(floatval(preg_replace('/[^\d\.]+/', '', $pay)), 2, ".", ","),1,'R',false);
+        if($iva != 0)
+        {
+            $yprev = $this->GetY();
+            $this->SetY($yprev);
+            $this->SetX(45);
+            $this->SetFont('Arial','B',10);
+            $this->MultiCell(90,6,utf8_decode("IVA 16%"),1,'L',false);
+            $this->SetY($yprev);
+            $this->SetX(135);
+            $this->SetFont('Arial','',10);
+            $this->MultiCell(30,6,"$".number_format(floatval(preg_replace('/[^\d\.]+/', '', $iva)), 2, ".", ","),1,'R',false);
+        }
         $yprev = $this->GetY();
         $this->SetY($yprev);
-        $this->SetX(10);
+        $this->SetX(45);
         $this->SetFont('Arial','B',10);
-        $this->MultiCell(70,6,utf8_decode("Iva 16%"),1,'L',false);
+        $this->MultiCell(90,6,utf8_decode("TOTAL EN USD"),1,'L',false);
         $this->SetY($yprev);
-        $this->SetX(80);
-        $this->SetFont('Arial','',10);
-        $this->MultiCell(30,6,"$".number_format(floatval(preg_replace('/[^\d\.]+/', '', $iva)), 2, ".", ","),1,'R',false);
-        $yprev = $this->GetY();
-        $this->SetY($yprev);
-        $this->SetX(10);
-        $this->SetFont('Arial','B',10);
-        $this->MultiCell(70,6,utf8_decode("Total en USD"),1,'L',false);
-        $this->SetY($yprev);
-        $this->SetX(80);
+        $this->SetX(135);
         $this->SetFont('Arial','',10);
         $this->MultiCell(30,6,"$".number_format(floatval(preg_replace('/[^\d\.]+/', '', $payt)), 2, ".", ","),1,'R',false);
+        $yprev = $this->GetY();
+        $this->SetY($yprev);
+        $this->SetX(45);
+        $this->SetFont('Arial','B',10);
+        $this->MultiCell(90,6,utf8_decode("TOTAL EN MXN"),1,'L',false);
+        $this->SetY($yprev);
+        $this->SetX(135);
+        $this->SetFont('Arial','',10);
+        $this->MultiCell(30,6,"$".number_format(floatval(preg_replace('/[^\d\.]+/', '', $paytotalMxn)), 2, ".", ","),1,'R',false);
 
         $yprev = $this->GetY() + 6;
         $this->SetY($yprev);
@@ -386,7 +425,7 @@ Con esta opción la orden puede salir a tu nombre o a nombre de Hidalgo Export, 
         $this->Cell(0,10,'Page '.$this->PageNo().'/{nb}',0,0,'C');
     }
 
-    function PrintPDF($client,$destiny,$quote_date,$total, $broker, $pay, $iva, $payt)
+    function PrintPDF($client,$destiny,$quote_date,$total, $broker, $pay, $iva, $payt, $tax, $discount, $percent, $paytotalMxn)
     {
         $this->client = $client;
         $this->quote_date = $quote_date;
@@ -394,7 +433,8 @@ Con esta opción la orden puede salir a tu nombre o a nombre de Hidalgo Export, 
         $this->AddPage('P','Letter');
         $this->SetFont('Times','',12);
         $this->FancyTable();
-        $this->Charge($total, $broker, $pay, $iva, $payt, $destiny);
+        $disc = $total * $discount/100;
+        $this->Charge($total, $broker, $pay, $iva, $payt, $destiny, $tax, $disc, $percent, $paytotalMxn);
     }
 }
 ?>

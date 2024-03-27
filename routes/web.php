@@ -102,6 +102,6 @@ Route::post('processes/quoter/quoter/storeItem', 'QuoterController@storeItem')->
 Route::delete('processes/quoter/quoter/DeleteItem/{id}/{idOrder}', 'QuoterController@DeleteItem')->name('quoter.DeleteItem');
 Route::get('processes/quoter/quoter/GetInfoItem/{id}','QuoterController@GetInfoItem')->name('quoter.GetInfoItem');
 Route::post('processes/quoter/quoter/updateItem', 'QuoterController@updateItem')->name('quoter.updateItem');
-Route::get('processes/quoter/quoter/GetPDF/{total}/{broker}/{pay}/{iva}/{payt}/{idOrder}', 'QuoterController@GetPDF')->name('quoter.GetPDF');
+Route::get('processes/quoter/quoter/GetPDF/{total}/{broker}/{pay}/{iva}/{payt}/{idOrder}/{tax}/{discount}/{percent}/{paytotalMxn}', 'QuoterController@GetPDF')->name('quoter.GetPDF');
 Route::get('processes/quoter/quoter/GetInfoOrder/{id}','QuoterController@GetInfoOrder')->name('quoter.GetInfoOrder');
 
