@@ -61,7 +61,7 @@ Route::resource('admin/project/projects', 'ProjectsController');
 
 //------------------------------------------------Procesos---------------------------------------------
 // ordenes
-Route::get('processes/order/orders/GetInfo/{id}','OrdersController@GetInfo')->name('orders.GetInfo');
+Route::get('processes/order/orders/GetInfo/{id}/{tc}','OrdersController@GetInfo')->name('orders.GetInfo');
 Route::get('processes/order/orders/GetInfoOrder/{id}','OrdersController@GetInfoOrder')->name('orders.GetInfoOrder');
 Route::get('processes/order/orders/GetInfoItem/{id}','OrdersController@GetInfoItem')->name('orders.GetInfoItem');
 Route::get('processes/order/orders/OpenSingleOrder/{id}','OrdersController@OpenSingleOrder')->name('orders.OpenSingleOrder');
@@ -76,18 +76,19 @@ Route::post('processes/order/orders/updateTR', 'OrdersController@updateTR')->nam
 Route::get('processes/order/orders/GetinfoStatus/{id}', 'OrdersController@GetinfoStatus')->name('orders.GetinfoStatus');
 Route::get('processes/order/orders/GetinfoStatusOrder/{id}', 'OrdersController@GetinfoStatusOrder')->name('orders.GetinfoStatusOrder');
 Route::get('processes/order/orders/GetinfoTR/{id}', 'OrdersController@GetinfoTR')->name('orders.GetinfoTR');
-Route::get('processes/order/orders/GetItemsTR/{id}/{tr}', 'OrdersController@GetItemsTR')->name('orders.GetItemsTR');
+Route::get('processes/order/orders/GetItemsTR/{id}/{tr}/{tc}', 'OrdersController@GetItemsTR')->name('orders.GetItemsTR');
 Route::get('processes/order/orders/GetPDF/{id}/{cellar}/{comition}/{dlls}/{date}/{pkgs}', 'OrdersController@GetPDF')->name('orders.GetPDF');
 Route::get('processes/order/orders/ItemsPDF/{order}/{tr}/{cellar}/{comition}/{mxn_total}/{iva}/{mxn_invoice}/{usd_total}/{broker}/{flaginvoice}', 'OrdersController@ItemsPDF')->name('orders.ItemsPDF');
 Route::get('processes/order/orders/GetinfoTROrders/{id}', 'OrdersController@GetinfoTROrders')->name('orders.GetinfoTROrders');
 Route::get('processes/order/orders/GetinfoTRItems/{id}', 'OrdersController@GetinfoTRItems')->name('orders.GetinfoTRItems');
-Route::get('processes/order/orders/GetPDFCobroTodos/{flag}/{date}/{pkgs}/{tr}/{address}/{ids}', 'OrdersController@GetPDFCobroTodos')->name('orders.GetPDFCobroTodos');
+Route::get('processes/order/orders/GetPDFCobroTodos/{flag}/{date}/{pkgs}/{tr}/{address}/{ids}/{tc}', 'OrdersController@GetPDFCobroTodos')->name('orders.GetPDFCobroTodos');
 Route::post('processes/order/orders/updateBOAll', 'OrdersController@updateBOAll')->name('orders.updateBOAll');
-Route::get('processes/order/orders/GetPDFItemsTodos/{flag}/{tr}/{ids}/{flaginvoice}/{status}', 'OrdersController@GetPDFItemsTodos')->name('orders.GetPDFItemsTodos');
+Route::get('processes/order/orders/GetPDFItemsTodos/{flag}/{tr}/{ids}/{flaginvoice}/{status}/{tc}', 'OrdersController@GetPDFItemsTodos')->name('orders.GetPDFItemsTodos');
 Route::post('processes/order/orders/CloseOrders', 'OrdersController@CloseOrders')->name('orders.CloseOrders');
 Route::post('processes/order/orders/OpenOrders', 'OrdersController@OpenOrders')->name('orders.OpenOrders');
 Route::post('processes/order/orders/AssignReceipt', 'OrdersController@AssignReceipt')->name('orders.AssignReceipt');
 Route::get('processes/order/orders/GetViewItems/{tr}/{status}', 'OrdersController@GetViewItems')->name('orders.GetViewItems');
+Route::post('processes/order/orders/updateGlobal', 'OrdersController@updateGlobal')->name('orders.updateGlobal');
 
 // closed order
 Route::resource('processes/order/closedOrders', 'ClosedOrdController');

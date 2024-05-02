@@ -206,14 +206,14 @@ class QuoterController extends Controller
         return response()->json(['status'=>true, 'message'=>"Orden Actualizada", "data"=>$data["items"], "order"=>$data["order"]]);
     }
 
-    public function GetPDF($total, $broker, $pay, $iva, $payt, $idOrder, $tax, $discount, $percent, $paytotalMxn)
+    public function GetPDF($total, $broker, $pay, $iva, $exc_rate, $idOrder, $tax, $discount, $percent, $paytotalMxn)
     {
         $client = DB::table('users')->select(DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(users.firstname, "")," ",IFNULL(users.lastname, "")) AS cname'),'destiny','quote_date')
             ->join('Orders',"users.id","=","fk_user")
             ->where('Orders.id',$idOrder)
             ->whereNull('Orders.deleted_at')->first();
         $pdf = new PDFQuote();
-        $pdf->PrintPDF($client->cname,$client->destiny,$client->quote_date,$total, $broker, $pay, $iva, $payt, $tax, $discount, $percent, $paytotalMxn);
+        $pdf->PrintPDF($client->cname,$client->destiny,$client->quote_date,$total, $broker, $pay, $iva, $exc_rate, $tax, $discount, $percent, $paytotalMxn);
         $pdf->Output('D',"Cotizacion.pdf");
         // $pdf->Output('F',public_path("img/")."Cotizacion.pdf");
         return;

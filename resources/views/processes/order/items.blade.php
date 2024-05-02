@@ -532,7 +532,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" onclick="cerrarSelectTR()" class="btn btn-secundary">Cancelar</button>
-                <button type="button" id="btnAcceptTr" style="display: none;" onclick="abrirSeleccionTR()" class="btn btn-primary">Aceptar</button>
+                <button type="button" id="btnAcceptTr" style="display: none;" onclick="exc_rate_func(0,0,2)" class="btn btn-primary">Aceptar</button>
             </div>
         {{-- </form> --}}
         </div>
@@ -705,7 +705,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" onclick="cerrarSelectTROrder()" class="btn btn-secundary">Cancelar</button>
-                <button type="button" id="btnAcceptOrder" style="display: none;" onclick="DwnldHojaCobroTodos()" class="btn btn-primary">Aceptar</button>
+                <button type="button" id="btnAcceptOrder" style="display: none;" onclick="exc_rateCobro()" class="btn btn-primary">Aceptar</button>
             </div>
         {{-- </form> --}}
         </div>
@@ -780,7 +780,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" onclick="cerrarPDFItemsAll()" class="btn btn-secundary" data-dismiss="modal">Cancelar</button>
-                <button type="button" id="btnAcceptItems" style="display: none;" onclick="DwnldItemsTodos()" class="btn btn-primary">Aceptar</button>
+                <button type="button" id="btnAcceptItems" style="display: none;" onclick="exc_rateItems()" class="btn btn-primary">Aceptar</button>
             </div>
         </div>
     </div>

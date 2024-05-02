@@ -106,6 +106,7 @@ trAll = 0;
 statAll = 0;
 bototal = 0;
 subtotal = 0;
+tc = 0;
 
 function refreshTable(result)
 {
@@ -293,7 +294,7 @@ function nuevoItem(id,profile)
     idOrder = id;
     profileOrder = profile
     var table = $('#tbProf1').DataTable();
-    var route = baseUrlOrder + '/GetInfo/'+ id;
+    var route = baseUrlOrder + '/GetInfo/'+ id + '/'+ tc;
     var btnNewItem = document.getElementById("btnNewItem");
 
     flagTR = "null";
@@ -1089,7 +1090,7 @@ function abrirSeleccionTR()
 {
     var selectTR = $('#selectTR').val();
     var btnNewItem = document.getElementById("btnNewItem");
-    var route = baseUrlOrder + '/GetItemsTR/' + idOrder + "/" + selectTR;
+    var route = baseUrlOrder + '/GetItemsTR/' + idOrder + "/" + selectTR + "/" + tc;
 
     jQuery.ajax({
         url:route,
@@ -1489,7 +1490,7 @@ function DwnldHojaCobroTodos()
         if(checkedOrderChkb.length-1 != indice) stringaux = stringaux.concat("-");
     });
 
-    var route = baseUrlOrder + '/GetPDFCobroTodos/' + flag + '/' + $("#datePDFOrder").val() + '/' + $("#pkgsOrder").val() + '/' + $("#selectTROrder").val() + '/' + $("#selectAddressOrder").val() + '/' + stringaux;
+    var route = baseUrlOrder + '/GetPDFCobroTodos/' + flag + '/' + $("#datePDFOrder").val() + '/' + $("#pkgsOrder").val() + '/' + $("#selectTROrder").val() + '/' + $("#selectAddressOrder").val() + '/' + stringaux + "/" + tc;
 
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
@@ -1656,7 +1657,7 @@ function DwnldItemsTodos()
         if(checkedOrderChkb.length-1 != indice) stringaux = stringaux.concat("-");
     });
 
-    var route = baseUrlOrder + '/GetPDFItemsTodos/' + flag + '/' + $("#selectTRItems").val() + '/' + stringaux + '/' + invoiceflag + '/' + $("#selectStatusItemsAll").val();
+    var route = baseUrlOrder + '/GetPDFItemsTodos/' + flag + '/' + $("#selectTRItems").val() + '/' + stringaux + '/' + invoiceflag + '/' + $("#selectStatusItemsAll").val() + "/" + tc;
 
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }
@@ -1982,4 +1983,89 @@ function VerItemsTodos()
         }
     })
 
+}
+
+function changeGlobal()
+{
+    if($("#exc_rate_global").val() == "")
+        $("#exc_rate_global").val(0);
+
+    var exc_rate_global = parseFloat($("#exc_rate_global").val());
+
+    var route = baseUrlOrder+'/updateGlobal';
+    var data = {
+        "_token": $("meta[name='csrf-token']").attr("content"),
+        'exc_rate_global':exc_rate_global
+    };
+    jQuery.ajax({
+        url:route,
+        type:'post',
+        data:data,
+        dataType:'json',
+        success:function(result)
+        {
+            alertify.success(result.message);
+        }
+    })
+}
+
+function exc_rate_func(id,profile,selec)
+{
+    tc = 0;
+    alertify.confirm("Tipo de cambio","¿Usar el tipo de cambio del día?",
+        function(){
+            tc = $("#exc_rate_global").val()
+            gotofunc(id,profile,selec);
+        },
+        function()
+        {
+            gotofunc(id,profile,selec);
+        }).set('labels', {ok:'Si', cancel:'No'});
+}
+
+function gotofunc(id,profile,selec)
+{
+    switch(selec)
+    {
+        case 1:
+            nuevoItem(id,profile);
+            break;
+        case 2:
+            abrirSeleccionTR();
+            break;
+        case 3:
+            DwnldHojaCobroTodos();
+            break;
+        case 4:
+            DwnldItemsTodos();
+            break;
+    }
+}
+
+function exc_rateCobro()
+{
+    var paymntDetails = $("#paymntDetailsOrder").prop('checked');
+    if(paymntDetails)
+    {
+        flag = 0;
+        exc_rate_func(0,0,3);
+    }
+    else
+    {
+        DwnldHojaCobroTodos();
+    }
+}
+
+function exc_rateItems()
+{
+    var paymntDetails = $("#paymntDetailsItemsAll").prop('checked');
+    if(paymntDetails)
+    {
+        flag = 0;
+        exc_rate_func(0,0,4);
+    }
+    else
+    {
+        DwnldItemsTodos();
+    }
 }

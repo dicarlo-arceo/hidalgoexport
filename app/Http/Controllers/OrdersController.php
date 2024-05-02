@@ -10,6 +10,7 @@ use App\Order;
 use App\Item;
 use App\Project;
 use App\Status;
+use App\Globals;
 use App\Receipt_assigns;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
@@ -29,6 +30,8 @@ class OrdersController extends Controller
             ->where("fk_section","27")
             ->pluck('name','id');
         $title = "Órdenes";
+        $global_er = Globals::where("id",1)->first();
+        // dd($global_er);
         $flagClosed = 0;
         // dd($profile);
         if($profile != 61)
@@ -57,11 +60,12 @@ class OrdersController extends Controller
         }
         else
         {
-            return view('processes.order.orders', compact('orders','perm_btn','profile','projects','cmbStatus','title','flagClosed'));
+            return view('processes.order.orders', compact('orders','perm_btn','profile','projects','cmbStatus','title','flagClosed','global_er'));
         }
     }
-    public function GetInfo($id)
+    public function GetInfo($id,$tc)
     {
+        if($tc != 0) $order = Order::where('id',$id)->update(['exc_rate'=>$tc]);
         $flag = 0;
         $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
         ->join('Orders',"Orders.id","=","fk_order")
@@ -377,8 +381,9 @@ class OrdersController extends Controller
         // dd($initial->commentary);
         return response()->json(['status'=>true, "data"=>$items]);
     }
-    public function GetItemsTR($id,$tr)
+    public function GetItemsTR($id,$tr,$tc)
     {
+        if($tc != 0) $order = Order::where('id',$id)->update(['exc_rate'=>$tc]);
         if($tr == 0)
         {
             $items = DB::table('Items')->select("*","Items.id as id",'Status.id as statId')
@@ -606,7 +611,7 @@ class OrdersController extends Controller
         }
         return $temp_array;
     }
-    public function GetPDFCobroTodos($flag,$date,$pkgs,$tr,$address,$ids)
+    public function GetPDFCobroTodos($flag,$date,$pkgs,$tr,$address,$ids,$tc)
     {
         $totalCellar = 0;
         $totalComition = 0;
@@ -623,6 +628,7 @@ class OrdersController extends Controller
             $prices = array();
             foreach($ids as $id)
             {
+                if($tc != 0) $order = Order::where('id',$id)->update(['exc_rate'=>$tc]);
                 $cellar = 0;
                 $items = DB::table('Items')->select("total_price")
                 ->join('Orders',"Orders.id","=","fk_order")
@@ -677,6 +683,7 @@ class OrdersController extends Controller
         {
             $totalCellar = "1";
             $totalComition = "1";
+            // if($tc != 0) $order = Order::where('id',$id)->update(['exc_rate'=>$tc]);
             $order = DB::table('Orders')->select("Projects.name as projectName","address",'cellphone',"order_number","exc_rate",DB::raw('CONCAT(IFNULL(users.name, "")," ",IFNULL(firstname, "")," ",IFNULL(lastname, "")) AS name'))
                     ->join('Projects',"Projects.id","=","fk_project")
                     ->join('users',"users.id","=","fk_user")
@@ -733,7 +740,7 @@ class OrdersController extends Controller
         // return;
         return response()->json(['status'=>true, "message"=>"Estatus Actualizado", "data"=>$items,"flag"=>$flag]);
     }
-    public function GetPDFItemsTodos($flag,$tr,$ids,$flaginvoice,$status)
+    public function GetPDFItemsTodos($flag,$tr,$ids,$flaginvoice,$status,$tc)
     {
         $totalCellar = 0;
         $totalComition = 0;
@@ -798,6 +805,7 @@ class OrdersController extends Controller
 
             foreach($ids as $id)
             {
+                if($tc != 0) $order = Order::where('id',$id)->update(['exc_rate'=>$tc]);
                 $cellar = 0;
 
                 if(intval($tr) != 0)
@@ -1179,5 +1187,12 @@ class OrdersController extends Controller
         $returnArray = array('items' => $itm, 'paymntarray' => $paymntarray);
 
         return($returnArray);
+    }
+
+    public function updateGlobal(Request $request)
+    {
+        $global = Globals::where('id',1)->update(['val'=>$request->exc_rate_global]);
+
+        return response()->json(['status'=>true, 'message'=>"Tipo de cambio actualizado"]);
     }
 }

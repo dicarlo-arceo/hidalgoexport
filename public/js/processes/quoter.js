@@ -192,7 +192,7 @@ function calculoTotales()
 
     comition = total_merch * parseFloat($("#percent").val())/100;
 
-    sub_total += comition + parseFloat($("#broker").val()) + parseFloat($("#tax").val()) + total_merch;
+    sub_total += comition + parseFloat($("#broker").val()) + parseFloat($("#tax").val());
 
     if(roundout == 1) iva = sub_total * 0.16;
     else iva = 0;
@@ -395,7 +395,7 @@ function calculoDlls()
 
     var exc_rate = parseFloat($("#dlls").val());
 
-    var route = baseUrlOrder+'/updateOrder';
+    var route = baseUrl+'/updateOrder';
     var data = {
         'id':idOrder,
         "_token": $("meta[name='csrf-token']").attr("content"),
@@ -566,13 +566,13 @@ function GetPDFQuote()
     broker = Number($("#broker").val().replace(/[^0-9.-]+/g,""));
     pay = Number($("#pay").val().replace(/[^0-9.-]+/g,""));
     iva = Number($("#iva").val().replace(/[^0-9.-]+/g,""));
-    payt = Number($("#paytotal").val().replace(/[^0-9.-]+/g,""));
+    exc_rate = Number($("#dlls").val().replace(/[^0-9.-]+/g,""));
     tax = Number($("#tax").val().replace(/[^0-9.-]+/g,""));
     discount = Number($("#discount").val().replace(/[^0-9.-]+/g,""));
     percent = Number($("#percent").val().replace(/[^0-9.-]+/g,""));
     paytotalMxn = Number($("#paytotalMxn").val().replace(/[^0-9.-]+/g,""));
 
-    var route = baseUrl + '/GetPDF/' + total + '/' + broker + '/' + pay + '/' + iva + '/' + payt + '/' + idOrder + '/' + tax + '/' + discount + '/' + percent + '/' + paytotalMxn;
+    var route = baseUrl + '/GetPDF/' + total + '/' + broker + '/' + pay + '/' + iva + '/' + exc_rate + '/' + idOrder + '/' + tax + '/' + discount + '/' + percent + '/' + paytotalMxn;
 
     $.ajaxSetup({
         headers: { 'X-CSRF-Token' : $('meta[name=_token]').attr('content') }

@@ -213,17 +213,6 @@
                             <div class="row">
                                 <div class = "col-lg-4">
                                     <div class="form-group">
-                                        <label for="">Total USD</label>
-                                        <div class="input-group mb-2 mr-sm-2">
-                                            <div class="input-group-prepend">
-                                                <div class="input-group-text">$</div>
-                                            </div>
-                                            <input type="text" id="paytotal" name="paytotal" class="form-control" disabled>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class = "col-lg-4">
-                                    <div class="form-group">
                                         <label for="">Tipo de Cambio</label>
                                         <input type="text" id="dlls" name="dlls" class="form-control" onchange = "calculoDlls()" @if($perm_btn['modify']!=1) disabled @endif>
                                         {{-- <input type="text" id="dlls" name="dlls" class="form-control"> --}}

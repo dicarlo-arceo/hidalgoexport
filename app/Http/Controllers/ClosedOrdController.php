@@ -10,6 +10,7 @@ use App\Order;
 use App\Item;
 use App\Project;
 use App\Status;
+use App\Globals;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Codedge\Fpdf\Fpdf\Fpdf;
@@ -28,6 +29,7 @@ class ClosedOrdController extends Controller
             ->where("fk_section","27")
             ->pluck('name','id');
         $title = "Órdenes Cerradas";
+        $global_er = Globals::where("id",1)->first();
         $flagClosed = 1;
         // dd($profile);
         if($profile != 61)
@@ -56,7 +58,7 @@ class ClosedOrdController extends Controller
         }
         else
         {
-            return view('processes.order.orders', compact('orders','perm_btn','profile','projects','cmbStatus','title','flagClosed'));
+            return view('processes.order.orders', compact('orders','perm_btn','profile','projects','cmbStatus','title','flagClosed','global_er'));
         }
     }
 }
