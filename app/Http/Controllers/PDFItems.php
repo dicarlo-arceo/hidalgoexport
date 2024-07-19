@@ -133,7 +133,7 @@ class PDFItems extends FPDF
         $this->Cell(90,10,'TOTAL',1,0,'C',true);
         $this->Ln();
         $this->SetFont('Arial','',13);
-        $this->Cell(90,10,"BODEGA","LR",0,'L');
+        $this->Cell(90,10,utf8_decode("TOTAL DE MERCANCÍA"),"LR",0,'L');
         $this->Cell(90,10,$cellar,"LR",0,'L');
         $this->Ln();
         $this->SetFont('Arial','',13);
